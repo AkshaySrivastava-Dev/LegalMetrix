@@ -32,7 +32,7 @@ The backend acts as the central coordinator connecting the client frontend, the 
 +------------------+       +-------------------+       +-------------------+
 |  AI/OCR PIPELINE |       | RULES ENGINE      |       | PERSISTENT DB     |
 | (Multi-Frame CV) |       | (Deterministic)   |       | (SQLite Backend)  |
-| [Member 3 Scope] |       | [Member 4 Scope]  |       | [Member 2 Scope]  |
+| [AI / CV Module] |       | [Compliance Team] |       | [Member 2 Scope]  |
 +------------------+       +-------------------+       +-------------------+
 ```
 
@@ -40,13 +40,13 @@ The backend acts as the central coordinator connecting the client frontend, the 
 To maintain clean separation of concerns across our multi-developer team:
 - **What Member 2 Built**: The FastAPI server, route controllers, safe upload streaming, service adapters, error handling, SQLite persistence layer, paginated history APIs, offline batch sync endpoints, and backend integration test suites.
 - **What Other Modules Own**:
-  - **AI / Computer Vision** *(Member 3)*: PaddleOCR models, text detection boxes, image quality metrics, and multi-view frame fusion algorithms.
-  - **Compliance Rule Engine** *(Member 4)*: Deterministic Legal Metrology (Packaged Commodities) Rules, 2011 definitions, field validators, confidence routers, and manual review resolution logic.
-  - **Reconciliation Normalizers** *(Member 4)*: Price/quantity normalization and catalog mismatch algorithms.
-  - **Frontend UI & Offline Client** *(Member 1 & 5)*: User interface, camera capture UI, and browser/device IndexedDB queue management.
+  - **AI / Computer Vision Pipeline**: PaddleOCR models, text detection boxes, image quality metrics, and multi-view frame fusion algorithms. *(Member 2 integrated the pipeline invocations but did not train or build the OCR models).*
+  - **Compliance Rule Engine**: Deterministic Legal Metrology (Packaged Commodities) Rules, 2011 definitions, field validators, confidence routers, and manual review resolution logic. *(Member 2 orchestrated evaluation calls but did not implement the statutory rules).*
+  - **Reconciliation / Comparison Algorithms**: Price/quantity normalization and catalog mismatch algorithms.
+  - **Frontend & Client Layer**: User interface, camera capture UI, and browser/device IndexedDB offline queue management. *(Member 2 built the backend-side `/api/sync` endpoints; phone-side IndexedDB belongs to the client layer).*
 
 > ⚠️ **Core System Principle**:  
-> **AI extracts information. The deterministic rules engine determines compliance. The backend orchestrates the two.**  
+> **AI/OCR extracts information. The deterministic rules engine determines compliance. The backend orchestrates both.**  
 > The backend does **not** independently make legal decisions or invent compliance findings.
 
 ---
@@ -59,7 +59,7 @@ To maintain clean separation of concerns across our multi-developer team:
 4. **Compliance Engine Orchestration**: Formats extracted fields, confidences, and bounding boxes, and delegates evaluation directly to `evaluate_compliance()`.
 5. **Durable SQLite Persistence**: Thread-safe database storage (`data/inspections.db`) managing structured records, audit logs, and status indices.
 6. **Inspection History & Intelligence**: Paginated queries (`/api/inspections`) and same-product lookups (`/api/inspections/same-product`) for tracking repeated violations.
-7. **Offline Batch Synchronization**: Idempotent batch sync endpoints (`POST /api/sync` and `/api/inspections/sync`) for uploading inspections captured without network connectivity.
+7. **Offline Batch Synchronization API**: Idempotent batch sync endpoints (`POST /api/sync` and `/api/inspections/sync`) for uploading inspections captured without network connectivity.
 8. **Catalog Reconciliation Routing**: Mounted `/api/reconciliation/compare` and `/api/comparison` routing to deterministic field comparison logic.
 9. **Centralized Error & Exception Handling**: Standardized JSON error envelopes preventing stack trace leakage and preserving diagnostic details.
 10. **System Health & Observability**: `/health` and `/api/health` monitoring database connectivity and storage directory status.
@@ -220,7 +220,7 @@ LegalMetrix/
 
 ## 8. Error Handling & Reliability Governance
 
-Custom exceptions in [`utils/errors.py`](file:///c:/Users/ADITYA/Desktop/Mera%20Kaam/utils/errors.py) guarantee consistent, clear JSON error envelopes:
+Custom exceptions in [utils/errors.py](utils/errors.py) guarantee consistent, clear JSON error envelopes:
 
 ```json
 {
@@ -421,8 +421,8 @@ async function syncOfflineInspections(offlineRecords) {
 ## 14. Technical Limitations & Non-Goals
 
 To maintain clear technical boundaries, this backend contribution explicitly does **not**:
-- Train or fine-tune neural OCR / character recognition models (owned by Member 3).
-- Implement custom Legal Metrology compliance rule logic inside API routes (owned by Member 4).
+- Train or fine-tune neural OCR / character recognition models.
+- Implement custom Legal Metrology compliance rule logic inside API routes.
 - Execute 3D point cloud or photogrammetry reconstruction (multi-view OCR fusion is used instead).
 - Manage browser/device IndexedDB client storage directly (managed on client side).
 - Replace human officers in statutory enforcement decisions.
@@ -435,16 +435,16 @@ To maintain clear technical boundaries, this backend contribution explicitly doe
 ================================================================================
 MEMBER 2 DELIVERABLES SUMMARY
 ================================================================================
-• FastAPI Server & Lifespan Architecture      [COMPLETE & VERIFIED]
-• Real AI/OCR Ingestion & Multi-Frame Fusion   [COMPLETE & UNMOCKED]
-• Deterministic Rules Engine Orchestration     [COMPLETE & UNMOCKED]
-• Durable SQLite Storage & Indexing            [COMPLETE & TESTED]
-• Offline Batch Synchronization (Idempotent)   [COMPLETE & TESTED]
-• Same-Product & History Search Endpoints      [COMPLETE & TESTED]
-• Physical vs Catalog Reconciliation Routing   [COMPLETE & TESTED]
-• Safe File Uploads & UUID Isolation           [COMPLETE & TESTED]
-• Centralized Error & Exception Handlers       [COMPLETE & TESTED]
-• Integration Test Suite (99/99 Passing)       [COMPLETE & VERIFIED]
-• Git Feature Branch & PR Preparation          [BRANCH: feature/backend]
+• FastAPI Server & Lifespan Architecture          [COMPLETE & VERIFIED]
+• AI/OCR Pipeline Integration & Frame Invocation  [COMPLETE & VERIFIED]
+• Deterministic Rules Engine Integration          [COMPLETE & VERIFIED]
+• Durable SQLite Storage & Indexing                [COMPLETE & TESTED]
+• Offline Batch Synchronization (Idempotent)       [COMPLETE & TESTED]
+• Same-Product & History Search Endpoints          [COMPLETE & TESTED]
+• Physical vs Catalog Reconciliation Routing       [COMPLETE & TESTED]
+• Safe File Uploads & UUID Isolation               [COMPLETE & TESTED]
+• Centralized Error & Exception Handlers           [COMPLETE & TESTED]
+• Integration Test Suite (99/99 Passing)           [COMPLETE & VERIFIED]
+• Git Feature Branch & PR Preparation              [BRANCH: feature/backend]
 ================================================================================
 ```
