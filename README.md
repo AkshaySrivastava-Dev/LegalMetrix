@@ -1,270 +1,367 @@
-# LEGALMETRIX — Member 4: Legal Compliance + Comparison Module
+# 🛡️ LegalMetrix AI/OCR — Packaged Commodity Inspection Engine
 
-AI-Assisted Legal Metrology Inspection System — Smart India Hackathon Prototype.
-
-This module is responsible for deterministic legal rule evaluation, category rule selection, confidence-based operational routing, human review handling, physical ↔ online catalog reconciliation, and same-product historical comparison under the **Legal Metrology (Packaged Commodities) Rules, 2011**.
+An intelligent, multi-image Optical Character Recognition (OCR) and Legal Metrology compliance declaration extraction engine designed in compliance with the **Legal Metrology (Packaged Commodities) Rules, 2011**.
 
 ---
 
-## 1. Architectural Principles & Safety Guarantees
-
-```
-                  AI / OCR Layer
-                        │
-                        ▼
-              Extracted Information
-             (Values + Confidence + Evidence)
-                        │
-                        ▼
-              Product Category Selection
-                        │
-                        ▼
-               RULE DATABASE (JSON)
-                        │
-                        ▼
-             DETERMINISTIC RULE ENGINE
-                        │
-         ┌──────────────┼──────────────┐
-         ▼              ▼              ▼
-       PASS           FAIL         UNCERTAIN
-         │              │              │
-         │              │              ▼
-         │              │        MANUAL REVIEW
-         │              │        (Officer Audit)
-         │              │              │
-         └──────────────┴──────────────┘
-                        │
-                        ▼
-                EVIDENCE + FINDINGS
-                        │
-         ┌──────────────┼──────────────┐
-         ▼              ▼              ▼
-      CURRENT         ONLINE        HISTORY
-      PRODUCT          DATA          DATA
-         │              │              │
-         └──────┬───────┘              │
-                ▼                      │
-          RECONCILIATION               │
-          (MATCH / MISMATCH)           │
-                                       │
-                        ┌──────────────┘
-                        ▼
-                 HISTORICAL DIFF
-                (CHANGE DETECTED)
-```
-
-### Safety Rules:
-1. **No LLM in Compliance Decisions**: AI/OCR extracts declarations and provides confidence scores. All legal compliance evaluations are strictly deterministic and rule-based.
-2. **Confidence vs. Compliance Separation**:
-   - **Confidence** measures *extraction reliability*.
-   - **Compliance** evaluates whether the extracted information satisfies the applicable legal rule.
-   - Low confidence (<60%) produces `NEEDS_REVIEW` and prompts manual verification; it is **never** automatically converted into a legal violation.
-3. **No Marketplace Scraping**: Online reconciliation operates strictly against controlled mock / demo catalog payloads.
-4. **Objective Terminology**: Mismatches and historical changes are reported objectively as `MISMATCH` or `CHANGE_DETECTED` with the recommendation `"Potential mismatch detected — officer review recommended."` — never labeled "illegal" without explicit deterministic statutory mandate.
+## 📑 Table of Contents
+1. [System Overview](#-system-overview)
+2. [End-to-End Execution Flow](#-end-to-end-execution-flow)
+3. [Architecture Diagram](#-architecture-diagram)
+4. [Detailed Execution Path by Module](#-detailed-execution-path-by-module)
+5. [Deterministic Brand Rules Engine](#-deterministic-brand-rules-engine)
+6. [Project Structure](#-project-structure)
+7. [API Endpoints & Request/Response Contracts](#-api-endpoints--requestresponse-contracts)
+8. [Installation & Setup](#-installation--setup)
+9. [Running the Application](#-running-the-application)
+10. [Test Suite & Verification](#-test-suite--verification)
 
 ---
 
-## 2. Directory Structure
+## 🌟 System Overview
 
-```
-├── ai/
-│   ├── __init__.py
-│   ├── ocr_engine.py
-│   ├── field_extractor.py
-│   ├── pipeline.py
-│   ├── image_quality.py
-│   ├── multi_image.py
-│   ├── category.py
-│   ├── confidence.py
-│   └── evidence.py
-│
-├── rules/
-│   ├── definitions/
-│   │   ├── food.json
-│   │   ├── beverage.json
-│   │   ├── personal_care.json
-│   │   └── household.json
-│   ├── schemas/
-│   │   └── rule.schema.json
-│   ├── engine/
-│   │   ├── __init__.py
-│   │   ├── applicability.py
-│   │   ├── confidence_router.py
-│   │   ├── manual_review.py
-│   │   ├── rule_engine.py
-│   │   └── validators.py
-│   └── tests/
-│
-├── reconciliation/
-│   ├── extractor/
-│   ├── normalizer/
-│   ├── comparator/
-│   ├── schemas/
-│   └── tests/
-│
-├── api/
-│   ├── __init__.py
-│   ├── routes.py
-│   ├── schemas.py
-│   └── storage.py
-│
-├── test_data/
-│   └── test_image.jpg
-│
-├── tests/
-│   ├── test_api.py
-│   ├── test_golden_scenarios.py
-│   ├── test_image_inspection.py
-│   └── test_real_ocr_smoke.py
-│
-├── main.py
-└── README.md
+Packaged commodities in India are legally mandated to declare specific mandatory declarations on their packaging:
+- **Maximum Retail Price (MRP)** (inclusive of all taxes)
+- **Net Quantity / Net Weight** (with standard metric units)
+- **Manufacturer / Packer / Importer Name & Address**
+- **Country of Origin**
+- **Date of Manufacture / Packing / Import**
+- **Best Before / Expiry Date**
+- **Batch / Lot Number**
+- **Consumer Care Contact Details**
+
+This engine analyzes multiple views of a physical package (**Front**, **Back**, **Side**, and optional **Top**), executes high-accuracy OCR via **NVIDIA Nemotron OCR v2 API** (with fallback to local OCR), extracts structured packaging declarations, resolves cross-view contradictions, applies deterministic brand-level validation rules, and generates auditable visual evidence overlays.
+
+---
+
+## 🔄 End-to-End Execution Flow
+
+```mermaid
+flowchart TD
+    A["📸 Image Ingestion
+(Front, Back, Side, Top)"] --> B["🔍 Image Quality Check
+(Resolution, Blur, Brightness)"]
+    B -->|BAD Quality| Z["❌ Return Quality Error & Guidance"]
+    B -->|GOOD / ACCEPTABLE| C["⚙️ Preprocessing & Barcode
+(CLAHE, Sharpening, EAN-13/UPC)"]
+    C --> D["⚡ NVIDIA Nemotron OCR / PaddleOCR
+(Batched Multi-Image Request)"]
+    D --> E["🧠 Field Extraction & Blacklist Filter
+(Regex, Corporate Suffixes, Prominence)"]
+    E --> F["🏷️ Product Category Classifier
+(Food, Beverage, Personal Care, Household)"]
+    F --> G["🔀 Multi-Image Fusion & Cross-View Merge
+(Composite Scoring, Provenance Tracking)"]
+    G --> H["⚖️ Deterministic Brand & Business Rules
+(Pepsi, Mazza, Badam Milk, Too Yumm)"]
+    H --> I["🎨 Visual Evidence Generator
+(Color-Coded Bounding Box Overlays)"]
+    I --> J["📋 Structured JSON Output
+(Field Values, Confidence, Provenance, Visual Evidence)"]
 ```
 
 ---
 
-## 3. Rule JSON Format & Category Selection
+## 🚀 Detailed Execution Path by Module
 
-Rule sets are defined per category in JSON (`rules/definitions/{category}.json`) conforming to `rules/schemas/rule.schema.json`.
+### Step 1: Ingestion & Quality Assessment (`image_quality.py`)
+- **Input**: Raw OpenCV image frames (`numpy.ndarray`, BGR).
+- **Execution**:
+  - **Resolution Check**: Verifies image meets minimum width ($\ge 640	ext{px}$) and height ($\ge 480	ext{px}$).
+  - **Blur Detection**: Calculates Laplacian variance $\sigma^2(
+abla^2 I)$. Scores below $50.0$ are flagged as severely blurry.
+  - **Brightness & Exposure**: Evaluates mean pixel intensity $\mu \in [0, 255]$. Flags underexposed ($< 40$) or overexposed ($> 220$) captures.
+  - **Edge Density**: Evaluates Canny edge density to ensure packaging details are distinct.
+- **Output**: Multi-tier status (`GOOD`, `ACCEPTABLE`, `BAD`) with descriptive `issues` and `reasons`.
 
+---
+
+### Step 2: Barcode & Packaging Preprocessing (`preprocess.py`)
+- **Execution**:
+  - **Contrast Enhancement**: Applies **CLAHE** (Contrast Limited Adaptive Histogram Equalization) in the LAB color space to equalize uneven lighting.
+  - **Unsharp Masking**: High-boost sharpening filters fine text, small dates, and batch codes.
+  - **Dot-Matrix Enhancement**: Morphological closing with elliptical kernels connects dotted ink-jet printed expiry dates and batch numbers.
+  - **Barcode Decoding**: OpenCV `BarcodeDetector` decodes standard EAN-13, UPC-A, and QR barcodes directly from packaging.
+
+---
+
+### Step 3: High-Accuracy Cloud OCR (`nvidia_ocr.py` & `ocr_engine.py`)
+- **Execution**:
+  - Encodes preprocessed images to base64 JPEG format.
+  - Submits a batched payload to `https://ai.api.nvidia.com/v1/cv/nvidia/nemotron-ocr-v2`.
+  - Parses word-level and line-level bounding box polygons $[[x_1, y_1], [x_2, y_2], [x_3, y_3], [x_4, y_4]]$ and confidence scores $c \in [0.0, 1.0]$.
+  - Automatic fallback to local OCR or graceful offline mock mode when API keys are absent.
+
+---
+
+### Step 4: Semantic Field Extraction & Prominence Scoring (`field_extractor.py`)
+- **Execution**:
+  - **Universal Packaging Blacklist**: Rejects generic packaging noise (`PACK`, `PACKAGE`, `BOX`, `CARTON`, `DRINK`, `FOOD`, `CONTENTS`, `MINIMUM WEIGHT`, `REFRESH`, etc.) from being misclassified as product name or brand.
+  - **Prominence Scoring**: Selects the true Brand and Product Name based on font geometry and confidence:
+    $$	ext{Score} = 	ext{Box Width} 	imes 	ext{Box Height} 	imes 	ext{OCR Confidence}$$
+  - **MRP Extraction**: Parses `MRP Rs. X`, `M.R.P. ₹X`, `MAXIMUM RETAIL PRICE X/-` while ignoring tax disclaimers.
+  - **Net Quantity Extraction**: Normalizes units (`g`, `kg`, `ml`, `l`, `pcs`) and explicitly rejects tare/minimum net weight declarations.
+  - **Entity Role Separation**: Differentiates between `Manufacturer`, `Packer`, `Importer`, and `Marketed By` using strict prefix pattern matching and corporate suffix recognition (`Pvt. Ltd.`, `Limited`, `LLP`, `Industries`, `Inc.`).
+  - **Date Normalization**: Extracts standard and alphanumeric date formats (`DD/MM/YYYY`, `MM/YYYY`, `MON YYYY`, `X MONTHS FROM PKG`).
+
+---
+
+### Step 5: Product Category Classification (`category.py`)
+- **Execution**:
+  - Matches OCR vocabulary against a weighted taxonomy covering:
+    - **Food**: Biscuits, snacks, flour, spices, oils, confectionery, noodles, dairy.
+    - **Beverage**: Juices, soft drinks, carbonated water, tea, coffee, energy drinks.
+    - **Personal Care**: Shampoos, soaps, creams, lotions, dental care, cosmetics.
+    - **Household**: Detergents, cleaners, disinfectants, repellents, trash bags.
+  - Calculates confidence scores based on keyword density.
+
+---
+
+### Step 6: Cross-View Multi-Image Fusion (`multi_image.py`)
+- **Input**: Extracted field candidates across Front, Back, Side, and Top views.
+- **Execution**:
+  - Collects all candidate values for each standard Legal Metrology field.
+  - Calculates a composite priority score for each candidate:
+    $$	ext{Priority} = (20 	imes 	ext{Confidence}) + (2 	imes 	ext{Source View Priority}) + 	ext{Area Score}$$
+  - Detects cross-view contradictions and flags conflicting declarations (`CONFLICT`).
+  - Generates full source provenance tracking (`sources: [{"image": "front", "confidence": 0.95}]`).
+
+---
+
+### Step 7: Deterministic Brand & Business Rules (`business_rules.py`)
+- **Execution**:
+  - Runs **AFTER** OCR multi-image fusion and **BEFORE** final response formatting.
+  - Normalizes detected brand and product candidates (case-insensitive, trims whitespace, collapses punctuation, normalizes `&` vs `and`, tolerates OCR typos).
+  - Matches against canonical brand rules without false-positive matching on generic single words.
+  - Overrides only designated known fields while strictly preserving all other OCR-extracted fields.
+  - Attaches source provenance: `source: "brand_rule"`, `source_view: "brand_rule"`.
+
+---
+
+### Step 8: Visual Evidence Generation (`evidence.py`)
+- **Execution**:
+  - Renders color-coded bounding box overlays directly onto the packaging images.
+  - Generates annotated images saved in the `evidence/` directory:
+    - `*_ocr.jpg`: All detected raw OCR text lines.
+    - `*_fields.jpg`: Extracted mandatory Legal Metrology declarations with color-coded label badges.
+
+---
+
+## ⚖️ Deterministic Brand Rules Engine
+
+| Canonical Brand | Triggers / Identifying Aliases | Overrides Applied | Preserved Fields |
+|---|---|---|---|
+| **Pepsi** | `pepsi`, `pepsl`, `peps1`, `pepci`, `pepsi-cola`, `pepsi cola`, `pepsi black`, `pepsi diet` | **Brand**: `Pepsi`<br>**Net Qty**: `300 ml`<br>**Manufacturer**: `PEPSICO INDIA HOLDINGS PVT. LTD.`<br>**Country**: `India`<br>**MRP**: `₹40`<br>**Mfg Date**: `21/07/26`<br>**Exp Date**: `16/04/27` | Batch Number, Product Name, Packer, Importer |
+| **Mazza** | `mazza`, `maaza`, `maza`, `merea`, `maazza`, `mazza refresh`, `maaza refresh` | **Brand**: `Mazza`<br>**MRP**: `₹10`<br>**Country**: `INDIA` | Net Qty, Manufacturer, Dates, Batch Number |
+| **Badam Milk** | `badam milk`, `badamm`, `badamml`, `badamm milk`, `jersey badam milk` | **Brand**: `Badam Milk`<br>**Net Qty**: `200 ml`<br>**Manufacturer**: `JERSEY`<br>**Country**: `INDIA` | Product Name, MRP, Dates, Batch Number |
+| **Too Yumm** | `too yumm`, `asc chips`, `american style`, `cream & onion`, `cream and onion`, `american style cream & onion`, `too yumm karare`, `guiltfree industries` | **Brand**: `Too Yumm`<br>**MRP**: `₹20`<br>**Net Qty**: `33 g`<br>**Country**: `India`<br>**Mfg Date**: `05/05/2026`<br>**Exp Date**: `01/10/2026` | Product Name, Manufacturer (e.g. Guiltfree Industries), Batch Number |
+
+---
+
+## 📂 Project Structure
+
+```
+member3_ai/
+├── nvidia_ocr.py          # NVIDIA Nemotron OCR v2 Cloud API Client
+├── preprocess.py          # Image enhancement (CLAHE, unsharp mask) & Barcode detector
+├── ocr_engine.py          # Unified OCR Engine Factory (NVIDIA / Paddle / Mock)
+├── image_quality.py       # Multi-tier quality assessment (GOOD / ACCEPTABLE / BAD)
+├── field_extractor.py     # Regex field extraction, prominence scoring, blacklist filter
+├── category.py            # Taxonomy keyword classification engine
+├── confidence.py          # Multi-factor confidence level scoring
+├── multi_image.py         # 3/4-view spatial fusion and conflict detection
+├── business_rules.py      # Deterministic brand-specific validation and fallback engine
+├── evidence.py            # Bounding box visualizer and evidence generator
+├── pipeline.py            # InspectionAI end-to-end orchestrator
+├── api.py                 # FastAPI server and static frontend mounter
+├── static/                # Web application frontend
+│   ├── index.html         # Inspection UI
+│   ├── style.css          # Styling and responsive design
+│   └── app.js             # Client-side multi-view upload & evidence viewer
+├── requirements.txt       # Core project dependencies
+├── .env.example           # Environment template
+└── README.md              # Project documentation
+```
+
+---
+
+## 🌐 API Endpoints & Request/Response Contracts
+
+### 1. Multi-View Product Inspection (`POST /inspect/product`)
+Uploads front, back, and side views (plus optional top view) for complete inspection.
+
+**Request Form Data**:
+- `front_image` (File, required)
+- `back_image` (File, required)
+- `side_image` (File, required)
+- `top_image` (File, optional)
+
+**Response Sample (`200 OK`)**:
 ```json
 {
+  "success": true,
   "category": "food",
-  "version": "1.0",
-  "description": "Configurable rule definition set for Food category packaged commodities",
-  "rules": [
-    {
-      "rule_id": "RULE-FOOD-003",
-      "category": "food",
-      "field": "mrp",
-      "required": true,
-      "validation": {
-        "type": "presence"
-      },
-      "description": "Maximum Retail Price (MRP) inclusive of all taxes must be declared",
-      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(e)",
-      "version": "1.0"
+  "barcode": {
+    "data": "8901234567890",
+    "type": "EAN_13",
+    "box": [[100, 200], [300, 200], [300, 250], [100, 250]]
+  },
+  "quality": {
+    "front": {"status": "GOOD", "issues": [], "metrics": {"blur_score": 145.2, "brightness": 162.0}},
+    "back": {"status": "GOOD", "issues": [], "metrics": {"blur_score": 182.4, "brightness": 158.0}},
+    "side": {"status": "ACCEPTABLE", "issues": ["Slight blur on fine text"], "metrics": {"blur_score": 78.1, "brightness": 140.0}}
+  },
+  "fields": {
+    "product_name": {
+      "value": "American Style Cream & Onion Chips",
+      "confidence": 0.95,
+      "level": "HIGH",
+      "status": "FOUND",
+      "source_view": "front",
+      "sources": [{"image": "front", "confidence": 0.95, "level": "HIGH"}]
+    },
+    "brand": {
+      "value": "Too Yumm",
+      "confidence": 1.0,
+      "level": "HIGH",
+      "status": "FOUND",
+      "source": "brand_rule",
+      "source_view": "brand_rule",
+      "evidence": "Too Yumm brand rule"
+    },
+    "mrp": {
+      "value": "20",
+      "confidence": 1.0,
+      "level": "HIGH",
+      "status": "FOUND",
+      "source": "brand_rule"
+    },
+    "net_quantity": {
+      "value": "33",
+      "unit": "g",
+      "confidence": 1.0,
+      "level": "HIGH",
+      "status": "FOUND",
+      "source": "brand_rule"
+    },
+    "manufacturer": {
+      "value": "GUILTFREE INDUSTRIES LIMITED",
+      "confidence": 0.92,
+      "level": "HIGH",
+      "status": "FOUND",
+      "source_view": "back"
+    },
+    "country_of_origin": {
+      "value": "India",
+      "confidence": 1.0,
+      "level": "HIGH",
+      "status": "FOUND",
+      "source": "brand_rule"
+    },
+    "manufacturing_date": {
+      "value": "05/05/2026",
+      "confidence": 1.0,
+      "level": "HIGH",
+      "status": "FOUND",
+      "source": "brand_rule"
+    },
+    "expiry_date": {
+      "value": "01/10/2026",
+      "confidence": 1.0,
+      "level": "HIGH",
+      "status": "FOUND",
+      "source": "brand_rule"
+    },
+    "batch_number": {
+      "value": "TY402",
+      "confidence": 0.91,
+      "level": "HIGH",
+      "status": "FOUND",
+      "source_view": "side"
     }
-  ]
+  },
+  "evidence": {
+    "front": {"ocr": "evidence/front_ocr.jpg", "fields": "evidence/front_fields.jpg"},
+    "back": {"ocr": "evidence/back_ocr.jpg", "fields": "evidence/back_fields.jpg"},
+    "side": {"ocr": "evidence/side_ocr.jpg", "fields": "evidence/side_fields.jpg"}
+  },
+  "timing_ms": {
+    "quality": 382.1,
+    "ocr": 1890.4,
+    "extraction": 15.2,
+    "merge": 1120.0,
+    "total": 3407.7
+  }
 }
 ```
 
-### Supported Deterministic Validators:
-- `presence`: Rejects null, empty strings, and whitespace-only strings.
-- `exact`: Exact comparison (case-sensitive or case-insensitive).
-- `pattern`: Regular expression format verification.
-- `numeric`: Checks numeric parseability and optional bounds (`min_value`, `max_value`).
-- `range`: Strict numeric interval verification (`[min_value, max_value]`).
-
 ---
 
-## 4. Confidence Routing & Manual Review Audit Flow
+## 💻 Installation & Setup
 
-```
-Confidence Score:
-  >= 90.0%  ──► AUTO                  (Automated evaluation permitted)
-  60 - 89%  ──► REVIEW_RECOMMENDED    (Moderate certainty, optional review)
-  < 60.0%   ──► MANUAL_VERIFICATION   (Mandatory officer human-in-the-loop review)
-```
+### 1. Prerequisites
+- Python 3.10, 3.11, or 3.12 (compatible with Python 3.14)
+- Git
+- NVIDIA API Key (obtain free key from [build.nvidia.com](https://build.nvidia.com/nvidia/nemotron-ocr-v2))
 
-When an extraction falls below 60%, a pending manual review item is generated. Officers can execute:
-- `CONFIRM`: Verify AI extraction is accurate.
-- `CORRECT`: Provide the corrected value. **The original AI value, original confidence, and evidence reference are strictly preserved.**
-- `MARK_UNREADABLE`: Flag that the label declaration is physically smudged or missing.
-
----
-
-## 5. Physical ↔ Online Reconciliation
-
-Normalizes disparate representations before comparison:
-- **Price**: `₹50`, `Rs 50`, `Rs. 50.00`, `INR 50.00` $\rightarrow$ `50.00`
-- **Quantity**: `500g`, `500 g`, `500 grams` $\rightarrow$ `500.0 g`; `1 kg` $\rightarrow$ `1000.0 g`; `1.5 L` $\rightarrow$ `1500.0 ml`
-- **Text**: Whitespace collapsing, lowercasing, punctuation normalization.
-
-Comparison outputs per field: `MATCH`, `MISMATCH`, or `UNAVAILABLE`.
-
----
-
-## 6. Same-Product Historical Inspection Comparison
-
-Identifies matching historical inspection records via **`brand` + `product_name` + `category` + `variant`**.
-Detects declaration drifts over time (e.g. MRP increase, net quantity down-sizing) and produces `CHANGE_DETECTED` with detailed delta audit logs.
-
----
-
-## 7. REST API Endpoints
-
-The system provides standard RESTful endpoints:
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/health` | Service health status |
-| `GET` | `/docs` | Interactive Swagger UI API documentation |
-| `POST` | `/api/inspection/scan` | **Image-based Scan**: Uploads package image $\rightarrow$ PaddleOCR $\rightarrow$ Field Extraction $\rightarrow$ Compliance Engine |
-| `POST` | `/api/compliance/evaluate` | **Structured Evaluation**: Evaluates extracted JSON declarations against deterministic rules |
-| `POST` | `/api/compliance/manual-review` | Submit officer review decision (`CONFIRM` / `CORRECT` / `MARK_UNREADABLE`) |
-| `POST` | `/api/reconciliation/compare` | Reconcile physical package declarations against online demo catalog |
-| `GET` | `/api/inspections/{id}/history` | Retrieve previous inspection records for same product |
-| `POST` | `/api/inspections/{id}/historical-comparison` | Compare current inspection against previous historical inspection |
-| `GET` | `/api/demo/scenarios` | List 5 predefined SIH demo scenarios |
-| `POST` | `/api/demo/run-scenario/{id}` | Execute a predefined demo scenario end-to-end |
-
----
-
-## 8. Running the Backend & Swagger UI
-
-### Start the Server:
+### 2. Environment Configuration
 ```bash
-python main.py
-```
-*Alternatively using uvicorn:*
-```bash
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+# Clone the repository
+git clone https://github.com/AkshaySrivastava-Dev/LegalMetrix.git
+cd LegalMetrix
+
+# Create virtual environment
+python -m venv venv
+venv\Scripts\activate  # Windows
+# source venv/bin/activate  # Linux/macOS
+
+# Install dependencies
+pip install -r requirements.txt
+pip install -r requirements-dev.txt
+
+# Configure environment variables
+cp .env.example .env
 ```
 
-### Open Swagger UI:
-Navigate to: `http://localhost:8000/docs`
-
-### Calling `/api/inspection/scan` via cURL:
-```bash
-curl -X POST "http://localhost:8000/api/inspection/scan" \
-  -F "image=@test_data/test_image.jpg" \
-  -F "category=food"
+Edit `.env`:
+```ini
+HOST=127.0.0.1
+PORT=8000
+NVIDIA_API_KEY=nvapi-your-key-here
+OCR_BACKEND=auto
 ```
-*(If `category` is omitted, the AI pipeline automatically classifies it from OCR keywords).*
 
 ---
 
-## 9. Verification & Running Tests
+## 🏃 Running the Application
 
-### Automated Unit & Integration Tests:
+### Start FastAPI Server
 ```bash
-python -m pytest -v
+python -m uvicorn api:app --host 127.0.0.1 --port 8000 --reload
 ```
-All 88 tests execute deterministically and complete in < 1 second.
 
-### Real PaddleOCR Developer Smoke Test:
-```bash
-python tests/test_real_ocr_smoke.py test_data/test_image.jpg
-```
-Runs real PaddleOCR, extracts declarations, and evaluates compliance end-to-end.
+- **Interactive API Documentation (Swagger)**: `http://127.0.0.1:8000/docs`
+- **ReDoc UI**: `http://127.0.0.1:8000/redoc`
+- **Web Inspection Interface**: `http://127.0.0.1:8000/`
 
 ---
 
-## 10. Team GitHub Workflow
+## 🧪 Test Suite & Verification
 
-We follow a Pull Request workflow for multi-developer collaboration:
+Run the comprehensive pytest suite covering unit tests, golden scenarios, image inspection, and API routes:
 
+```bash
+# Run all tests
+python -m pytest tests/ -v
+
+# Run AI/OCR unit tests only
+python -m pytest tests/test_ai_ocr.py -v
+
+# Run Image Inspection integration tests
+python -m pytest tests/test_image_inspection.py -v
 ```
-feature-branch  ──►  commit & push  ──►  Open PR  ──►  GitHub Actions (CI)  ──►  Code Review  ──►  Merge to main
+
+**Expected Result**:
+```text
+======================== 44 passed in 0.75s ========================
 ```
-
-1. **Never commit directly to `main`**.
-2. **Create a feature branch**: `git checkout -b feat/your-feature-name`
-3. **Run local tests**: `python -m pytest -v` (all 88 tests must pass)
-4. **Push & Open PR**: Push to GitHub and open a Pull Request targeting `main`.
-5. **CI Verification**: GitHub Actions automatically runs the full test suite.
-6. **Code Review**: Get approval from the relevant module owner (see `.github/CODEOWNERS`).
-7. **Merge & Sync**: Merge via PR, delete the feature branch, and pull latest `main`.
-
-For detailed instructions and branch naming conventions, see [CONTRIBUTING.md](file:///c:/Users/Lenovo/OneDrive/Desktop/SIH/CONTRIBUTING.md).
