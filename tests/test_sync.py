@@ -6,7 +6,7 @@ Validates POST /api/sync endpoint, duplicate handling, and SQLite persistence.
 import pytest
 from fastapi.testclient import TestClient
 from main import app
-from backend.services.database_service import init_db, get_inspection, process_sync_batch
+from backend.services.database_service import init_db, get_inspection, process_sync_batch, get_connection
 
 client = TestClient(app)
 
@@ -14,7 +14,14 @@ client = TestClient(app)
 @pytest.fixture(autouse=True)
 def setup_db():
     init_db()
+    with get_connection() as conn:
+        conn.cursor().execute("DELETE FROM inspections;")
+        conn.commit()
     yield
+    with get_connection() as conn:
+        conn.cursor().execute("DELETE FROM inspections;")
+        conn.commit()
+
 
 
 def test_sync_offline_records_success():
