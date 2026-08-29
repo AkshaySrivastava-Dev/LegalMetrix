@@ -1,0 +1,39 @@
+# =============================================================================
+# GitHub CODEOWNERS for LegalMetrix
+# =============================================================================
+# NOTE: The @mentions below are placeholder roles.
+# BEFORE enabling "Require review from Code Owners" in GitHub Branch Protection,
+# replace each placeholder with the actual GitHub usernames or team handles.
+#
+# Placeholder Mapping:
+#   @BACKEND_OWNER        -> Member responsible for FastAPI & core services
+#   @AI_OWNER             -> Member responsible for PaddleOCR & field extraction (Member 3)
+#   @RULES_OWNER          -> Member responsible for Legal Metrology rules & compliance (Member 4)
+#   @RECONCILIATION_OWNER -> Member responsible for reconciliation & historical comparator
+#   @FRONTEND_OWNER       -> Member responsible for UI & client integration
+# =============================================================================
+
+# Default project maintainers (fallback for entire repo)
+*                   @BACKEND_OWNER @RULES_OWNER
+
+# FastAPI Backend & Server Configuration
+/api/               @BACKEND_OWNER
+/main.py            @BACKEND_OWNER
+/requirements.txt   @BACKEND_OWNER
+/requirements-dev.txt @BACKEND_OWNER
+
+# Member 3: AI & OCR Pipeline
+/ai/                @AI_OWNER
+/test_data/         @AI_OWNER
+
+# Member 4: Legal Metrology Rule Engine
+/rules/             @RULES_OWNER
+
+# Member 4: Online & Historical Reconciliation
+/reconciliation/    @RECONCILIATION_OWNER
+
+# Test Suite & Quality Assurance
+/tests/             @BACKEND_OWNER @RULES_OWNER
+
+# Frontend Client (when added)
+/frontend/          @FRONTEND_OWNER

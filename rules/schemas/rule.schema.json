@@ -1,0 +1,99 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "LegalMetrixRuleDefinition",
+  "description": "Schema for deterministic legal metrology rule definitions per category",
+  "type": "object",
+  "required": [
+    "category",
+    "version",
+    "rules"
+  ],
+  "properties": {
+    "category": {
+      "type": "string",
+      "description": "Product category identifier (e.g. food, beverage, personal_care, household)"
+    },
+    "version": {
+      "type": "string",
+      "description": "Version of this category rule definition set"
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional category description or scope notice"
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "rule_id",
+          "category",
+          "field",
+          "required",
+          "description",
+          "source",
+          "version"
+        ],
+        "properties": {
+          "rule_id": {
+            "type": "string",
+            "description": "Unique identifier for the legal rule (e.g. LMR-FOOD-001)"
+          },
+          "category": {
+            "type": "string",
+            "description": "Product category matching the parent definition"
+          },
+          "field": {
+            "type": "string",
+            "description": "Key of the extracted field to evaluate (e.g. mrp, net_quantity)"
+          },
+          "required": {
+            "type": "boolean",
+            "description": "Whether this declaration is mandatory for the category"
+          },
+          "validation": {
+            "type": "object",
+            "description": "Validation configuration parameter dictionary",
+            "required": ["type"],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["presence", "exact", "pattern", "numeric", "range"]
+              },
+              "expected_value": {
+                "description": "Expected exact value for exact validation"
+              },
+              "pattern": {
+                "type": "string",
+                "description": "Regular expression pattern for pattern validation"
+              },
+              "min_value": {
+                "type": "number",
+                "description": "Minimum numeric value for numeric or range validation"
+              },
+              "max_value": {
+                "type": "number",
+                "description": "Maximum numeric value for numeric or range validation"
+              }
+            },
+            "additionalProperties": true
+          },
+          "description": {
+            "type": "string",
+            "description": "Requirement description"
+          },
+          "source": {
+            "type": "string",
+            "description": "Verified legal source/reference reference code"
+          },
+          "version": {
+            "type": "string",
+            "description": "Version of this rule entry"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

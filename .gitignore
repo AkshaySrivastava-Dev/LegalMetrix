@@ -1,0 +1,88 @@
+# =============================================================================
+# LegalMetrix - Git Ignore Configuration
+# =============================================================================
+
+# --- Python & Bytecode ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+sdist/
+develop-eggs/
+.installed.cfg
+lib/
+lib64/
+
+# --- Virtual Environments ---
+.venv/
+venv/
+ENV/
+env/
+.env/
+env.bak/
+venv.bak/
+
+# --- Testing, Coverage & Profiling ---
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.tox/
+
+# --- Environment & Secret Variables ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.cert
+
+# --- OCR, Paddle & Deep Learning Caches ---
+.paddlex/
+.paddleocr/
+.cache/
+models/
+official_models/
+evidence/
+*.onnx
+*.pdmodel
+*.pdiparams
+*.pdiparams.info
+
+# --- Runtime, Logs & Temporary Files ---
+*.log
+logs/
+*.tmp
+*.temp
+tmp/
+temp/
+
+# --- IDE & Editor Specific ---
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- OS-generated metadata ---
+NTUSER.DAT*
+ntuser.dat*

@@ -1,0 +1,91 @@
+{
+  "category": "beverage",
+  "version": "1.0",
+  "description": "Configurable rule definition set for Beverage category packaged commodities [DEMO / TEST CONFIGURATION - Pending verified legal rule data]",
+  "rules": [
+    {
+      "rule_id": "RULE-BEV-001",
+      "category": "beverage",
+      "field": "product_name",
+      "required": true,
+      "validation": {
+        "type": "presence"
+      },
+      "description": "Name of the beverage commodity must be declared",
+      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(a) [Reference Framework]",
+      "version": "1.0"
+    },
+    {
+      "rule_id": "RULE-BEV-002",
+      "category": "beverage",
+      "field": "net_quantity",
+      "required": true,
+      "validation": {
+        "type": "presence"
+      },
+      "description": "Net volume in standard unit (e.g. ml, L) must be declared",
+      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(b) [Reference Framework]",
+      "version": "1.0"
+    },
+    {
+      "rule_id": "RULE-BEV-003",
+      "category": "beverage",
+      "field": "mrp",
+      "required": true,
+      "validation": {
+        "type": "presence"
+      },
+      "description": "Maximum Retail Price (MRP) inclusive of all taxes must be declared",
+      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(e) [Reference Framework]",
+      "version": "1.0"
+    },
+    {
+      "rule_id": "RULE-BEV-004",
+      "category": "beverage",
+      "field": "manufacturer",
+      "required": true,
+      "validation": {
+        "type": "presence"
+      },
+      "description": "Name and address of the manufacturer or bottler must be declared",
+      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(a) [Reference Framework]",
+      "version": "1.0"
+    },
+    {
+      "rule_id": "RULE-BEV-005",
+      "category": "beverage",
+      "field": "country_of_origin",
+      "required": true,
+      "validation": {
+        "type": "presence"
+      },
+      "description": "Country of origin must be declared",
+      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(10) [Reference Framework]",
+      "version": "1.0"
+    },
+    {
+      "rule_id": "RULE-BEV-006",
+      "category": "beverage",
+      "field": "date_of_manufacture",
+      "required": true,
+      "validation": {
+        "type": "presence"
+      },
+      "description": "Date/Month of manufacturing or packaging must be declared",
+      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(d) [Reference Framework]",
+      "version": "1.0"
+    },
+    {
+      "rule_id": "RULE-BEV-007",
+      "category": "beverage",
+      "field": "consumer_care",
+      "required": true,
+      "validation": {
+        "type": "presence"
+      },
+      "description": "Consumer care contact details must be declared",
+      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(g) [Reference Framework]",
+      "version": "1.0"
+    }
+  ]
+}

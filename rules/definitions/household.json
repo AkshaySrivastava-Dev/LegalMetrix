@@ -1,0 +1,79 @@
+{
+  "category": "household",
+  "version": "1.0",
+  "description": "Configurable rule definition set for Household category packaged commodities [DEMO / TEST CONFIGURATION - Pending verified legal rule data]",
+  "rules": [
+    {
+      "rule_id": "RULE-HH-001",
+      "category": "household",
+      "field": "product_name",
+      "required": true,
+      "validation": {
+        "type": "presence"
+      },
+      "description": "Generic name of the household commodity must be declared",
+      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(a) [Reference Framework]",
+      "version": "1.0"
+    },
+    {
+      "rule_id": "RULE-HH-002",
+      "category": "household",
+      "field": "net_quantity",
+      "required": true,
+      "validation": {
+        "type": "presence"
+      },
+      "description": "Net quantity (number or dimensions or weight/measure) must be declared",
+      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(b) [Reference Framework]",
+      "version": "1.0"
+    },
+    {
+      "rule_id": "RULE-HH-003",
+      "category": "household",
+      "field": "mrp",
+      "required": true,
+      "validation": {
+        "type": "presence"
+      },
+      "description": "MRP inclusive of all taxes must be declared",
+      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(e) [Reference Framework]",
+      "version": "1.0"
+    },
+    {
+      "rule_id": "RULE-HH-004",
+      "category": "household",
+      "field": "manufacturer",
+      "required": true,
+      "validation": {
+        "type": "presence"
+      },
+      "description": "Manufacturer or importer name and address must be declared",
+      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(a) [Reference Framework]",
+      "version": "1.0"
+    },
+    {
+      "rule_id": "RULE-HH-005",
+      "category": "household",
+      "field": "country_of_origin",
+      "required": true,
+      "validation": {
+        "type": "presence"
+      },
+      "description": "Country of origin must be declared",
+      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(10) [Reference Framework]",
+      "version": "1.0"
+    },
+    {
+      "rule_id": "RULE-HH-006",
+      "category": "household",
+      "field": "consumer_care",
+      "required": true,
+      "validation": {
+        "type": "presence"
+      },
+      "description": "Consumer care contact details must be declared",
+      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(g) [Reference Framework]",
+      "version": "1.0"
+    }
+  ]
+}

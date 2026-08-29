@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "LegalMetrixReconciliationSchema",
+  "description": "Schema for physical vs online commodity reconciliation and comparison output",
+  "type": "object",
+  "required": [
+    "overall",
+    "message",
+    "fields"
+  ],
+  "properties": {
+    "overall": {
+      "type": "string",
+      "enum": ["MATCH", "MISMATCH", "UNAVAILABLE"],
+      "description": "Overall comparison status"
+    },
+    "message": {
+      "type": "string",
+      "description": "Explainable summary recommendation for the officer"
+    },
+    "matches_count": {
+      "type": "integer"
+    },
+    "mismatches_count": {
+      "type": "integer"
+    },
+    "unavailable_count": {
+      "type": "integer"
+    },
+    "fields": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["physical", "online", "result"],
+        "properties": {
+          "physical": {
+            "description": "Value extracted from physical package"
+          },
+          "online": {
+            "description": "Value present in online catalog"
+          },
+          "result": {
+            "type": "string",
+            "enum": ["MATCH", "MISMATCH", "UNAVAILABLE"]
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

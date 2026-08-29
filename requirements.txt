@@ -1,0 +1,21 @@
+# LegalMetrix Core Backend & AI Dependencies
+# Python 3.10.x compatible
+
+# FastAPI Web Framework & Server
+fastapi>=0.115.0
+uvicorn>=0.30.0
+python-multipart>=0.0.9
+pydantic>=2.8.0
+
+# Computer Vision & Image Processing
+opencv-contrib-python>=4.10.0.84
+numpy>=1.24.0
+pillow>=10.0.0
+
+# PaddleOCR & PaddleX AI Engine
+paddlepaddle==3.3.1
+paddleocr==3.7.0
+paddlex==3.7.2
+
+# Enforce stable chardet 5.x (prevents Windows application control policy conflicts)
+chardet==5.2.0
