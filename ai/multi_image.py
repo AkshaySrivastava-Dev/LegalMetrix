@@ -81,10 +81,11 @@ class MultiImageFusion:
             for field_name in self.STANDARD_FIELDS:
                 field_data = fields.get(field_name)
                 if field_data and field_data.get('value') is not None:
+                    raw_conf = field_data.get('confidence')
                     candidate = FieldCandidate(
                         value=field_data['value'],
-                        confidence=field_data.get('confidence', 0.0),
-                        level=field_data.get('level', 'LOW'),
+                        confidence=float(raw_conf) if raw_conf is not None else 0.0,
+                        level=field_data.get('level', 'LOW') or 'LOW',
                         source=source_name,
                         box=field_data.get('box', []),
                         unit=field_data.get('unit')
@@ -184,9 +185,9 @@ class MultiImageFusion:
         Resolve conflicts between different values from different images.
         
         Strategy:
-        1. Prefer value with highest confidence
-        2. If confidence similar, prefer value from more reliable source (back for regulatory info, front for branding)
-        3. If still ambiguous, mark as CONFLICT
+        1. Prefer value with highest composite score (confidence + source priority)
+        2. If winner is clearly better, use it with status FOUND
+        3. If still genuine tie between contradicting values, mark as CONFLICT
         """
         candidates_list = []
         for value, group in value_groups.items():
@@ -194,44 +195,46 @@ class MultiImageFusion:
                 candidates_list.append({
                     'value': value,
                     'source': c.source,
-                    'confidence': c.confidence,
+                    'confidence': c.confidence if c.confidence is not None else 0.0,
                     'level': c.level,
                     'box': c.box
                 })
         
         # Try to pick the best candidate based on confidence and source priority
         best_candidate = None
-        best_score = -1
+        best_score = -1.0
         
-        # Source priority depends on field type
         source_priority = self._get_source_priority(field_name)
         
+        scores = {}
         for value, group in value_groups.items():
-            # Use highest confidence in group
-            group_best = max(group, key=lambda c: c.confidence)
-            # Calculate composite score
-            confidence_score = group_best.confidence
+            group_best = max(group, key=lambda c: (c.confidence if c.confidence is not None else 0.0))
+            confidence_score = group_best.confidence if group_best.confidence is not None else 0.0
             source_score = source_priority.get(group_best.source, 0)
-            composite = confidence_score * 10 + source_score
+            
+            # Area score if box coordinates available
+            area_score = 0.0
+            if group_best.box and len(group_best.box) >= 4:
+                w = max(p[0] for p in group_best.box) - min(p[0] for p in group_best.box)
+                h = max(p[1] for p in group_best.box) - min(p[1] for p in group_best.box)
+                area_score = min(5.0, (w * h) / 50000.0)
+                
+            composite = confidence_score * 20.0 + source_score * 2.0 + area_score
+            scores[value] = (composite, group_best)
             
             if composite > best_score:
                 best_score = composite
                 best_candidate = group_best
         
-        # If we have a clear winner (significantly better), use it with MEDIUM confidence
         if best_candidate and best_score > 0:
-            # Check if there's a close competitor
-            second_best_score = -1
-            for value, group in value_groups.items():
-                group_best = max(group, key=lambda c: c.confidence)
-                confidence_score = group_best.confidence
-                source_score = source_priority.get(group_best.source, 0)
-                composite = confidence_score * 10 + source_score
+            # Check second best score
+            second_best_score = -1.0
+            for value, (composite, _) in scores.items():
                 if composite != best_score and composite > second_best_score:
                     second_best_score = composite
             
-            # If winner is clearly better (score diff > 5), use it
-            if best_score - second_best_score > 5:
+            # If winner is better or is the only distinct group
+            if second_best_score < 0 or (best_score - second_best_score >= 0.2):
                 return self._build_field_result(
                     best_candidate.value,
                     [best_candidate],
@@ -242,16 +245,15 @@ class MultiImageFusion:
         return {
             'value': None,
             'confidence': None,
-            'level': None,
+            'level': 'LOW',
             'status': 'CONFLICT',
             'candidates': candidates_list
         }
     
     def _get_source_priority(self, field_name: str) -> Dict[str, int]:
         """Get source priority for conflict resolution based on field type."""
-        # Back/side typically have regulatory info, front has branding
         priorities = {
-            'mrp': {'front': 3, 'back': 2, 'side': 1},
+            'mrp': {'back': 3, 'front': 2, 'side': 1},
             'net_quantity': {'back': 3, 'side': 2, 'front': 1},
             'manufacturer': {'back': 3, 'side': 2, 'front': 1},
             'packer': {'back': 3, 'side': 2, 'front': 1},
@@ -260,8 +262,8 @@ class MultiImageFusion:
             'manufacturing_date': {'back': 3, 'side': 2, 'front': 1},
             'expiry_date': {'back': 3, 'side': 2, 'front': 1},
             'batch_number': {'back': 3, 'side': 2, 'front': 1},
-            'product_name': {'front': 3, 'back': 1, 'side': 1},
-            'brand': {'front': 3, 'back': 1, 'side': 1},
+            'product_name': {'front': 3, 'back': 2, 'side': 1},
+            'brand': {'front': 3, 'back': 2, 'side': 1},
         }
         return priorities.get(field_name, {'front': 1, 'back': 1, 'side': 1})
     
@@ -273,21 +275,22 @@ class MultiImageFusion:
     ) -> Dict[str, Any]:
         """Build standard field result from candidates with same value."""
         # Use highest confidence as primary
-        best = max(candidates, key=lambda c: c.confidence)
+        best = max(candidates, key=lambda c: (c.confidence if c.confidence is not None else 0.0))
+        best_conf = best.confidence if best.confidence is not None else 0.0
         
         sources = []
         for c in candidates:
             sources.append({
                 'image': c.source,
                 'box': c.box,
-                'confidence': c.confidence,
-                'level': c.level
+                'confidence': c.confidence if c.confidence is not None else 0.0,
+                'level': c.level or 'LOW'
             })
         
         result = {
             'value': value,
-            'confidence': round(best.confidence, 4),
-            'level': best.level,
+            'confidence': round(best_conf, 4),
+            'level': best.level or 'LOW',
             'status': status,
             'sources': sources
         }

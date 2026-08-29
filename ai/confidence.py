@@ -10,19 +10,26 @@ Converts raw confidence scores to prototype levels:
 from typing import Dict, Any
 
 
-def get_confidence_level(confidence: float) -> str:
+def get_confidence_level(confidence: Any) -> str:
     """
     Get prototype confidence level from score.
     
     Args:
-        confidence: Confidence score (0.0 to 1.0)
+        confidence: Confidence score (0.0 to 1.0) or None
         
     Returns:
         "HIGH", "MEDIUM", or "LOW"
     """
-    if confidence >= 0.90:
+    if confidence is None:
+        return "LOW"
+    try:
+        conf_float = float(confidence)
+    except (ValueError, TypeError):
+        return "LOW"
+
+    if conf_float >= 0.90:
         return "HIGH"
-    elif confidence >= 0.60:
+    elif conf_float >= 0.60:
         return "MEDIUM"
     else:
         return "LOW"
@@ -41,8 +48,13 @@ def add_confidence_levels(fields: Dict[str, Any]) -> Dict[str, Any]:
     result = {}
     for key, value in fields.items():
         if value is not None and isinstance(value, dict):
-            conf = value.get("confidence", 0.0)
-            value["level"] = get_confidence_level(conf)
+            conf = value.get("confidence")
+            if conf is None:
+                # If level is already set (e.g. CONFLICT), preserve or set default
+                if "level" not in value or value["level"] is None:
+                    value["level"] = "LOW"
+            else:
+                value["level"] = get_confidence_level(conf)
         result[key] = value
     return result
 

@@ -55,9 +55,10 @@ def draw_ocr_evidence(
         if text:
             # Position label at top-left of box
             x, y = box[0]
-            label = f"{text} ({confidence:.2f})"
+            conf_val = float(confidence) if confidence is not None else 0.0
+            label = f"{text} ({conf_val:.2f})"
             cv2.putText(
-                annotated, label, (x, y - 5),
+                annotated, label, (x, max(12, y - 5)),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1
             )
     
@@ -115,7 +116,7 @@ def draw_field_evidence(
             
         box = field_data.get('box', [])
         value = field_data.get('value', '')
-        confidence = field_data.get('confidence', 0.0)
+        confidence = field_data.get('confidence')
         level = field_data.get('level', '')
         
         if not box or len(box) < 4:
@@ -132,9 +133,10 @@ def draw_field_evidence(
         
         # Draw field label
         x, y = box[0]
-        label = f"{field_name}: {value} ({confidence:.2f} {level})"
+        conf_str = f"({float(confidence):.2f} {level})" if confidence is not None else f"({level})"
+        label = f"{field_name}: {value} {conf_str}".strip()
         cv2.putText(
-            annotated, label, (x, y - 10),
+            annotated, label, (x, max(15, y - 10)),
             cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2
         )
     
