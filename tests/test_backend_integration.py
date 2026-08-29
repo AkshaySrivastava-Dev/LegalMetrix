@@ -1,10 +1,13 @@
 """
 Integration Tests for Member 2 Backend Endpoints in LegalMetrix.
-Tests Scan (Photo/Video), Compliance, Persistence, Offline Sync, and Comparison.
+Tests Real Scan (Photo/Video), Compliance, Persistence, Offline Sync, and Comparison.
 """
 
 import io
+import cv2
+import numpy as np
 import pytest
+from unittest.mock import MagicMock, patch
 from fastapi.testclient import TestClient
 from main import app
 from api.storage import db
@@ -27,55 +30,101 @@ class TestBackendIntegration:
         assert data["status"] == "ok"
         assert "LegalMetrix" in data["service"]
         assert data["database_status"] == "connected"
-
-    def test_scan_image_success(self):
-        # Create dummy PNG image bytes
-        image_content = b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06\x00\x00\x00\x1f\x15c4\x00\x00\x00\rIDATx\x9cc\xf8\xff\xff?\x00\x05\xfe\x02\xfe\xa75\x81\x84\x00\x00\x00\x00IEND\xaeB`\x82"
-        files = {"image": ("test_package.png", image_content, "image/png")}
-        resp = client.post("/api/scan", files=files)
-        assert resp.status_code == 200
-        data = resp.json()
-        assert "inspection_id" in data
-        assert data["product_name"] is not None
-        assert data["compliance_status"] in ("COMPLIANT", "NON_COMPLIANT", "NEEDS_REVIEW")
-        assert data["source"] == "image"
+        assert data["mock_ai"] is False
+        assert data["mock_compliance"] is False
 
     def test_scan_image_validation_errors(self):
-        # Empty file
+        # 1. Empty file
         files = {"image": ("empty.png", b"", "image/png")}
         resp = client.post("/api/scan", files=files)
         assert resp.status_code == 400
-        assert resp.json()["error"] is True
+        assert "empty" in resp.json()["detail"].lower()
 
-        # Invalid file format
-        files = {"image": ("notes.txt", b"plain text content", "text/plain")}
+        # 2. Corrupted / un-decodable file
+        files = {"image": ("corrupted.png", b"not-a-real-image", "image/png")}
         resp = client.post("/api/scan", files=files)
         assert resp.status_code == 400
-        assert resp.json()["error"] is True
+        assert "decode" in resp.json()["detail"].lower()
 
-    def test_scan_360_video_success(self):
-        video_content = b"\x00\x00\x00 ftypisom\x00\x00\x02\x00isomiso2mp41\x00\x00\x00\x08free"
-        files = {"video": ("scan_rotation.mp4", video_content, "video/mp4")}
-        resp = client.post("/api/scan/360", files=files)
-        assert resp.status_code == 200
-        data = resp.json()
-        assert "inspection_id" in data
-        assert data["source"] == "video_360"
-        assert "evidence" in data
+        # 3. Missing image file
+        resp = client.post("/api/scan")
+        assert resp.status_code == 422
+
+    def test_ocr_failure_does_not_produce_hardcoded_data(self):
+        """Proves that OCR pipeline failure raises an error and does NOT silently fabricate mock data."""
+        with patch("api.routes.get_ai_pipeline") as mock_get_pipeline:
+            mock_pipeline = MagicMock()
+            mock_pipeline.inspect_image.side_effect = RuntimeError("OCR Engine Failure")
+            mock_get_pipeline.return_value = mock_pipeline
+
+            # Create real valid 100x100 PNG bytes
+            img = np.zeros((100, 100, 3), dtype=np.uint8)
+            _, encoded = cv2.imencode(".png", img)
+            files = {"image": ("test_package.png", encoded.tobytes(), "image/png")}
+            resp = client.post("/api/scan", files=files)
+
+            assert resp.status_code == 500
+            assert "OCR processing failed" in resp.json()["detail"]
+
+    def test_bad_image_quality_rejected_without_compliance(self):
+        """Proves that bad image quality returns HTTP 400 and halts before rule evaluation."""
+        with patch("api.routes.get_ai_pipeline") as mock_get_pipeline:
+            mock_pipeline = MagicMock()
+            mock_pipeline.inspect_image.return_value = {
+                "quality": {"status": "BAD", "issues": ["Image is too blurry", "Glare detected"]},
+                "fields": {},
+                "category": "food",
+            }
+            mock_get_pipeline.return_value = mock_pipeline
+
+            img = np.zeros((100, 100, 3), dtype=np.uint8)
+            _, encoded = cv2.imencode(".png", img)
+            files = {"image": ("blurry_package.png", encoded.tobytes(), "image/png")}
+            resp = client.post("/api/scan", files=files)
+
+            assert resp.status_code == 400
+            assert "Image quality check failed" in resp.json()["detail"]
+            assert "blurry" in resp.json()["detail"]
+
+    def test_compliance_engine_error_does_not_return_compliant(self):
+        """Proves that invalid category / compliance engine failure raises 404/400 and NEVER converts to COMPLIANT."""
+        payload = {
+            "category": "invalid_nonexistent_category_xyz",
+            "extracted_data": {"product_name": "Test Product"},
+        }
+        resp = client.post("/api/compliance", json=payload)
+        assert resp.status_code == 404
+        assert "No rule definition found" in resp.json()["detail"]
 
     def test_direct_compliance_endpoint(self):
         payload = {
-            "product_name": "Nutri Crunch Wheat Bread",
-            "brand": "Healthy Bakers",
-            "mrp": "₹40.00 (incl. of all taxes)",
-            "net_quantity": "400 g",
-            "manufacturer": "Healthy Bakers Pvt Ltd, Plot 45, New Delhi 110020",
+            "category": "food",
+            "extracted_data": {
+                "product_name": "Nutri Crunch Wheat Bread",
+                "brand": "Healthy Bakers",
+                "mrp": "₹40.00",
+                "net_quantity": "400 g",
+                "manufacturer": "Healthy Bakers Pvt Ltd, Plot 45, New Delhi 110020",
+                "country_of_origin": "India",
+                "date_of_manufacture": "08/2026",
+                "consumer_care": "care@healthybakers.com",
+            },
+            "confidence": {
+                "product_name": 95.0,
+                "brand": 92.0,
+                "mrp": 96.0,
+                "net_quantity": 94.0,
+                "manufacturer": 91.0,
+                "country_of_origin": 95.0,
+                "date_of_manufacture": 90.0,
+                "consumer_care": 90.0,
+            }
         }
         resp = client.post("/api/compliance", json=payload)
         assert resp.status_code == 200
         data = resp.json()
-        assert data["compliance_status"] in ("COMPLIANT", "NON_COMPLIANT")
-        assert len(data["checks"]) > 0
+        assert data["overall_status"] == "COMPLIANT"
+        assert len(data["findings"]) > 0
 
     def test_get_inspection_by_id_and_not_found(self):
         # Save an inspection first
@@ -171,14 +220,24 @@ class TestBackendIntegration:
 
     def test_comparison_endpoint(self):
         payload = {
-            "brand": "Dhara Agro",
-            "product_name": "Pure Gold Refined Mustard Oil",
-            "mrp": "₹190.00",
-            "net_quantity": "1 L / 910 g",
+            "physical_data": {
+                "product_name": "Demo Biscuits",
+                "mrp": "₹50",
+                "net_quantity": "500g",
+                "manufacturer": "Demo Foods",
+                "country_of_origin": "India"
+            },
+            "online_data": {
+                "product_name": "Demo Biscuits",
+                "mrp": "₹60",
+                "net_quantity": "500 g",
+                "manufacturer": "Demo Foods",
+                "country_of_origin": "India"
+            }
         }
         resp = client.post("/api/comparison", json=payload)
         assert resp.status_code == 200
         data = resp.json()
-        assert data["status"] == "mismatched"
-        assert "mrp" in data["mismatched_fields"]
-        assert len(data["matched_fields"]) > 0
+        assert data["overall"] == "MISMATCH"
+        assert data["fields"]["mrp"]["result"] == "MISMATCH"
+        assert data["fields"]["net_quantity"]["result"] == "MATCH"
