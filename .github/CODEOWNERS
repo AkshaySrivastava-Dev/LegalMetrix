@@ -1,39 +1,31 @@
 # =============================================================================
 # GitHub CODEOWNERS for LegalMetrix
 # =============================================================================
-# NOTE: The @mentions below are placeholder roles.
-# BEFORE enabling "Require review from Code Owners" in GitHub Branch Protection,
-# replace each placeholder with the actual GitHub usernames or team handles.
-#
-# Placeholder Mapping:
-#   @BACKEND_OWNER        -> Member responsible for FastAPI & core services
-#   @AI_OWNER             -> Member responsible for PaddleOCR & field extraction (Member 3)
-#   @RULES_OWNER          -> Member responsible for Legal Metrology rules & compliance (Member 4)
-#   @RECONCILIATION_OWNER -> Member responsible for reconciliation & historical comparator
-#   @FRONTEND_OWNER       -> Member responsible for UI & client integration
+# Confirmed Team Owners:
+#   Team Lead / Rules Lead : @AkshaySrivastava-Dev
+#   Backend Lead           : @Aditya1127git
+#   Frontend Lead          : @adityarathod2008
+#   AI / OCR Lead          : @pavankalyan444-Max
 # =============================================================================
 
 # Default project maintainers (fallback for entire repo)
-*                   @BACKEND_OWNER @RULES_OWNER
+*                   @AkshaySrivastava-Dev @Aditya1127git
 
-# FastAPI Backend & Server Configuration
-/api/               @BACKEND_OWNER
-/main.py            @BACKEND_OWNER
-/requirements.txt   @BACKEND_OWNER
-/requirements-dev.txt @BACKEND_OWNER
+# Backend: FastAPI Application, Server & Dependencies
+/api/               @Aditya1127git
+/main.py            @Aditya1127git
+/requirements.txt   @Aditya1127git
+/requirements-dev.txt @Aditya1127git
 
-# Member 3: AI & OCR Pipeline
-/ai/                @AI_OWNER
-/test_data/         @AI_OWNER
+# AI / OCR: PaddleOCR & Field Extraction
+/ai/                @pavankalyan444-Max
+/test_data/         @pavankalyan444-Max
 
-# Member 4: Legal Metrology Rule Engine
-/rules/             @RULES_OWNER
+# Rules: Legal Metrology Rule Engine & Definitions
+/rules/             @AkshaySrivastava-Dev
 
-# Member 4: Online & Historical Reconciliation
-/reconciliation/    @RECONCILIATION_OWNER
+# Reconciliation: Catalog & Historical Diff
+/reconciliation/    @Aditya1127git
 
-# Test Suite & Quality Assurance
-/tests/             @BACKEND_OWNER @RULES_OWNER
-
-# Frontend Client (when added)
-/frontend/          @FRONTEND_OWNER
+# Tests: Integration & Golden Scenarios
+/tests/             @AkshaySrivastava-Dev @Aditya1127git
