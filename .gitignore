@@ -68,6 +68,12 @@ logs/
 *.temp
 tmp/
 temp/
+data/*.db
+data/
+uploads/
+backend/
+INTEGRATION.md
+test_backend.py
 
 # --- IDE & Editor Specific ---
 .vscode/
