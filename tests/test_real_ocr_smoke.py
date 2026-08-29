@@ -17,11 +17,8 @@ import numpy as np
 # Ensure project root is in sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-if sys.platform == "win32" and hasattr(sys.stdout, "reconfigure"):
-    try:
-        sys.stdout.reconfigure(encoding="utf-8")
-    except Exception:
-        pass
+import pytest
+pytest.importorskip("paddle")
 
 from ai.pipeline import InspectionAI
 from api.routes import map_ai_fields_to_compliance

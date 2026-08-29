@@ -1,22 +1,37 @@
 """
 LEGALMETRIX - AI-Assisted Legal Metrology Inspection System
-Member 4: Legal Compliance + Comparison Engine Entry Point.
+Unified Backend Entry Point (Member 2 Integration & Sync + Member 4 Compliance & Reconciliation).
 """
 
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.routes import router as api_router
+from api.storage import db
+from utils.files import ensure_upload_dirs
+from utils.errors import AppException, app_exception_handler, global_exception_handler
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: Ensure upload directories and SQLite tables exist
+    ensure_upload_dirs()
+    db._init_sqlite()
+    yield
+    # Shutdown logic if needed
+
 
 app = FastAPI(
-    title="LegalMetrix - Legal Compliance & Comparison Engine",
+    title="LegalMetrix - AI-Assisted Legal Metrology Inspection System",
     description=(
-        "AI-Assisted Legal Metrology Inspection System. "
+        "Unified Legal Metrology Inspection & Synchronization Backend. "
         "Provides deterministic compliance verification under Legal Metrology (Packaged Commodities) Rules, 2011, "
-        "confidence routing, human-in-the-loop review audit trail, physical vs online catalog reconciliation, "
-        "and same-product historical tracking."
+        "AI OCR extraction, multi-panel 360 video inspection, confidence routing, offline batch synchronization, "
+        "human-in-the-loop review audit trail, and physical vs online catalog reconciliation."
     ),
     version="1.0.0",
+    lifespan=lifespan,
 )
 
 # CORS Configuration
@@ -28,7 +43,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount Member 4 API Routes
+# Exception Handlers
+app.add_exception_handler(AppException, app_exception_handler)
+app.add_exception_handler(Exception, global_exception_handler)
+
+# Mount API Routes
 app.include_router(api_router)
 
 
@@ -36,7 +55,7 @@ app.include_router(api_router)
 def health_check():
     return {
         "status": "healthy",
-        "service": "LegalMetrix Compliance & Reconciliation Engine",
+        "service": "LegalMetrix Unified Backend",
         "version": "1.0.0",
     }
 
@@ -47,7 +66,8 @@ def root():
         "message": "Welcome to LEGALMETRIX - AI-Assisted Legal Metrology Inspection System",
         "docs": "/docs",
         "health": "/health",
-        "member": "Member 4 - Legal Compliance + Comparison Engineer",
+        "api_health": "/api/health",
+        "version": "1.0.0",
     }
 
 

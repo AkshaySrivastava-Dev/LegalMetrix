@@ -164,3 +164,156 @@ class DemoScenarioItem(BaseModel):
     category: str
     description: str
     expected_result: str
+
+
+# ------------------ Member 2 Backend Schemas ------------------ #
+class ComplianceCheck(BaseModel):
+    field: str
+    rule: str
+    passed: bool
+    detected_value: Optional[str] = None
+    message: Optional[str] = None
+
+
+class ComplianceViolation(BaseModel):
+    field: str
+    rule: str
+    severity: str = "medium"
+    issue: str
+    suggestion: Optional[str] = None
+
+
+class ComplianceResult(BaseModel):
+    compliance_status: str = "NON_COMPLIANT"
+    confidence: float = 0.0
+    checks: List[ComplianceCheck] = Field(default_factory=list)
+    violations: List[ComplianceViolation] = Field(default_factory=list)
+    summary: Optional[str] = None
+
+
+class AIAnalysisResult(BaseModel):
+    product_name: Optional[str] = None
+    brand: Optional[str] = None
+    category: Optional[str] = None
+    variant: Optional[str] = None
+    mrp: Optional[str] = None
+    net_quantity: Optional[str] = None
+    manufacturer: Optional[str] = None
+    confidence: float = 0.0
+    raw_text: Optional[str] = None
+    evidence: Optional[Dict[str, Any]] = Field(default_factory=dict)
+    source: Optional[str] = "image"
+
+
+class InspectionBase(BaseModel):
+    product_name: Optional[str] = None
+    brand: Optional[str] = None
+    category: Optional[str] = None
+    variant: Optional[str] = None
+    mrp: Optional[str] = None
+    net_quantity: Optional[str] = None
+    manufacturer: Optional[str] = None
+    confidence: float = 0.0
+    compliance_status: str = "UNKNOWN"
+    violations: List[Any] = Field(default_factory=list)
+    checks: List[Any] = Field(default_factory=list)
+    evidence: Optional[Dict[str, Any]] = Field(default_factory=dict)
+    source: Optional[str] = "image"
+    sync_status: str = "synced"
+
+
+class InspectionCreate(InspectionBase):
+    inspection_id: Optional[str] = None
+    created_at: Optional[str] = None
+
+
+class InspectionResponse(InspectionBase):
+    inspection_id: str
+    created_at: str
+    file_path: Optional[str] = None
+
+
+class InspectionListResponse(BaseModel):
+    total: int
+    items: List[InspectionResponse]
+
+
+class SyncItem(BaseModel):
+    inspection_id: Optional[str] = None
+    product_name: Optional[str] = None
+    brand: Optional[str] = None
+    category: Optional[str] = None
+    variant: Optional[str] = None
+    mrp: Optional[str] = None
+    net_quantity: Optional[str] = None
+    manufacturer: Optional[str] = None
+    confidence: Optional[float] = 0.0
+    compliance_status: Optional[str] = "UNKNOWN"
+    violations: Optional[List[Any]] = Field(default_factory=list)
+    checks: Optional[List[Any]] = Field(default_factory=list)
+    evidence: Optional[Dict[str, Any]] = Field(default_factory=dict)
+    source: Optional[str] = "offline_sync"
+    created_at: Optional[str] = None
+    sync_status: Optional[str] = "pending"
+    device_id: Optional[str] = None
+    client_timestamp: Optional[str] = None
+
+
+class SyncRequest(BaseModel):
+    records: List[SyncItem]
+
+
+class SyncResultItem(BaseModel):
+    inspection_id: str
+    status: str
+    action: str
+    reason: Optional[str] = None
+
+
+class SyncResponse(BaseModel):
+    total_received: int
+    synced_count: int
+    failed_count: int
+    results: List[SyncResultItem]
+
+
+class ComparisonRequest(BaseModel):
+    inspection_id: Optional[str] = None
+    product_name: Optional[str] = None
+    brand: Optional[str] = None
+    category: Optional[str] = None
+    variant: Optional[str] = None
+    mrp: Optional[str] = None
+    net_quantity: Optional[str] = None
+    manufacturer: Optional[str] = None
+
+
+class FieldComparison(BaseModel):
+    field: str
+    physical_value: Optional[str] = None
+    online_value: Optional[str] = None
+    matched: bool
+    note: Optional[str] = None
+
+
+class ComparisonResponse(BaseModel):
+    status: str
+    product_name: Optional[str] = None
+    brand: Optional[str] = None
+    matched_fields: List[str] = Field(default_factory=list)
+    mismatched_fields: List[str] = Field(default_factory=list)
+    details: List[FieldComparison] = Field(default_factory=list)
+    online_source: Optional[str] = "Controlled Demo Catalog"
+    message: Optional[str] = None
+
+
+class HealthResponse(BaseModel):
+    status: str
+    service: str
+    version: str = "1.0.0"
+    timestamp: str
+    mock_ai: bool
+    mock_compliance: bool
+    database_status: str
+    uploads_dir: str
+
