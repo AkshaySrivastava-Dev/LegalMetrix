@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Legal Metrology AI - Offline Sync & Voice Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0f172a;
+      --bg-surface: #1e293b;
+      --bg-card: #243048;
+      --border-color: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-blue: #3b82f6;
+      --accent-blue-hover: #2563eb;
+      --accent-green: #10b981;
+      --accent-red: #ef4444;
+      --accent-amber: #f59e0b;
+      --accent-purple: #8b5cf6;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.2);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Top Bar */
+    header {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow);
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-title h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .badge-member {
+      background-color: rgba(59, 130, 246, 0.2);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.4);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      letter-spacing: 0.5px;
+    }
+
+    .controls-top {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    /* Toggle Switch */
+    .network-toggle-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background-color: var(--bg-card);
+      padding: 6px 14px;
+      border-radius: 9999px;
+      border: 1px solid var(--border-color);
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #ef4444;
+      transition: .3s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: #10b981;
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    .network-pill {
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .dot-online { background-color: var(--accent-green); box-shadow: 0 0 10px var(--accent-green); }
+    .dot-offline { background-color: var(--accent-red); box-shadow: 0 0 10px var(--accent-red); }
+
+    .btn {
+      background-color: var(--accent-blue);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 8px 16px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn:hover {
+      background-color: var(--accent-blue-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-green {
+      background-color: var(--accent-green);
+    }
+    .btn-green:hover {
+      background-color: #059669;
+    }
+
+    .btn-amber {
+      background-color: var(--accent-amber);
+      color: #111;
+    }
+    .btn-amber:hover {
+      background-color: #d97706;
+    }
+
+    .btn-outline {
+      background-color: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+    }
+    .btn-outline:hover {
+      background-color: var(--bg-card);
+    }
+
+    /* KPI Metrics Bar */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+
+    .metric-card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .metric-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .metric-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .val-pending { color: var(--accent-amber); }
+    .val-synced { color: var(--accent-green); }
+    .val-failed { color: var(--accent-red); }
+
+    /* Main Dashboard Grid */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 1024px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Left Sidebar: Controls & Audio */
+    .sidebar-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .card-header h2 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Voice Assistant Box */
+    .lang-selector {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .lang-btn {
+      flex: 1;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: .2s;
+    }
+
+    .lang-btn.active {
+      background-color: var(--accent-blue);
+      color: white;
+      border-color: var(--accent-blue);
+    }
+
+    .voice-buttons {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .voice-btn {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all .2s;
+    }
+
+    .voice-btn:hover {
+      background-color: #334155;
+      border-color: var(--accent-blue);
+    }
+
+    .voice-btn span.tag {
+      font-size: 0.7rem;
+      background-color: rgba(255,255,255,0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--text-muted);
+    }
+
+    /* Scenario Runner */
+    .scenario-select-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 280px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .scenario-item-btn {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: .2s;
+    }
+
+    .scenario-item-btn:hover {
+      background-color: #334155;
+      border-color: var(--accent-blue);
+    }
+
+    .scenario-num {
+      background-color: rgba(59, 130, 246, 0.3);
+      color: #93c5fd;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    /* 360 Video Player Box */
+    .rotator-container {
+      background: #000;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      position: relative;
+      aspect-ratio: 16 / 9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border-color);
+    }
+
+    canvas#rotatorCanvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    .rotator-overlay {
+      position: absolute;
+      bottom: 8px;
+      left: 8px;
+      right: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(15, 23, 42, 0.85);
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+    }
+
+    /* Right Main Panel: History & Comparison */
+    .right-content {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Table Toolbar */
+    .table-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .filter-tabs {
+      display: flex;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 3px;
+    }
+
+    .filter-tab {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: .2s;
+    }
+
+    .filter-tab.active {
+      background-color: var(--accent-blue);
+      color: white;
+    }
+
+    .search-input {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      color: white;
+      min-width: 220px;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+    }
+
+    /* Inspections Table */
+    .table-container {
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      background-color: var(--bg-card);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      text-align: left;
+    }
+
+    thead {
+      background-color: rgba(15, 23, 42, 0.6);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      padding: 12px 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.5px;
+    }
+
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.4);
+      color: var(--text-main);
+    }
+
+    tr:hover td {
+      background-color: rgba(59, 130, 246, 0.05);
+    }
+
+    /* Badges */
+    .badge-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+
+    .status-synced { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .status-pending { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .status-failed { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+
+    .badge-compliance {
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .comp-compliant { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .comp-non_compliant { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+    .comp-flagged { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+
+    /* Comparison Box */
+    .comparison-banner {
+      background: linear-gradient(90deg, rgba(30, 41, 59, 1) 0%, rgba(36, 48, 72, 1) 100%);
+      border: 1px solid #475569;
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: none;
+    }
+
+    .comparison-banner.active {
+      display: block;
+    }
+
+    .comparison-header {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #93c5fd;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .comparison-list {
+      list-style-type: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.85rem;
+    }
+
+    .comparison-list li {
+      padding: 6px 10px;
+      background-color: rgba(15, 23, 42, 0.5);
+      border-radius: var(--radius-sm);
+      border-left: 3px solid var(--accent-amber);
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 20px;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal-content {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      max-width: 650px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.4rem;
+      cursor: pointer;
+    }
+
+    .kv-grid {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 8px;
+      font-size: 0.85rem;
+      margin-bottom: 16px;
+    }
+
+    .kv-key {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .kv-val {
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .code-box {
+      background-color: #0f172a;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: #38bdf8;
+      overflow-x: auto;
+      white-space: pre-wrap;
+    }
+
+    /* Toast Notification */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 10000;
+    }
+
+    .toast {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 12px 18px;
+      color: #fff;
+      font-size: 0.85rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <header>
+    <div class="brand-title">
+      <span style="font-size: 1.8rem;">⚖️</span>
+      <div>
+        <h1>Legal Metrology Inspection System</h1>
+        <p style="font-size: 0.8rem; color: var(--text-muted);">AI Packaged Commodity Compliance • Rural/Offline-First Architecture</p>
+      </div>
+      <span class="badge-member">MEMBER 5 — OFFLINE DB & SYNC</span>
+    </div>
+
+    <div class="controls-top">
+      <!-- Network Switch -->
+      <div class="network-toggle-wrapper">
+        <label class="switch">
+          <input type="checkbox" id="networkToggle" checked>
+          <span class="slider"></span>
+        </label>
+        <span class="network-pill" id="networkPill">
+          <span class="status-dot dot-online" id="statusDot"></span>
+          <span id="networkText">ONLINE</span>
+        </span>
+      </div>
+
+      <button class="btn btn-green" id="syncNowBtn">
+        <span>🔄</span> Force Sync Now
+      </button>
+
+      <button class="btn btn-outline" id="clearDbBtn" title="Reset local database for fresh test">
+        <span>🗑️</span> Reset DB
+      </button>
+    </div>
+  </header>
+
+  <!-- Metrics Overview Bar -->
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-title">Total Local Records</div>
+      <div class="metric-value" id="kpiTotal">0</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-title">Pending Sync Queue</div>
+      <div class="metric-value val-pending" id="kpiPending">0</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-title">Cloud Synced</div>
+      <div class="metric-value val-synced" id="kpiSynced">0</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-title">Failed Syncs (Retrying)</div>
+      <div class="metric-value val-failed" id="kpiFailed">0</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-title">Compliance Rate</div>
+      <div class="metric-value" id="kpiRate">100%</div>
+    </div>
+  </div>
+
+  <!-- Main Grid -->
+  <div class="main-grid">
+
+    <!-- Left Controls Sidebar -->
+    <div class="sidebar-panel">
+
+      <!-- Voice Assistant Widget -->
+      <div class="card">
+        <div class="card-header">
+          <h2><span>🔊</span> Voice Assistant (Offline TTS)</h2>
+        </div>
+
+        <div class="lang-selector">
+          <button class="lang-btn active" data-lang="en">English (en-IN)</button>
+          <button class="lang-btn" data-lang="hi">हिंदी (hi-IN)</button>
+          <button class="lang-btn" data-lang="te">తెలుగు (te-IN)</button>
+        </div>
+
+        <div class="voice-buttons">
+          <button class="voice-btn" data-voice="ROTATE_PACKAGE">
+            <span>🔄 "Rotate package slowly"</span>
+            <span class="tag">Prompt 1</span>
+          </button>
+          <button class="voice-btn" data-voice="IMAGE_UNCLEAR">
+            <span>⚠️ "Image unclear. Retake"</span>
+            <span class="tag">Prompt 2</span>
+          </button>
+          <button class="voice-btn" data-voice="MANUAL_VERIFY">
+            <span>🔍 "Manual verify required"</span>
+            <span class="tag">Prompt 3</span>
+          </button>
+          <button class="voice-btn" data-voice="INSPECTION_COMPLETE">
+            <span>✅ "Inspection completed"</span>
+            <span class="tag">Prompt 4</span>
+          </button>
+          <button class="voice-btn" data-voice="NON_COMPLIANT">
+            <span>🚨 "Violation detected"</span>
+            <span class="tag">Prompt 5</span>
+          </button>
+          <button class="voice-btn" data-voice="OFFLINE_SAVED">
+            <span>💾 "Saved offline"</span>
+            <span class="tag">Prompt 6</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 13 Test Scenarios Quick Injector -->
+      <div class="card">
+        <div class="card-header">
+          <h2><span>🧪</span> 13 Test Scenarios Injector</h2>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">Click to simulate</span>
+        </div>
+
+        <div class="scenario-select-grid" id="scenarioButtonsList">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+
+      <!-- Pre-recorded 360 Video Fallback Demo -->
+      <div class="card">
+        <div class="card-header">
+          <h2><span>📹</span> 360° Backup Scan Viewer</h2>
+          <span class="badge-status status-synced">Fallback Ready</span>
+        </div>
+        <div class="rotator-container">
+          <canvas id="rotatorCanvas" width="320" height="180"></canvas>
+          <div class="rotator-overlay">
+            <span>Colgate 150g (36-Frame 360° Scan)</span>
+            <button class="btn btn-outline" style="padding: 2px 8px; font-size: 0.7rem;" id="rotatorToggleBtn">Pause</button>
+          </div>
+        </div>
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px;">
+          Guarantees zero-failure live presentation if phone camera or video stream glitches.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Right Main Dashboard Content -->
+    <div class="right-content">
+
+      <!-- Same-Product Comparison Notification (Shrinkflation / MRP Hike) -->
+      <div class="comparison-banner" id="comparisonBanner">
+        <div class="comparison-header">
+          <span>🔍</span> Same-Product Historical Comparison Alert
+        </div>
+        <ul class="comparison-list" id="comparisonList"></ul>
+      </div>
+
+      <!-- Inspections Database Table Card -->
+      <div class="card">
+        <div class="card-header">
+          <h2><span>📋</span> Local Inspections Store (IndexedDB)</h2>
+        </div>
+
+        <div class="table-toolbar">
+          <div class="filter-tabs">
+            <button class="filter-tab active" data-filter="ALL">All (<span id="tabCountAll">0</span>)</button>
+            <button class="filter-tab" data-filter="pending">Pending (<span id="tabCountPending">0</span>)</button>
+            <button class="filter-tab" data-filter="synced">Synced (<span id="tabCountSynced">0</span>)</button>
+            <button class="filter-tab" data-filter="failed">Failed (<span id="tabCountFailed">0</span>)</button>
+          </div>
+
+          <input type="text" class="search-input" id="tableSearch" placeholder="Search product, barcode, ID...">
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Inspection ID</th>
+                <th>Product Name</th>
+                <th>Category</th>
+                <th>MRP / Qty</th>
+                <th>Compliance</th>
+                <th>Sync Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="inspectionsTableBody">
+              <tr>
+                <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">
+                  No inspections saved yet. Click any test scenario on the left to simulate a scan.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Inspection Details Modal -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="modalTitle">Inspection Details</h3>
+      <button class="close-btn" id="modalCloseBtn">&times;</button>
+    </div>
+    <div class="kv-grid" id="modalKvGrid"></div>
+    <h4 style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px;">Extracted OCR & Violation Payload (JSON)</h4>
+    <div class="code-box" id="modalJsonBox"></div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Application Logic -->
+<script type="module">
+  import {
+    initDB,
+    saveInspection,
+    getAllInspections,
+    getPendingInspections,
+    updateSyncStatus,
+    getSyncStats,
+    clearAllInspections,
+    SYNC_STATUS
+  } from '../src/db/indexedDB.js';
+  import { syncManager } from '../src/sync/syncManager.js';
+  import { voiceAssistant, speak, PROMPT_KEYS } from '../src/voice/voiceAssistant.js';
+  import { compareProductWithPrevious } from '../src/history/historyManager.js';
+  import { configureSQLiteBackend } from '../src/db/sqliteClient.js';
+
+  // Load mock test data
+  let mockScenarios = [];
+  try {
+    const res = await fetch('../src/data/mockInspections.json');
+    mockScenarios = await res.json();
+  } catch (e) {
+    console.warn('Could not load mock JSON via fetch:', e);
+  }
+
+  // Enable local SQLite edge persistence mode for robust demo
+  configureSQLiteBackend({ mockMode: true });
+
+  // Initialize DB and Sync Manager
+  await initDB();
+  syncManager.init();
+
+  // State
+  let activeLanguage = 'en';
+  let activeFilter = 'ALL';
+  let searchQuery = '';
+  let rotatorAngle = 0;
+  let rotatorPlaying = true;
+
+  // DOM Elements
+  const networkToggle = document.getElementById('networkToggle');
+  const networkPill = document.getElementById('networkPill');
+  const statusDot = document.getElementById('statusDot');
+  const networkText = document.getElementById('networkText');
+  const syncNowBtn = document.getElementById('syncNowBtn');
+  const clearDbBtn = document.getElementById('clearDbBtn');
+  const tableBody = document.getElementById('inspectionsTableBody');
+  const scenarioButtonsList = document.getElementById('scenarioButtonsList');
+  const comparisonBanner = document.getElementById('comparisonBanner');
+  const comparisonList = document.getElementById('comparisonList');
+  const detailModal = document.getElementById('detailModal');
+  const modalCloseBtn = document.getElementById('modalCloseBtn');
+  const tableSearch = document.getElementById('tableSearch');
+
+  // Show Toast
+  function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warn' ? '⚠️' : 'ℹ️';
+    toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+    document.getElementById('toastContainer').appendChild(toast);
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      setTimeout(() => toast.remove(), 300);
+    }, 3500);
+  }
+
+  // Render 13 Scenario Buttons
+  function renderScenarioButtons() {
+    scenarioButtonsList.innerHTML = '';
+    mockScenarios.forEach(item => {
+      const btn = document.createElement('button');
+      btn.className = 'scenario-item-btn';
+      btn.innerHTML = `
+        <span class="scenario-num">${item.scenario_id}</span>
+        <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+          <strong style="display: block; font-size: 0.8rem;">${item.scenario_name}</strong>
+          <span style="font-size: 0.7rem; color: var(--text-muted);">${item.product_name}</span>
+        </div>
+      `;
+      btn.onclick = () => injectScenario(item);
+      scenarioButtonsList.appendChild(btn);
+    });
+  }
+
+  // Inject Scenario
+  async function injectScenario(scenarioData) {
+    const isOnline = syncManager.isOnline();
+    const cloned = JSON.parse(JSON.stringify(scenarioData));
+    
+    // For test scenarios, if offline, force status pending
+    if (!isOnline) {
+      cloned.sync_status = SYNC_STATUS.PENDING;
+      cloned.synced_at = null;
+    }
+
+    // Save to IndexedDB
+    const saved = await saveInspection(cloned);
+    showToast(`Injected: ${saved.product_name} (${saved.sync_status})`, 'success');
+
+    // Voice trigger based on compliance
+    if (saved.compliance_status === 'COMPLIANT') {
+      speak(PROMPT_KEYS.COMPLIANT, activeLanguage);
+    } else if (saved.compliance_status === 'NON_COMPLIANT') {
+      speak(PROMPT_KEYS.NON_COMPLIANT, activeLanguage);
+    } else if (saved.compliance_status === 'UNCLEAR_IMAGE') {
+      speak(PROMPT_KEYS.IMAGE_UNCLEAR, activeLanguage);
+    }
+
+    // Check same-product comparison
+    const comparison = await compareProductWithPrevious(saved);
+    if (comparison.hasHistory && comparison.changesDetected.length > 0) {
+      comparisonBanner.classList.add('active');
+      comparisonList.innerHTML = comparison.changesDetected.map(c => `<li>${c}</li>`).join('');
+      speak(PROMPT_KEYS.MRP_CHANGED, activeLanguage);
+    } else {
+      comparisonBanner.classList.remove('active');
+    }
+
+    // Auto-sync trigger if online
+    if (isOnline) {
+      syncManager.triggerSync('auto_post_save');
+    }
+
+    await refreshDashboard();
+  }
+
+  // Refresh Table and KPI Metrics
+  async function refreshDashboard() {
+    const stats = await getSyncStats();
+    let records = await getAllInspections();
+
+    // Update KPI
+    document.getElementById('kpiTotal').textContent = stats.total;
+    document.getElementById('kpiPending').textContent = stats.pending;
+    document.getElementById('kpiSynced').textContent = stats.synced;
+    document.getElementById('kpiFailed').textContent = stats.failed;
+
+    const compCount = records.filter(r => r.compliance_status === 'COMPLIANT').length;
+    const rate = records.length > 0 ? ((compCount / records.length) * 100).toFixed(0) : '100';
+    document.getElementById('kpiRate').textContent = `${rate}%`;
+
+    // Filter counts
+    document.getElementById('tabCountAll').textContent = records.length;
+    document.getElementById('tabCountPending').textContent = stats.pending;
+    document.getElementById('tabCountSynced').textContent = stats.synced;
+    document.getElementById('tabCountFailed').textContent = stats.failed;
+
+    // Apply active filter
+    if (activeFilter !== 'ALL') {
+      records = records.filter(r => r.sync_status === activeFilter);
+    }
+
+    // Apply search
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      records = records.filter(r => 
+        (r.product_name && r.product_name.toLowerCase().includes(q)) ||
+        (r.inspection_id && r.inspection_id.toLowerCase().includes(q)) ||
+        (r.category && r.category.toLowerCase().includes(q))
+      );
+    }
+
+    // Render Table Rows
+    if (records.length === 0) {
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">
+            No inspections found in this view.
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tableBody.innerHTML = records.map(r => {
+      const compClass = r.compliance_status === 'COMPLIANT' ? 'comp-compliant' :
+                        r.compliance_status === 'NON_COMPLIANT' ? 'comp-non_compliant' : 'comp-flagged';
+      const syncClass = r.sync_status === 'synced' ? 'status-synced' :
+                        r.sync_status === 'pending' ? 'status-pending' : 'status-failed';
+
+      return `
+        <tr>
+          <td style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #93c5fd;">${r.inspection_id}</td>
+          <td><strong>${r.product_name}</strong></td>
+          <td style="color: var(--text-muted);">${r.category}</td>
+          <td>${r.mrp ? `₹${r.mrp}` : 'N/A'} <span style="color: var(--text-muted); font-size: 0.75rem;">(${r.net_quantity || 'N/A'})</span></td>
+          <td><span class="badge-compliance ${compClass}">${r.compliance_status}</span></td>
+          <td><span class="badge-status ${syncClass}">${r.sync_status}</span></td>
+          <td>
+            <button class="btn btn-outline" style="padding: 4px 8px; font-size: 0.75rem;" onclick="window.viewDetails('${r.inspection_id}')">
+              View
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  // Details Modal
+  window.viewDetails = async (id) => {
+    const records = await getAllInspections();
+    const item = records.find(r => r.inspection_id === id);
+    if (!item) return;
+
+    document.getElementById('modalTitle').textContent = item.product_name;
+    const kvGrid = document.getElementById('modalKvGrid');
+    kvGrid.innerHTML = `
+      <span class="kv-key">Inspection ID:</span><span class="kv-val">${item.inspection_id}</span>
+      <span class="kv-key">Category:</span><span class="kv-val">${item.category}</span>
+      <span class="kv-key">Barcode:</span><span class="kv-val">${item.barcode || 'N/A'}</span>
+      <span class="kv-key">Declared MRP:</span><span class="kv-val">₹${item.mrp || 'N/A'}</span>
+      <span class="kv-key">Net Quantity:</span><span class="kv-val">${item.net_quantity || 'N/A'}</span>
+      <span class="kv-key">Unit Sale Price:</span><span class="kv-val">${item.unit_sale_price || 'N/A'}</span>
+      <span class="kv-key">Mfg / Exp Date:</span><span class="kv-val">${item.mfg_date || 'N/A'} / ${item.expiry_date || 'N/A'}</span>
+      <span class="kv-key">Manufacturer:</span><span class="kv-val">${item.manufacturer || 'N/A'}</span>
+      <span class="kv-key">Sync Status:</span><span class="kv-val">${item.sync_status} (Attempts: ${item.sync_attempts})</span>
+      <span class="kv-key">Inspected At:</span><span class="kv-val">${new Date(item.created_at).toLocaleString()}</span>
+    `;
+
+    document.getElementById('modalJsonBox').textContent = JSON.stringify({
+      violations: item.violations,
+      mandatory_declarations: item.mandatory_declarations,
+      evidence: item.evidence
+    }, null, 2);
+
+    detailModal.classList.add('open');
+  };
+
+  modalCloseBtn.onclick = () => detailModal.classList.remove('open');
+  detailModal.onclick = (e) => { if (e.target === detailModal) detailModal.classList.remove('open'); };
+
+  // Network Switch Handler
+  networkToggle.addEventListener('change', (e) => {
+    const isOnline = e.target.checked;
+    syncManager.setSimulatedOffline(!isOnline);
+
+    if (isOnline) {
+      statusDot.className = 'status-dot dot-online';
+      networkText.textContent = 'ONLINE';
+      showToast('Internet Restored! Triggering automatic background sync...', 'info');
+    } else {
+      statusDot.className = 'status-dot dot-offline';
+      networkText.textContent = 'OFFLINE (Rural Mode)';
+      showToast('Internet OFF: All scans will save safely to IndexedDB.', 'warn');
+    }
+  });
+
+  // Sync Now Button
+  syncNowBtn.addEventListener('click', async () => {
+    syncNowBtn.disabled = true;
+    syncNowBtn.innerHTML = '<span>⏳</span> Syncing...';
+    
+    const res = await syncManager.syncNow();
+    
+    syncNowBtn.disabled = false;
+    syncNowBtn.innerHTML = '<span>🔄</span> Force Sync Now';
+
+    if (res.syncedCount > 0) {
+      showToast(`Synced ${res.syncedCount} inspection(s) to Supabase!`, 'success');
+      speak(PROMPT_KEYS.SYNC_SUCCESS, activeLanguage);
+    } else if (res.offline) {
+      showToast('Cannot sync while offline! Turn internet switch ON.', 'warn');
+    } else {
+      showToast('All local inspections are already synced.', 'info');
+    }
+
+    await refreshDashboard();
+  });
+
+  // Reset DB Button
+  clearDbBtn.addEventListener('click', async () => {
+    if (confirm('Reset local IndexedDB for fresh testing?')) {
+      await clearAllInspections();
+      showToast('Database reset successfully.', 'info');
+      await refreshDashboard();
+    }
+  });
+
+  // Filter Tabs
+  document.querySelectorAll('.filter-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeFilter = btn.dataset.filter;
+      refreshDashboard();
+    });
+  });
+
+  // Search Input
+  tableSearch.addEventListener('input', (e) => {
+    searchQuery = e.target.value;
+    refreshDashboard();
+  });
+
+  // Language Selection
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeLanguage = btn.dataset.lang;
+      voiceAssistant.setLanguage(activeLanguage);
+      showToast(`Voice language switched to: ${btn.textContent}`, 'info');
+    });
+  });
+
+  // Voice Test Buttons
+  document.querySelectorAll('.voice-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const promptKey = btn.dataset.voice;
+      speak(promptKey, activeLanguage);
+    });
+  });
+
+  // Sync Manager Event Listeners
+  syncManager.on('syncComplete', async () => {
+    await refreshDashboard();
+  });
+  syncManager.on('itemSynced', async () => {
+    await refreshDashboard();
+  });
+
+  // 360 Rotator Canvas Animation
+  const canvas = document.getElementById('rotatorCanvas');
+  const ctx = canvas.getContext('2d');
+
+  function draw360Frame() {
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.save();
+    ctx.translate(canvas.width / 2, canvas.height / 2);
+    
+    // Draw 3D Box Simulation
+    const rad = (rotatorAngle * Math.PI) / 180;
+    const w = 120 * Math.cos(rad);
+    const h = 60;
+
+    // Package Body
+    ctx.fillStyle = '#dc2626'; // Colgate Red
+    ctx.fillRect(-Math.abs(w) / 2, -h / 2, Math.abs(w), h);
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(-Math.abs(w) / 2, -h / 2, Math.abs(w), h);
+
+    // Front/Back Text Simulation
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 12px Inter';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    if (Math.cos(rad) > 0) {
+      ctx.fillText('Colgate Total', 0, -8);
+      ctx.font = '8px Inter';
+      ctx.fillText('MRP ₹120 • 150g', 0, 10);
+    } else {
+      ctx.fillText('Mandatory Dec.', 0, -8);
+      ctx.font = '8px Inter';
+      ctx.fillText('USP: ₹0.80/g • Mfd: 05/26', 0, 10);
+    }
+
+    ctx.restore();
+
+    if (rotatorPlaying) {
+      rotatorAngle = (rotatorAngle + 1.5) % 360;
+    }
+    requestAnimationFrame(draw360Frame);
+  }
+  draw360Frame();
+
+  document.getElementById('rotatorToggleBtn').onclick = () => {
+    rotatorPlaying = !rotatorPlaying;
+    document.getElementById('rotatorToggleBtn').textContent = rotatorPlaying ? 'Pause' : 'Play';
+  };
+
+  // Initial Boot
+  renderScenarioButtons();
+  
+  // Pre-seed with compliant item if empty
+  const currentRecords = await getAllInspections();
+  if (currentRecords.length === 0 && mockScenarios.length > 0) {
+    await saveInspection(mockScenarios[0]);
+  }
+  await refreshDashboard();
+</script>
+
+</body>
+</html>

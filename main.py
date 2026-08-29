@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.routes import router as api_router
+from backend.routes.sync import router as sync_router
 
 app = FastAPI(
     title="LegalMetrix - Legal Compliance & Comparison Engine",
@@ -28,8 +29,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount Member 4 API Routes
+# Mount API & Offline Sync Routes
 app.include_router(api_router)
+app.include_router(sync_router)
 
 
 @app.get("/health", tags=["System"])

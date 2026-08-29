@@ -1,0 +1,20 @@
+{
+  "name": "legal-metrology-offline-sync",
+  "version": "1.0.0",
+  "description": "Member 5 - Offline Database + Sync + Voice + Testing for Legal Metrology Inspection System",
+  "type": "module",
+  "scripts": {
+    "test": "powershell -ExecutionPolicy Bypass -File ./tests/testRunner.ps1",
+    "serve": "npx serve ."
+  },
+  "keywords": [
+    "indexeddb",
+    "offline-first",
+    "sqlite-sync",
+    "voice-assistant",
+    "legal-metrology",
+    "sih2026"
+  ],
+  "author": "Member 5",
+  "license": "MIT"
+}
