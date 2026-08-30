@@ -20,6 +20,7 @@ class FieldCandidate:
     source: str
     box: List[List[int]]
     unit: Optional[str] = None
+    extra_data: Optional[Dict[str, Any]] = None
 
 
 class MultiImageFusion:
@@ -28,8 +29,9 @@ class MultiImageFusion:
     # Standard fields that can be extracted
     STANDARD_FIELDS = [
         'product_name', 'brand', 'mrp', 'net_quantity',
-        'manufacturer', 'packer', 'importer',
-        'country_of_origin', 'manufacturing_date', 'expiry_date', 'batch_number'
+        'manufacturer', 'packer', 'importer', 'consumer_care',
+        'country_of_origin', 'manufacturing_date', 'expiry_date', 'batch_number',
+        'ingredients', 'safety_analysis'
     ]
     
     def __init__(self):
@@ -88,7 +90,11 @@ class MultiImageFusion:
                         level=field_data.get('level', 'LOW') or 'LOW',
                         source=source_name,
                         box=field_data.get('box', []),
-                        unit=field_data.get('unit')
+                        unit=field_data.get('unit'),
+                        extra_data={
+                            'list': field_data.get('list'),
+                            'data': field_data.get('data')
+                        } if (field_data.get('list') or field_data.get('data')) else None
                     )
                     field_candidates[field_name].append(candidate)
         
@@ -300,6 +306,11 @@ class MultiImageFusion:
             if c.unit:
                 result['unit'] = c.unit
                 break
+            if c.extra_data:
+                if c.extra_data.get('list'):
+                    result['list'] = c.extra_data['list']
+                if c.extra_data.get('data'):
+                    result['data'] = c.extra_data['data']
         
         return result
     

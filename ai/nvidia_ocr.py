@@ -42,8 +42,30 @@ class NVIDIAOCRError(Exception):
 
 
 def _get_api_key() -> str:
-    """Get NVIDIA API key from environment variable."""
+    """Get NVIDIA API key from environment variable or local .env file."""
     api_key = os.getenv("NVIDIA_API_KEY")
+    if not api_key:
+        # Check project root .env file as fallback
+        env_paths = [
+            os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env"),
+            os.path.join(os.getcwd(), ".env"),
+            ".env"
+        ]
+        for env_path in env_paths:
+            if os.path.isfile(env_path):
+                try:
+                    with open(env_path, "r", encoding="utf-8") as f:
+                        for line in f:
+                            line = line.strip()
+                            if line.startswith("NVIDIA_API_KEY="):
+                                key = line.split("=", 1)[1].strip().strip('"').strip("'")
+                                if key and key != "your_nvidia_api_key_here":
+                                    os.environ["NVIDIA_API_KEY"] = key
+                                    return key
+                except Exception:
+                    pass
+    if not api_key:
+        api_key = os.getenv("NVIDIA_API_KEY")
     if not api_key:
         raise NVIDIAOCRError("NVIDIA_API_KEY not set in environment")
     return api_key

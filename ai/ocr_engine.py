@@ -45,7 +45,13 @@ class OCREngine:
         self._backend_type = "mock"
 
         # Determine backend
-        nvidia_key = api_key or os.environ.get("NVIDIA_API_KEY") or os.environ.get("NVIDIA_OCR_API_KEY")
+        nvidia_key = api_key
+        if not nvidia_key:
+            try:
+                from ai.nvidia_ocr import _get_api_key
+                nvidia_key = _get_api_key()
+            except Exception:
+                nvidia_key = os.environ.get("NVIDIA_API_KEY") or os.environ.get("NVIDIA_OCR_API_KEY")
         
         if backend in ("auto", "nvidia") and nvidia_key:
             try:
