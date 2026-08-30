@@ -289,7 +289,69 @@ class TestAPIEndpoints:
         assert resp.status_code == 200
         data = resp.json()
         assert "/api/inspection/scan" in data["paths"]
-        assert "post" in data["paths"]["/api/inspection/scan"]
+        assert "/api/scan" in data["paths"]
+        assert "/api/scan/360" in data["paths"]
+        assert "/api/sync" in data["paths"]
 
         docs_resp = client.get("/docs")
         assert docs_resp.status_code == 200
+
+    def test_api_health_endpoint(self):
+        resp = client.get("/api/health")
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["status"] == "healthy"
+        assert data["database"] == "SQLite"
+
+    def test_sqlite_inspections_list_and_detail(self):
+        # 1. Create inspection
+        payload = {
+            "category": "food",
+            "inspection_id": "INSP-SQLITE-001",
+            "extracted_data": {
+                "product_name": "SQLite Test Biscuits",
+                "mrp": "₹25",
+                "net_quantity": "100g",
+                "manufacturer": "Test Bakeries",
+                "country_of_origin": "India",
+                "date_of_manufacture": "09/2026",
+                "consumer_care": "care@test.com"
+            },
+            "confidence": {"mrp": 95.0, "product_name": 98.0}
+        }
+        create_resp = client.post("/api/compliance/evaluate", json=payload)
+        assert create_resp.status_code == 200
+
+        # 2. Query list
+        list_resp = client.get("/api/inspections?limit=10")
+        assert list_resp.status_code == 200
+        list_data = list_resp.json()
+        assert list_data["total"] >= 1
+        assert any(i["inspection_id"] == "INSP-SQLITE-001" for i in list_data["inspections"])
+
+        # 3. Query detail
+        detail_resp = client.get("/api/inspections/INSP-SQLITE-001")
+        assert detail_resp.status_code == 200
+        detail_data = detail_resp.json()
+        assert detail_data["inspection_id"] == "INSP-SQLITE-001"
+        assert detail_data["product_name"] == "SQLite Test Biscuits"
+
+    def test_comparison_aliases(self):
+        # Comparison product alias
+        comp_payload = {
+            "physical_data": {"product_name": "Milk", "mrp": "₹30"},
+            "online_data": {"product_name": "Milk", "mrp": "₹30"}
+        }
+        resp = client.post("/api/comparison/product", json=comp_payload)
+        assert resp.status_code == 200
+        assert resp.json()["overall"] == "MATCH"
+
+        # Comparison history alias
+        hist_payload = {
+            "previous_data": {"product_name": "Milk", "mrp": "₹28"},
+            "current_data": {"product_name": "Milk", "mrp": "₹30"}
+        }
+        h_resp = client.post("/api/comparison/history", json=hist_payload)
+        assert h_resp.status_code == 200
+        assert h_resp.json()["status"] == "CHANGE_DETECTED"
+

@@ -931,8 +931,8 @@
     console.warn('Could not load mock JSON via fetch:', e);
   }
 
-  // Enable local SQLite edge persistence mode for robust demo
-  configureSQLiteBackend({ mockMode: true });
+  // Connect to authoritative FastAPI backend /api/sync endpoint
+  configureSQLiteBackend({ mockMode: false });
 
   // Initialize DB and Sync Manager
   await initDB();

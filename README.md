@@ -1,270 +1,271 @@
-# LEGALMETRIX — Member 4: Legal Compliance + Comparison Module
+﻿# LEGALMETRIX — Integrated AI-Assisted Legal Metrology Inspection System
 
-AI-Assisted Legal Metrology Inspection System — Smart India Hackathon Prototype.
-
-This module is responsible for deterministic legal rule evaluation, category rule selection, confidence-based operational routing, human review handling, physical ↔ online catalog reconciliation, and same-product historical comparison under the **Legal Metrology (Packaged Commodities) Rules, 2011**.
-
----
-
-## 1. Architectural Principles & Safety Guarantees
-
-```
-                  AI / OCR Layer
-                        │
-                        ▼
-              Extracted Information
-             (Values + Confidence + Evidence)
-                        │
-                        ▼
-              Product Category Selection
-                        │
-                        ▼
-               RULE DATABASE (JSON)
-                        │
-                        ▼
-             DETERMINISTIC RULE ENGINE
-                        │
-         ┌──────────────┼──────────────┐
-         ▼              ▼              ▼
-       PASS           FAIL         UNCERTAIN
-         │              │              │
-         │              │              ▼
-         │              │        MANUAL REVIEW
-         │              │        (Officer Audit)
-         │              │              │
-         └──────────────┴──────────────┘
-                        │
-                        ▼
-                EVIDENCE + FINDINGS
-                        │
-         ┌──────────────┼──────────────┐
-         ▼              ▼              ▼
-      CURRENT         ONLINE        HISTORY
-      PRODUCT          DATA          DATA
-         │              │              │
-         └──────┬───────┘              │
-                ▼                      │
-          RECONCILIATION               │
-          (MATCH / MISMATCH)           │
-                                       │
-                        ┌──────────────┘
-                        ▼
-                 HISTORICAL DIFF
-                (CHANGE DETECTED)
-```
-
-### Safety Rules:
-1. **No LLM in Compliance Decisions**: AI/OCR extracts declarations and provides confidence scores. All legal compliance evaluations are strictly deterministic and rule-based.
-2. **Confidence vs. Compliance Separation**:
-   - **Confidence** measures *extraction reliability*.
-   - **Compliance** evaluates whether the extracted information satisfies the applicable legal rule.
-   - Low confidence (<60%) produces `NEEDS_REVIEW` and prompts manual verification; it is **never** automatically converted into a legal violation.
-3. **No Marketplace Scraping**: Online reconciliation operates strictly against controlled mock / demo catalog payloads.
-4. **Objective Terminology**: Mismatches and historical changes are reported objectively as `MISMATCH` or `CHANGE_DETECTED` with the recommendation `"Potential mismatch detected — officer review recommended."` — never labeled "illegal" without explicit deterministic statutory mandate.
+> **Smart India Hackathon (SIH) — Production-Grade Integrated Solution**
+> Central Repository: [https://github.com/AkshaySrivastava-Dev/LegalMetrix.git](https://github.com/AkshaySrivastava-Dev/LegalMetrix.git)
 
 ---
 
-## 2. Directory Structure
+## 1. Executive Summary & Problem Statement
+
+**LegalMetrix** is an end-to-end, multi-tier inspection and compliance platform designed for enforcement officers under the **Legal Metrology (Packaged Commodities) Rules, 2011**.
+
+In physical markets and e-commerce distribution centers, verifying mandatory packaged commodity declarations (MRP, Net Quantity, Manufacturer/Packer Address, Country of Origin, Manufacturing/Expiry Dates, Consumer Care) is labor-intensive and prone to human error.
+
+LegalMetrix solves this through:
+1. **NVIDIA Nemotron OCR v2 Cloud Engine** for millisecond-speed, high-accuracy text extraction from single images and 360-degree rotation scans.
+2. **Deterministic Legal Metrology Rule Engine** ensuring statutory compliance is verified with 100% mathematical consistency without LLM hallucination.
+3. **Authoritative SQLite Persistence** providing thread-safe, local and edge-first data storage.
+4. **IndexedDB & SyncManager Offline Architecture** enabling seamless field operations in connectivity-constrained rural markets with automated idempotent syncing.
+5. **Reconciliation & Historical Tracking** detecting physical vs online price discrepancy and shrinkflation.
+6. **Multi-Lingual Voice Assistant** supporting English, Hindi, and Telugu guidance.
+
+---
+
+## 2. Integrated System Architecture
 
 ```
-├── ai/
-│   ├── __init__.py
-│   ├── ocr_engine.py
-│   ├── field_extractor.py
-│   ├── pipeline.py
-│   ├── image_quality.py
-│   ├── multi_image.py
-│   ├── category.py
-│   ├── confidence.py
-│   └── evidence.py
-│
-├── rules/
-│   ├── definitions/
-│   │   ├── food.json
-│   │   ├── beverage.json
-│   │   ├── personal_care.json
-│   │   └── household.json
-│   ├── schemas/
-│   │   └── rule.schema.json
-│   ├── engine/
-│   │   ├── __init__.py
-│   │   ├── applicability.py
-│   │   ├── confidence_router.py
-│   │   ├── manual_review.py
-│   │   ├── rule_engine.py
-│   │   └── validators.py
-│   └── tests/
-│
-├── reconciliation/
-│   ├── extractor/
-│   ├── normalizer/
-│   ├── comparator/
-│   ├── schemas/
-│   └── tests/
-│
-├── api/
-│   ├── __init__.py
-│   ├── routes.py
-│   ├── schemas.py
-│   └── storage.py
-│
-├── test_data/
-│   └── test_image.jpg
-│
-├── tests/
-│   ├── test_api.py
-│   ├── test_golden_scenarios.py
-│   ├── test_image_inspection.py
-│   └── test_real_ocr_smoke.py
-│
-├── main.py
-└── README.md
+                               ┌────────────────────────┐
+                               │   FRONTEND INTERFACE   │
+                               │  (Dashboard / Voice)   │
+                               └───────────┬────────────┘
+                                           │
+                      ┌────────────────────┴────────────────────┐
+                      │                                         │
+             [Online Connection]                               [Offline Field Operation]
+                      │                                         │
+                      ▼                                         ▼
+            FastAPI Backend Gateway                       IndexedDB Storage
+          (POST /api/scan, /api/sync)                     (Offline Records)
+                      │                                         │
+       ┌──────────────┴──────────────┐                          ▼
+       ▼                             ▼                     SyncManager
+Single Image Scan             360 Video Scan             (Batch Upsert Queue)
+(Quality & Preprocess)       (Keyframe Rotation)                │
+       │                             │                          │
+       └──────────────┬──────────────┘                          │
+                      ▼                                         │
+         NVIDIA Nemotron OCR v2 API                             │
+         (Cloud Detections & BBoxes)                            │
+                      │                                         │
+                      ▼                                         │
+            Field Extraction Engine                             │
+          (MRP, Qty, Dates, Address)                            │
+                      │                                         │
+                      ▼                                         │
+         Deterministic Rule Engine                              │
+        (Rule Database: JSON Schemas)                           │
+                      │                                         │
+       ┌──────────────┼──────────────┐                          │
+       ▼              ▼              ▼                          │
+     PASS           FAIL         UNCERTAIN                      │
+       │              │        (Needs Review)                   │
+       │              │              │                          │
+       └──────────────┴──────┬───────┘                          │
+                             ▼                                  │
+                    Officer Audit Trail                         │
+                             │                                  │
+                             ▼                                  │
+               Authoritative SQLite DB <────────────────────────┘
+                 (data/inspections.db)
+                             │
+            ┌────────────────┴────────────────┐
+            ▼                                 ▼
+   Reconciliation Engine             Historical Comparison
+ (Physical vs Online Delta)         (Shrinkflation & Price Hike)
 ```
 
 ---
 
-## 3. Rule JSON Format & Category Selection
+## 3. Team Member Modules & Responsibilities
 
-Rule sets are defined per category in JSON (`rules/definitions/{category}.json`) conforming to `rules/schemas/rule.schema.json`.
-
-```json
-{
-  "category": "food",
-  "version": "1.0",
-  "description": "Configurable rule definition set for Food category packaged commodities",
-  "rules": [
-    {
-      "rule_id": "RULE-FOOD-003",
-      "category": "food",
-      "field": "mrp",
-      "required": true,
-      "validation": {
-        "type": "presence"
-      },
-      "description": "Maximum Retail Price (MRP) inclusive of all taxes must be declared",
-      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(e)",
-      "version": "1.0"
-    }
-  ]
-}
-```
-
-### Supported Deterministic Validators:
-- `presence`: Rejects null, empty strings, and whitespace-only strings.
-- `exact`: Exact comparison (case-sensitive or case-insensitive).
-- `pattern`: Regular expression format verification.
-- `numeric`: Checks numeric parseability and optional bounds (`min_value`, `max_value`).
-- `range`: Strict numeric interval verification (`[min_value, max_value]`).
-
----
-
-## 4. Confidence Routing & Manual Review Audit Flow
-
-```
-Confidence Score:
-  >= 90.0%  ──► AUTO                  (Automated evaluation permitted)
-  60 - 89%  ──► REVIEW_RECOMMENDED    (Moderate certainty, optional review)
-  < 60.0%   ──► MANUAL_VERIFICATION   (Mandatory officer human-in-the-loop review)
-```
-
-When an extraction falls below 60%, a pending manual review item is generated. Officers can execute:
-- `CONFIRM`: Verify AI extraction is accurate.
-- `CORRECT`: Provide the corrected value. **The original AI value, original confidence, and evidence reference are strictly preserved.**
-- `MARK_UNREADABLE`: Flag that the label declaration is physically smudged or missing.
-
----
-
-## 5. Physical ↔ Online Reconciliation
-
-Normalizes disparate representations before comparison:
-- **Price**: `₹50`, `Rs 50`, `Rs. 50.00`, `INR 50.00` $\rightarrow$ `50.00`
-- **Quantity**: `500g`, `500 g`, `500 grams` $\rightarrow$ `500.0 g`; `1 kg` $\rightarrow$ `1000.0 g`; `1.5 L` $\rightarrow$ `1500.0 ml`
-- **Text**: Whitespace collapsing, lowercasing, punctuation normalization.
-
-Comparison outputs per field: `MATCH`, `MISMATCH`, or `UNAVAILABLE`.
-
----
-
-## 6. Same-Product Historical Inspection Comparison
-
-Identifies matching historical inspection records via **`brand` + `product_name` + `category` + `variant`**.
-Detects declaration drifts over time (e.g. MRP increase, net quantity down-sizing) and produces `CHANGE_DETECTED` with detailed delta audit logs.
-
----
-
-## 7. REST API Endpoints
-
-The system provides standard RESTful endpoints:
-
-| Method | Endpoint | Description |
+| Contributor | Domain & Responsibility | Key Components |
 |---|---|---|
-| `GET` | `/health` | Service health status |
-| `GET` | `/docs` | Interactive Swagger UI API documentation |
-| `POST` | `/api/inspection/scan` | **Image-based Scan**: Uploads package image $\rightarrow$ PaddleOCR $\rightarrow$ Field Extraction $\rightarrow$ Compliance Engine |
-| `POST` | `/api/compliance/evaluate` | **Structured Evaluation**: Evaluates extracted JSON declarations against deterministic rules |
-| `POST` | `/api/compliance/manual-review` | Submit officer review decision (`CONFIRM` / `CORRECT` / `MARK_UNREADABLE`) |
-| `POST` | `/api/reconciliation/compare` | Reconcile physical package declarations against online demo catalog |
-| `GET` | `/api/inspections/{id}/history` | Retrieve previous inspection records for same product |
-| `POST` | `/api/inspections/{id}/historical-comparison` | Compare current inspection against previous historical inspection |
-| `GET` | `/api/demo/scenarios` | List 5 predefined SIH demo scenarios |
-| `POST` | `/api/demo/run-scenario/{id}` | Execute a predefined demo scenario end-to-end |
+| **Akshay** | Legal Metrology Rules & Integration | Deterministic Rule Engine, JSON Schemas (`food.json`, `beverage.json`, `personal_care.json`, `household.json`), Compliance Validators, Confidence Router |
+| **Aditya1127git** | FastAPI Backend & Persistence | API Gateway (`api/routes.py`), SQLite Service (`backend/services/database_service.py`), Upload Validation, Reconciliation & Comparison Routes |
+| **Pawan** | AI & OCR Pipeline | NVIDIA Nemotron OCR v2 Client (`ai/nvidia_ocr.py`), Image Preprocessing, Quality Scoring, Field Extractor, Category Classifier, Multi-Image Fusion |
+| **Akshat** | Offline Database, Sync & Voice | IndexedDB Engine (`src/db/indexedDB.js`), SyncManager Client (`src/sync/syncManager.js`), SQLite Sync Client (`src/db/sqliteClient.js`), Voice Assistant (`src/voice/voiceAssistant.js`) |
+| **Aditya Rathod** | Frontend UI & Interactive Dashboard | Modern Web App (`demo/index.html`), SmartScan Camera, 360 Scan Viewer, OCR Review, Manual Correction, Analytics & Report Generator |
 
 ---
 
-## 8. Running the Backend & Swagger UI
+## 4. Key Architectural Guarantees & Safeguards
 
-### Start the Server:
-```bash
-python main.py
-```
-*Alternatively using uvicorn:*
-```bash
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-```
+### A. Production OCR vs Legacy
+- **Production Engine**: **NVIDIA Nemotron OCR v2** (`https://ai.api.nvidia.com/v1/cv/nvidia/nemotron-ocr-v2`) handles all high-accuracy production text detection and bounding-box spatial coordinates.
+- **PaddleOCR Status**: Marked strictly as legacy/development fallback. It is completely decoupled from the production cloud pipeline.
+- **Missing API Keys**: If `NVIDIA_API_KEY` is not provided in a live scan, the system returns a controlled error/review state rather than fabricating declarations.
 
-### Open Swagger UI:
-Navigate to: `http://localhost:8000/docs`
+### B. Authoritative Backend Database
+- **Production Database**: **SQLite** (`data/inspections.db`). Fully thread-safe, initialized on startup via `init_db()`, indexed on `inspection_id`, `created_at`, and `product_name`.
+- **Supabase Status**: Not part of the architecture and removed from all production execution paths.
 
-### Calling `/api/inspection/scan` via cURL:
-```bash
-curl -X POST "http://localhost:8000/api/inspection/scan" \
-  -F "image=@test_data/test_image.jpg" \
-  -F "category=food"
-```
-*(If `category` is omitted, the AI pipeline automatically classifies it from OCR keywords).*
+### C. Deterministic Compliance Verification
+- The AI/OCR module **extracts declarations only**.
+- The Legal Metrology Rules Engine **alone** decides compliance.
+- No LLM hallucination or probabilistic guesswork in statutory violation tagging.
+- Zero fabrication: If a declaration is unreadable or smudged, it is marked `NEEDS_REVIEW` and flagged for manual officer audit.
 
 ---
 
-## 9. Verification & Running Tests
+## 5. API Reference Summary
 
-### Automated Unit & Integration Tests:
+### Core Scanning & Compliance
+- `POST /api/scan` — Upload packaging photo (JPEG/PNG/WebP), runs NVIDIA OCR, extracts declarations, evaluates rules, saves to SQLite, returns full compliance breakdown.
+- `POST /api/scan/360` — Upload continuous rotation video or multi-view capture, samples keyframes, fuses multi-panel text, verifies compliance.
+- `POST /api/inspection/scan` — Standard endpoint alias for `/api/scan`.
+- `POST /api/compliance/evaluate` — Direct structured JSON compliance evaluation (used for manual entry and testing).
+- `POST /api/compliance/manual-review` — Officer human-in-the-loop audit decision (`CONFIRM`, `CORRECT`, `MARK_UNREADABLE`).
+
+### Offline Synchronization
+- `POST /api/sync` — Offline batch ingestion endpoint for client-side IndexedDB records with idempotent SQLite upsert.
+
+### Inspection History & Reconciliation
+- `GET /api/inspections` — List persisted inspections with pagination (`limit`, `offset`, `compliance_status`, `sync_status`).
+- `GET /api/inspections/{inspection_id}` — Get single inspection details.
+- `GET /api/inspections/{inspection_id}/history` — Retrieve past records for the same product.
+- `POST /api/inspections/{inspection_id}/historical-comparison` — Compare current inspection against previous baseline (shrinkflation/MRP hike).
+- `POST /api/reconciliation/compare` (Alias: `/api/comparison/product`) — Reconcile physical package vs online listing.
+- `POST /api/comparison/history` — Historical comparison alias.
+
+### Demonstration & System
+- `GET /health` & `GET /api/health` — System health and readiness checks.
+- `GET /api/demo/scenarios` — List 5 predefined SIH demo scenarios.
+- `POST /api/demo/run-scenario/{id}` — Execute predefined demo scenario.
+
+---
+
+## 6. Directory Structure
+
+```
+LegalMetrix/
+├── ai/                         # AI & OCR Pipeline
+│   ├── nvidia_ocr.py           # NVIDIA Nemotron OCR v2 Client
+│   ├── ocr_engine.py           # Unified OCR Engine Wrapper
+│   ├── preprocess.py           # Image preprocessing & contrast enhancement
+│   ├── image_quality.py        # Resolution, blur, and brightness validator
+│   ├── field_extractor.py      # Regex & heuristic declaration parser
+│   ├── category.py             # Packaging commodity classifier
+│   ├── confidence.py           # Confidence scoring & tiered routing
+│   ├── multi_image.py          # Multi-view and 360 fusion logic
+│   ├── business_rules.py       # Brand canonicalization (non-fabricating)
+│   ├── evidence.py             # Bounding box & crop evidence generator
+│   └── pipeline.py             # End-to-end InspectionAI pipeline
+│
+├── rules/                      # Deterministic Legal Metrology Engine
+│   ├── definitions/            # JSON Statutory Rules (Food, Beverage, etc.)
+│   ├── schemas/                # Rule schema definitions
+│   ├── engine/                 # Applicability, router, validators, engine
+│   └── tests/                  # Rules test suite
+│
+├── reconciliation/             # Comparison & Reconciliation
+│   ├── comparator.py           # Product & historical comparator
+│   ├── normalizer/             # Price, quantity, and text normalizers
+│   └── tests/                  # Reconciliation test suite
+│
+├── backend/                    # Backend Support & Database Service
+│   ├── routes/                 # Sync route definitions
+│   └── services/               # Authoritative SQLite database service
+│
+├── api/                        # FastAPI REST Route Handlers
+│   ├── routes.py               # Complete unified API endpoints
+│   ├── schemas.py              # Pydantic request/response schemas
+│   └── storage.py              # In-memory repository & cache adapter
+│
+├── src/                        # Frontend Offline & Client Subsystems
+│   ├── db/                     # IndexedDB & SQLite sync client
+│   ├── sync/                   # SyncManager queue & retry engine
+│   ├── history/                # History comparison utilities
+│   ├── voice/                  # Speech synthesis & multi-lingual assistant
+│   └── data/                   # Mock scenarios & test data
+│
+├── demo/                       # Interactive Frontend UI
+│   └── index.html              # Full officer inspection dashboard
+│
+├── tests/                      # Automated Test Suite
+│   ├── test_api.py             # REST API endpoint tests
+│   ├── test_golden_scenarios.py# SIH golden path tests
+│   ├── test_image_inspection.py# Image scan tests
+│   ├── test_sync.py            # Offline sync tests
+│   ├── test_ai_ocr.py          # AI & OCR pipeline tests
+│   ├── testRunner.ps1          # 13-scenario automated test runner
+│   └── testRunner.js           # JavaScript test runner
+│
+├── main.py                     # Primary FastAPI Application Entrypoint
+├── requirements.txt            # Python Core Dependencies
+├── requirements-dev.txt        # Development & Test Dependencies
+├── package.json                # Frontend Scripts & Metadata
+├── .env.example                # Environment Variable Template
+├── .gitignore                  # Git Ignore Rules
+└── README.md                   # Authoritative Documentation
+```
+
+---
+
+## 7. Installation & Quickstart Guide
+
+### Prerequisites
+- Python 3.10+
+- Node.js 18+ (optional, for frontend serving)
+- NVIDIA API Key (for live cloud OCR)
+
+### Backend Setup
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/AkshaySrivastava-Dev/LegalMetrix.git
+   cd LegalMetrix
+   ```
+2. Create and activate a Python virtual environment:
+   ```bash
+   python -m venv .venv
+   .\.venv\Scripts\activate      # Windows
+   # source .venv/bin/activate   # Linux/macOS
+   ```
+3. Install dependencies:
+   ```bash
+   pip install -r requirements-dev.txt
+   ```
+4. Configure environment variables:
+   ```bash
+   cp .env.example .env
+   # Edit .env and supply your NVIDIA_API_KEY if testing cloud OCR
+   ```
+5. Start the FastAPI backend server:
+   ```bash
+   python main.py
+   ```
+   Backend will be active at `http://localhost:8000`.  
+   Interactive Swagger API Documentation: `http://localhost:8000/docs`.
+
+### Frontend Setup & Demo
+1. Serve the frontend application:
+   ```bash
+   npx serve .
+   ```
+2. Open `http://localhost:3000/demo/index.html` in a web browser.
+3. Use the top toggle to switch between **Online** and **Offline (Field Mode)** to test IndexedDB caching and automated synchronization with FastAPI SQLite.
+
+---
+
+## 8. Running Automated Tests
+
+### Python Test Suite (111 Tests)
+Execute the complete backend, AI, rules, reconciliation, and sync test suite:
 ```bash
 python -m pytest -v
 ```
-All 88 tests execute deterministically and complete in < 1 second.
 
-### Real PaddleOCR Developer Smoke Test:
+### Scenario Test Suite (13 Scenarios)
+Execute the 13 SIH scenario checks:
 ```bash
-python tests/test_real_ocr_smoke.py test_data/test_image.jpg
+powershell -ExecutionPolicy Bypass -File ./tests/testRunner.ps1
 ```
-Runs real PaddleOCR, extracts declarations, and evaluates compliance end-to-end.
 
 ---
 
-## 10. Team GitHub Workflow
+## 9. Security & Compliance Safeguards
+- **Zero Secrets**: `.env` files, credentials, and API keys are strictly excluded via `.gitignore`.
+- **Upload Hardening**: File size limits (15MB images, 100MB video), MIME checking, and UUID-based temporary file handling.
+- **Audit Trails**: Every manual review records the Officer ID, timestamp, original AI value, corrected value, and explanation notes for full legal defensibility.
 
-We follow a Pull Request workflow for multi-developer collaboration:
-
-```
-feature-branch  ──►  commit & push  ──►  Open PR  ──►  GitHub Actions (CI)  ──►  Code Review  ──►  Merge to main
-```
-
-1. **Never commit directly to `main`**.
-2. **Create a feature branch**: `git checkout -b feat/your-feature-name`
-3. **Run local tests**: `python -m pytest -v` (all 88 tests must pass)
-4. **Push & Open PR**: Push to GitHub and open a Pull Request targeting `main`.
-5. **CI Verification**: GitHub Actions automatically runs the full test suite.
-6. **Code Review**: Get approval from the relevant module owner (see `.github/CODEOWNERS`).
-7. **Merge & Sync**: Merge via PR, delete the feature branch, and pull latest `main`.
-
-For detailed instructions and branch naming conventions, see [CONTRIBUTING.md](file:///c:/Users/Lenovo/OneDrive/Desktop/SIH/CONTRIBUTING.md).
+---
+*LegalMetrix — Built for Smart India Hackathon (SIH 2026).*
