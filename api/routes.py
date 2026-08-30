@@ -334,6 +334,7 @@ async def scan_product_image(
         result["inspection_id"] = insp_id
         result["image_quality"] = quality_info
         result["raw_ocr_count"] = len(ai_result.get("raw_ocr", []))
+        result["ocr_detections"] = ai_result.get("raw_ocr", [])
 
         # Authoritative SQLite persistence
         try:
@@ -497,6 +498,7 @@ async def scan_360_video(
         result["inspection_id"] = insp_id
         result["image_quality"] = {"status": "GOOD", "angles_analyzed": len(frames)}
         result["raw_ocr_count"] = sum(len(r.get("raw_ocr", [])) for r in single_results.values())
+        result["ocr_detections"] = [det for r in single_results.values() for det in r.get("raw_ocr", [])]
 
         # Authoritative SQLite persistence
         try:
