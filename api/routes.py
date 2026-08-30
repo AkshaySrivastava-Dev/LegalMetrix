@@ -406,6 +406,11 @@ async def scan_product_image_primary(
     response_model=ComplianceEvaluationResponse,
     summary="Scan 360-degree Video or Multi-Angle Package",
 )
+@router.post(
+    "/scan/multi",
+    response_model=ComplianceEvaluationResponse,
+    summary="Scan Multiple Package Photos (Multi-Image Fusion)",
+)
 async def scan_360_video(
     video: Optional[UploadFile] = File(None, description="Package rotation video or multi-view file"),
     frames: Optional[List[UploadFile]] = File(None, description="List of sampled package rotation frames"),

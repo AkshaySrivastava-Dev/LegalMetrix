@@ -470,6 +470,78 @@
       color: var(--text-muted);
     }
 
+    
+    /* Multi-Upload Gallery Strip */
+    .multi-upload-strip {
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 10px;
+      margin-top: 10px;
+    }
+    .multi-upload-strip.active { display: flex; }
+    .multi-upload-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+      gap: 6px;
+    }
+    .multi-upload-item {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 4px;
+      gap: 2px;
+    }
+    .multi-upload-thumb {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      border-radius: 2px;
+    }
+    .multi-upload-label {
+      font-size: 0.6rem;
+      color: #93c5fd;
+      font-weight: 600;
+      text-align: center;
+      max-width: 90px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .multi-upload-remove {
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      background: rgba(239, 68, 68, 0.9);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      font-size: 0.6rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      z-index: 5;
+    }
+    .multi-upload-remove:hover {
+      background: #ef4444;
+    }
+    .dropzone.dragover {
+      border-color: var(--accent-blue) !important;
+      background-color: rgba(59, 130, 246, 0.15) !important;
+    }
+
     /* 360 Multi-Frame Preview Strip */
     .panel-360-strip {
       display: none;
@@ -1132,12 +1204,12 @@
           <div>
             <div class="dropzone" id="scannerDropzone" tabindex="0" role="button" aria-label="Upload packaging image">
               <span class="dropzone-icon">📥</span>
-              <p style="font-weight: 600; font-size: 0.9rem;">Drag & drop packaged commodity photo here</p>
-              <p style="font-size: 0.75rem; color: var(--text-muted);">Supports JPEG, PNG, WebP (up to 15MB)</p>
+              <p style="font-weight: 600; font-size: 0.9rem;">Drag & drop packaged commodity photo(s) here</p>
+              <p style="font-size: 0.75rem; color: var(--text-muted);">Select 1 to 4 photos (JPEG, PNG, WebP up to 15MB each)</p>
             </div>
-            <input type="file" id="scannerFileInput" accept="image/jpeg,image/png,image/webp" style="display: none;">
+            <input type="file" id="scannerFileInput" accept="image/jpeg,image/png,image/webp" multiple style="display: none;">
 
-            <!-- Single Image Preview Box -->
+            <!-- Single Image Preview Box (1 photo) -->
             <div class="scanner-preview-box" id="scannerPreviewBox">
               <img id="scannerThumbnail" class="scanner-thumbnail" alt="Selected packaging label preview">
               <div class="preview-meta">
@@ -1145,6 +1217,17 @@
                 <div class="preview-filesize" id="previewFilesize">0 KB</div>
               </div>
               <button class="btn btn-outline" id="clearSelectedFileBtn" style="padding: 4px 8px; font-size: 0.75rem;" title="Remove selected image">✕</button>
+            </div>
+
+            <!-- Multi-Image Upload Gallery (2 to 4 photos) -->
+            <div class="multi-upload-strip" id="multiUploadStrip">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <span style="font-size: 0.75rem; font-weight: 600; color: #fff;" id="multiUploadCountLabel">Uploaded Packaging Images (0)</span>
+                <button class="btn btn-outline" id="btnClearMultiFiles" style="padding: 2px 6px; font-size: 0.65rem;">Clear All</button>
+              </div>
+              <div class="multi-upload-grid" id="multiUploadGrid">
+                <!-- Populated dynamically -->
+              </div>
             </div>
 
             <!-- 360 Multi-Frame Preview Strip -->
@@ -1748,43 +1831,164 @@
   }
 
   // ==========================================
-  // SINGLE IMAGE SELECTION / UPLOAD
+  // MULTI-IMAGE & SINGLE IMAGE UPLOAD STATE
   // ==========================================
-  function handleSelectedFile(file) {
-    if (!file) return;
+  let selectedUploadFiles = [];
+  let selectedUploadDataUrls = [];
+  const SIDE_LABELS = ['1. Front', '2. Right / Side', '3. Back / Label', '4. Left / Ingredients', '5. Extra Angle', '6. Other'];
 
-    // Reset 360 mode state
+  function updateSelectedFilesState() {
+    selectedScanFile = selectedUploadFiles[0] || null;
+    currentPreviewDataUrl = selectedUploadDataUrls[0] || null;
+    renderSelectedFilesUI();
+  }
+
+  function handleSelectedFiles(fileList) {
+    if (!fileList || fileList.length === 0) return;
+
+    // Reset 360 camera mode state when user browses/uploads
     is360Mode = false;
     captured360Frames = [];
     panel360Strip.classList.remove('active');
 
-    selectedScanFile = file;
-    previewFilename.textContent = file.name;
-    previewFilesize.textContent = formatBytes(file.size);
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+    const maxSizeBytes = 15 * 1024 * 1024;
+    let addedCount = 0;
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      currentPreviewDataUrl = e.target.result;
-      scannerThumbnail.src = currentPreviewDataUrl;
-      scannerPreviewBox.classList.add('active');
-    };
-    reader.readAsDataURL(file);
+    for (let i = 0; i < fileList.length; i++) {
+      const file = fileList[i];
+      if (!allowedTypes.includes(file.type) && !file.name.match(/\.(jpg|jpeg|png|webp)$/i)) {
+        showToast(`Skipped "${file.name}": Unsupported format (JPEG, PNG, WebP only).`, 'warn');
+        continue;
+      }
+      if (file.size > maxSizeBytes) {
+        showToast(`Skipped "${file.name}": File exceeds 15MB.`, 'warn');
+        continue;
+      }
+      if (selectedUploadFiles.length >= 6) {
+        showToast('Maximum 6 images allowed per inspection.', 'warn');
+        break;
+      }
+      selectedUploadFiles.push(file);
+      addedCount++;
+    }
+
+    if (addedCount > 0) {
+      loadDataUrlsAndRender();
+      showToast(`${addedCount} photo(s) added (${selectedUploadFiles.length} total)`, 'info');
+    }
   }
 
-  function clearSelectedFile() {
+  function handleSelectedFile(file) {
+    if (!file) return;
+    handleSelectedFiles([file]);
+  }
+
+  function loadDataUrlsAndRender() {
+    selectedUploadDataUrls = new Array(selectedUploadFiles.length);
+    let loaded = 0;
+    if (selectedUploadFiles.length === 0) {
+      updateSelectedFilesState();
+      return;
+    }
+    selectedUploadFiles.forEach((file, idx) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        selectedUploadDataUrls[idx] = e.target.result;
+        loaded++;
+        if (loaded === selectedUploadFiles.length) {
+          updateSelectedFilesState();
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function removeSelectedFile(index) {
+    selectedUploadFiles.splice(index, 1);
+    selectedUploadDataUrls.splice(index, 1);
+    updateSelectedFilesState();
+  }
+
+  window.removeUploadImage = (idx) => removeSelectedFile(idx);
+
+  function clearAllSelectedFiles() {
+    selectedUploadFiles = [];
+    selectedUploadDataUrls = [];
     selectedScanFile = null;
     currentPreviewDataUrl = null;
     scannerFileInput.value = '';
-    scannerPreviewBox.classList.remove('active');
-    scannerThumbnail.src = '';
+    updateSelectedFilesState();
   }
 
-  clearSelectedFileBtn.onclick = clearSelectedFile;
+  function clearSelectedFile() {
+    clearAllSelectedFiles();
+  }
+
+  function renderSelectedFilesUI() {
+    const count = selectedUploadFiles.length;
+    const multiUploadStrip = document.getElementById('multiUploadStrip');
+    const multiUploadGrid = document.getElementById('multiUploadGrid');
+    const multiUploadCountLabel = document.getElementById('multiUploadCountLabel');
+
+    if (count === 0) {
+      scannerPreviewBox.classList.remove('active');
+      if (multiUploadStrip) multiUploadStrip.classList.remove('active');
+    } else if (count === 1) {
+      if (multiUploadStrip) multiUploadStrip.classList.remove('active');
+      previewFilename.textContent = selectedUploadFiles[0].name;
+      previewFilesize.textContent = formatBytes(selectedUploadFiles[0].size);
+      scannerThumbnail.src = selectedUploadDataUrls[0] || '';
+      scannerPreviewBox.classList.add('active');
+    } else {
+      scannerPreviewBox.classList.remove('active');
+      if (multiUploadStrip && multiUploadGrid) {
+        multiUploadCountLabel.textContent = `Uploaded Packaging Images (${count})`;
+        multiUploadGrid.innerHTML = selectedUploadFiles.map((file, idx) => {
+          const sideLabel = SIDE_LABELS[idx] || `Image ${idx + 1}`;
+          const thumbUrl = selectedUploadDataUrls[idx] || '';
+          return `
+            <div class="multi-upload-item">
+              <button class="multi-upload-remove" title="Remove image" onclick="window.removeUploadImage(${idx})">✕</button>
+              <img class="multi-upload-thumb" src="${thumbUrl}" alt="${sideLabel}">
+              <span class="multi-upload-label" title="${file.name}">${sideLabel}</span>
+              <span style="font-size: 0.58rem; color: var(--text-muted);">${formatBytes(file.size)}</span>
+            </div>
+          `;
+        }).join('');
+        multiUploadStrip.classList.add('active');
+      }
+    }
+  }
+
+  clearSelectedFileBtn.onclick = clearAllSelectedFiles;
+  const btnClearMulti = document.getElementById('btnClearMultiFiles');
+  if (btnClearMulti) btnClearMulti.onclick = clearAllSelectedFiles;
+
   scannerDropzone.addEventListener('click', () => scannerFileInput.click());
-  scannerFileInput.addEventListener('change', (e) => {
-    if (e.target.files && e.target.files[0]) handleSelectedFile(e.target.files[0]);
-  });
   browseFileBtn.addEventListener('click', () => scannerFileInput.click());
+
+  scannerFileInput.addEventListener('change', (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      handleSelectedFiles(e.target.files);
+    }
+  });
+
+  // Drag & Drop Multiple Files
+  scannerDropzone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    scannerDropzone.classList.add('dragover');
+  });
+  scannerDropzone.addEventListener('dragleave', () => {
+    scannerDropzone.classList.remove('dragover');
+  });
+  scannerDropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    scannerDropzone.classList.remove('dragover');
+    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleSelectedFiles(e.dataTransfer.files);
+    }
+  });
 
   // Single Camera Mode
   async function startCamera() {
@@ -2091,7 +2295,7 @@
     const category = scannerCategorySelect.value;
     const apiBase = window.__API_URL || 'http://localhost:8000';
 
-    // 1. If 360° frames are captured (4 angles)
+    // 1. If 360° frames are captured (4 angles from guided video capture)
     if (is360Mode && captured360Frames.length >= 4) {
       setScannerLoading(true, 'Processing 360° Multi-Angle Packaging...', 'Fusing multi-angle OCR detections with MultiImageFusion...');
       const formData = new FormData();
@@ -2114,36 +2318,60 @@
       return;
     }
 
-    // 2. If single image is uploaded or snapped
-    if (!selectedScanFile) {
-      showToast('Please select a photo, snap camera, or complete 360° scan first.', 'warn');
+    // 2. If multiple images are uploaded (2 to 4 photos)
+    if (selectedUploadFiles.length >= 2) {
+      setScannerLoading(true, `Processing Multi-Image Package (${selectedUploadFiles.length} Photos)...`, 'Extracting text across all views with NVIDIA Nemotron OCR v2 & MultiImageFusion...');
+      const formData = new FormData();
+      selectedUploadFiles.forEach(f => formData.append('frames', f));
+      if (category) formData.append('category', category);
+
+      try {
+        const res = await fetch(`${apiBase}/api/scan/360`, { method: 'POST', body: formData });
+        if (!res.ok) {
+          let errStr = 'Multi-image analysis error.';
+          try { const errJson = await res.json(); errStr = errJson.detail || JSON.stringify(errJson); } catch (e) {}
+          throw new Error(errStr);
+        }
+        const scanRes = await res.json();
+        await saveAndRenderScan(scanRes, 'multi_image', `Multi-Image Fusion (${selectedUploadFiles.length} Views)`, selectedUploadDataUrls[0]);
+      } catch (err) {
+        showToast(`Multi-Image Scan Error: ${err.message}`, 'error');
+        setScannerLoading(false);
+      }
       return;
     }
 
-    setScannerLoading(true, 'Running OCR & Legal Rules Engine...', 'Analyzing packaging with NVIDIA Nemotron OCR v2 & Legal Metrology Rules 2011...');
-    const formData = new FormData();
-    formData.append('image', selectedScanFile);
-    if (category) formData.append('category', category);
+    // 3. If single image is uploaded or snapped
+    if (selectedUploadFiles.length === 1) {
+      setScannerLoading(true, 'Running OCR & Legal Rules Engine...', 'Analyzing packaging with NVIDIA Nemotron OCR v2 & Legal Metrology Rules 2011...');
+      const formData = new FormData();
+      formData.append('image', selectedUploadFiles[0]);
+      if (category) formData.append('category', category);
 
-    try {
-      const res = await fetch(`${apiBase}/api/scan`, { method: 'POST', body: formData });
-      if (!res.ok) {
-        let errDetail = 'OCR and compliance evaluation failed.';
-        try { const errJson = await res.json(); errDetail = errJson.detail || JSON.stringify(errJson); } catch (e) {}
-        throw new Error(errDetail);
+      try {
+        const res = await fetch(`${apiBase}/api/scan`, { method: 'POST', body: formData });
+        if (!res.ok) {
+          let errDetail = 'OCR and compliance evaluation failed.';
+          try { const errJson = await res.json(); errDetail = errJson.detail || JSON.stringify(errJson); } catch (e) {}
+          throw new Error(errDetail);
+        }
+        const scanResult = await res.json();
+        await saveAndRenderScan(scanResult, 'image', 'Single Image', selectedUploadDataUrls[0]);
+      } catch (err) {
+        showToast(`Scan Error: ${err.message}`, 'error');
+        setScannerLoading(false);
+        scannerEmptyState.style.display = 'flex';
+        scannerEmptyState.innerHTML = `
+          <span style="font-size: 2.4rem; color: var(--accent-red); margin-bottom: 8px;">❌</span>
+          <strong style="color: #f87171; margin-bottom: 4px;">Scan Processing Failed</strong>
+          <p style="font-size: 0.8rem; color: var(--text-muted); max-width: 320px;">${err.message}</p>
+        `;
       }
-      const scanResult = await res.json();
-      await saveAndRenderScan(scanResult, 'image', 'Single Image', currentPreviewDataUrl);
-    } catch (err) {
-      showToast(`Scan Error: ${err.message}`, 'error');
-      setScannerLoading(false);
-      scannerEmptyState.style.display = 'flex';
-      scannerEmptyState.innerHTML = `
-        <span style="font-size: 2.4rem; color: var(--accent-red); margin-bottom: 8px;">❌</span>
-        <strong style="color: #f87171; margin-bottom: 4px;">Scan Processing Failed</strong>
-        <p style="font-size: 0.8rem; color: var(--text-muted); max-width: 320px;">${err.message}</p>
-      `;
+      return;
     }
+
+    // 4. If no image is selected
+    showToast('Please select photo(s), snap camera, or complete 360° scan first.', 'warn');
   });
 
   async function saveAndRenderScan(scanResult, source, modeLabel, thumbnail) {
