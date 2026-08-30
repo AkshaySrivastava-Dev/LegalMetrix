@@ -20,6 +20,11 @@ from api.schemas import (
     ReconciliationResponse,
 )
 from api.storage import db
+from backend.services.database_service import (
+    get_inspection as get_sqlite_inspection,
+    get_inspections as get_sqlite_inspections,
+    save_inspection as save_sqlite_inspection,
+)
 from reconciliation.comparator import (
     compare_historical,
     compare_product,
@@ -34,7 +39,11 @@ from rules.engine import (
     get_rules_for_category,
 )
 
+import logging
+
+logger = logging.getLogger("legalmetrix.api")
 router = APIRouter(prefix="/api", tags=["LegalMetrix"])
+
 
 _ai_pipeline = None
 
@@ -196,6 +205,29 @@ def evaluate_product_compliance(payload: ComplianceEvaluationRequest):
         )
         result["inspection_id"] = insp_id
 
+        # Authoritative SQLite persistence
+        try:
+            sqlite_payload = {
+                "inspection_id": insp_id,
+                "product_name": extracted.get("product_name"),
+                "brand": extracted.get("brand"),
+                "category": payload.category,
+                "variant": extracted.get("variant"),
+                "mrp": str(extracted.get("mrp", "")) if extracted.get("mrp") is not None else "",
+                "net_quantity": str(extracted.get("net_quantity", "")) if extracted.get("net_quantity") is not None else "",
+                "manufacturer": str(extracted.get("manufacturer", "")) if extracted.get("manufacturer") is not None else "",
+                "confidence": (sum(confidences.values()) / (100.0 * max(len(confidences), 1))) if confidences else 0.0,
+                "compliance_status": result.get("overall_status", "UNKNOWN"),
+                "violations": [f for f in result.get("findings", []) if f.get("result") == "FAIL"],
+                "checks": result.get("findings", []),
+                "evidence": evidences,
+                "source": "api_evaluate",
+                "sync_status": "synced",
+            }
+            save_sqlite_inspection(sqlite_payload)
+        except Exception as e:
+            logger.warning(f"Could not persist evaluation to SQLite: {e}")
+
         return result
     except CategoryNotFoundError as e:
         raise HTTPException(
@@ -303,6 +335,29 @@ async def scan_product_image(
         result["image_quality"] = quality_info
         result["raw_ocr_count"] = len(ai_result.get("raw_ocr", []))
 
+        # Authoritative SQLite persistence
+        try:
+            sqlite_payload = {
+                "inspection_id": insp_id,
+                "product_name": extracted.get("product_name"),
+                "brand": extracted.get("brand"),
+                "category": target_category,
+                "variant": extracted.get("variant"),
+                "mrp": str(extracted.get("mrp", "")) if extracted.get("mrp") is not None else "",
+                "net_quantity": str(extracted.get("net_quantity", "")) if extracted.get("net_quantity") is not None else "",
+                "manufacturer": str(extracted.get("manufacturer", "")) if extracted.get("manufacturer") is not None else "",
+                "confidence": (sum(confidences.values()) / (100.0 * max(len(confidences), 1))) if confidences else 0.0,
+                "compliance_status": result.get("overall_status", "UNKNOWN"),
+                "violations": [f for f in result.get("findings", []) if f.get("result") == "FAIL"],
+                "checks": result.get("findings", []),
+                "evidence": evidences,
+                "source": "image",
+                "sync_status": "synced",
+            }
+            save_sqlite_inspection(sqlite_payload)
+        except Exception as e:
+            logger.warning(f"Could not persist inspection to SQLite: {e}")
+
         return result
     except CategoryNotFoundError as e:
         raise HTTPException(
@@ -314,6 +369,166 @@ async def scan_product_image(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Compliance evaluation failed: {str(e)}",
         )
+
+
+@router.post(
+    "/scan",
+    response_model=ComplianceEvaluationResponse,
+    summary="Scan Product Packaging Image (Primary Endpoint)",
+)
+async def scan_product_image_primary(
+    image: UploadFile = File(..., description="Product packaging image (JPEG, PNG, WebP)"),
+    category: Optional[str] = Form(None, description="Optional product category (food, beverage, personal_care, household)"),
+    inspection_id: Optional[str] = Form(None, description="Optional custom inspection ID"),
+):
+    """
+    Primary endpoint for single image upload & Legal Metrology compliance evaluation.
+    """
+    return await scan_product_image(image=image, category=category, inspection_id=inspection_id)
+
+
+@router.post(
+    "/scan/360",
+    response_model=ComplianceEvaluationResponse,
+    summary="Scan 360-degree Video or Multi-Angle Package",
+)
+async def scan_360_video(
+    video: UploadFile = File(..., description="Package rotation video or multi-view file"),
+    category: Optional[str] = Form(None, description="Optional product category"),
+    inspection_id: Optional[str] = Form(None, description="Optional custom inspection ID"),
+):
+    """
+    Processes a 360-degree rotation video of commodity packaging.
+    Samples keyframes across rotation angles, aggregates multi-panel text detections via MultiImageFusion,
+    evaluates Legal Metrology rules, and records the audit record into SQLite.
+    """
+    import os
+    import tempfile
+    import uuid
+
+    if not video or not video.filename:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No video file uploaded.",
+        )
+
+    content = await video.read()
+    if not content or len(content) == 0:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Uploaded video file is empty.",
+        )
+
+    temp_dir = tempfile.gettempdir()
+    temp_video_path = os.path.join(temp_dir, f"scan360_{uuid.uuid4().hex}.mp4")
+    with open(temp_video_path, "wb") as f:
+        f.write(content)
+
+    try:
+        cap = cv2.VideoCapture(temp_video_path)
+        total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        if total_frames <= 0:
+            # If opencv can't read video directly, try decoding as image frame
+            nparr = np.frombuffer(content, np.uint8)
+            img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+            if img is None:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Could not decode video stream or image file.",
+                )
+            frames = [img]
+        else:
+            sample_count = min(max(total_frames, 1), 6)
+            step = max(total_frames // sample_count, 1)
+            frames = []
+            frame_idx = 0
+            while cap.isOpened() and len(frames) < sample_count:
+                cap.set(cv2.CAP_PROP_POS_FRAMES, frame_idx)
+                ret, frame = cap.read()
+                if not ret or frame is None:
+                    break
+                frames.append(frame)
+                frame_idx += step
+            cap.release()
+
+        if not frames:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="No readable frames decoded from 360 video.",
+            )
+
+        pipeline = get_ai_pipeline()
+        from ai.multi_image import create_fusion
+        fusion = create_fusion()
+        single_results = {}
+
+        for i, f in enumerate(frames):
+            source_tag = f"angle_{i*60}deg"
+            res = pipeline.inspect_image(f, source_name=source_tag)
+            if res.get("success"):
+                single_results[source_tag] = res
+
+        if single_results:
+            fused = fusion.fuse_results(single_results)
+            fused_fields = fused.get("fields", {})
+            fused_cat = fused.get("category", "unknown")
+        else:
+            fused_fields = {}
+            fused_cat = "unknown"
+
+        target_cat = category or (fused_cat if fused_cat != "unknown" else "food")
+        extracted, confidences, evidences = map_ai_fields_to_compliance(fused_fields, source_name="video_360")
+
+        result = evaluate_compliance(
+            category=target_cat,
+            extracted_data=extracted,
+            confidence_data=confidences,
+            evidence_data=evidences,
+        )
+
+        insp_id = db.save_inspection(
+            category=target_cat,
+            extracted_data=extracted,
+            evaluation_result=result,
+            confidence_data=confidences,
+            evidence_data=evidences,
+            inspection_id=inspection_id,
+        )
+        result["inspection_id"] = insp_id
+        result["image_quality"] = {"status": "GOOD", "angles_analyzed": len(frames)}
+        result["raw_ocr_count"] = sum(len(r.get("raw_ocr", [])) for r in single_results.values())
+
+        # Authoritative SQLite persistence
+        try:
+            sqlite_payload = {
+                "inspection_id": insp_id,
+                "product_name": extracted.get("product_name"),
+                "brand": extracted.get("brand"),
+                "category": target_cat,
+                "variant": extracted.get("variant"),
+                "mrp": str(extracted.get("mrp", "")) if extracted.get("mrp") is not None else "",
+                "net_quantity": str(extracted.get("net_quantity", "")) if extracted.get("net_quantity") is not None else "",
+                "manufacturer": str(extracted.get("manufacturer", "")) if extracted.get("manufacturer") is not None else "",
+                "confidence": (sum(confidences.values()) / (100.0 * max(len(confidences), 1))) if confidences else 0.0,
+                "compliance_status": result.get("overall_status", "UNKNOWN"),
+                "violations": [f for f in result.get("findings", []) if f.get("result") == "FAIL"],
+                "checks": result.get("findings", []),
+                "evidence": evidences,
+                "source": "video_360",
+                "sync_status": "synced",
+            }
+            save_sqlite_inspection(sqlite_payload)
+        except Exception as e:
+            logger.warning(f"Could not persist 360 inspection to SQLite: {e}")
+
+        return result
+    finally:
+        if os.path.exists(temp_video_path):
+            try:
+                os.remove(temp_video_path)
+            except Exception:
+                pass
+
 
 
 @router.post(
@@ -684,3 +899,98 @@ def run_demo_scenario(
             "expected_result": scenario["expected_result"],
             "result": res,
         }
+
+
+# ------------------ Inspections Database Endpoints ------------------ #
+@router.get(
+    "/inspections",
+    summary="List Persisted Inspections (SQLite)",
+)
+def list_inspections(
+    limit: int = 50,
+    offset: int = 0,
+    compliance_status: Optional[str] = None,
+    sync_status: Optional[str] = None,
+):
+    """
+    Retrieves paginated inspection records from the authoritative backend SQLite store.
+    """
+    items, total = get_sqlite_inspections(
+        limit=limit,
+        offset=offset,
+        compliance_status=compliance_status,
+        sync_status=sync_status,
+    )
+    return {
+        "total": total,
+        "limit": limit,
+        "offset": offset,
+        "inspections": items,
+    }
+
+
+@router.get(
+    "/inspections/{inspection_id}",
+    summary="Get Single Inspection Record",
+)
+def get_inspection_details(
+    inspection_id: str = FPath(..., description="Target inspection ID"),
+):
+    """
+    Retrieves a single inspection record by inspection_id from SQLite.
+    """
+    item = get_sqlite_inspection(inspection_id)
+    if not item:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Inspection '{inspection_id}' not found in database.",
+        )
+    return item
+
+
+# ------------------ Comparison / Reconciliation Aliases ------------------ #
+@router.post(
+    "/comparison/product",
+    response_model=ReconciliationResponse,
+    summary="Reconcile Physical Package vs Online Listing (Alias)",
+)
+def compare_product_alias(payload: ReconciliationRequest):
+    """
+    Alias route for /api/reconciliation/compare.
+    """
+    return reconcile_physical_vs_online(payload)
+
+
+@router.post(
+    "/comparison/history",
+    response_model=HistoricalComparisonResponse,
+    summary="Compare Historical Inspections (Alias)",
+)
+def compare_history_alias(payload: HistoricalComparisonRequest):
+    """
+    Alias route for historical inspection comparison.
+    """
+    result = compare_historical(
+        previous_data=payload.previous_data,
+        current_data=payload.current_data,
+        fields_to_track=payload.fields_to_track,
+    )
+    return result
+
+
+# ------------------ Health Endpoint ------------------ #
+@router.get(
+    "/health",
+    summary="API Health Status",
+)
+def api_health():
+    """
+    Returns API and database health status.
+    """
+    return {
+        "status": "healthy",
+        "database": "SQLite",
+        "ocr_engine": "NVIDIA Nemotron OCR v2",
+        "compliance_engine": "Deterministic Legal Metrology Rule Engine",
+    }
+

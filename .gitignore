@@ -86,3 +86,17 @@ desktop.ini
 # --- OS-generated metadata ---
 NTUSER.DAT*
 ntuser.dat*
+
+# --- SQLite Databases & Edge Stores ---
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+backend/data/*.db
+data/inspections.db
+
+# --- Frontend & Node Dependencies ---
+node_modules/
+.npm/
+

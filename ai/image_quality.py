@@ -1,7 +1,7 @@
 """
 Image Quality Check module using OpenCV.
 
-Provides heuristic checks for blur, brightness, resolution, and visibility.
+Provides field-aware checks for blur, brightness, resolution, and visibility.
 """
 
 from typing import Dict, Any
@@ -9,16 +9,16 @@ import cv2
 import numpy as np
 
 
-# Thresholds - easily modifiable in one place
+# Thresholds
 QUALITY_THRESHOLDS = {
-    "min_width": 640,
-    "min_height": 480,
-    "min_blur_score": 50.0,       # Laplacian variance threshold
-    "max_blur_score": 5000.0,     # Very high blur score might indicate issues
-    "min_brightness": 40.0,       # Mean pixel value (0-255)
-    "max_brightness": 220.0,      # Mean pixel value (0-255)
-    "min_edge_ratio": 0.001,      # Ratio of edge pixels to total (lowered for text)
-    "max_edge_ratio": 0.5,        # Too many edges might indicate noise
+    "min_width": 480,
+    "min_height": 360,
+    "min_blur_score": 25.0,       # Below 25 is severely blurred
+    "good_blur_score": 55.0,      # Above 55 is crisp
+    "min_brightness": 30.0,       # Mean pixel value (0-255)
+    "max_brightness": 235.0,      # Mean pixel value (0-255)
+    "min_edge_ratio": 0.0005,     # Ratio of edge pixels to total
+    "max_edge_ratio": 0.6,        # Too many edges might indicate noise
 }
 
 
@@ -79,7 +79,7 @@ def check_image_quality(image: np.ndarray) -> Dict[str, Any]:
         image: OpenCV image (numpy array, BGR format)
         
     Returns:
-        Dict with status, reasons, and metrics
+        Dict with status (GOOD/ACCEPTABLE/BAD), reasons, and metrics
     """
     if image is None or image.size == 0:
         return {
@@ -89,6 +89,7 @@ def check_image_quality(image: np.ndarray) -> Dict[str, Any]:
         }
     
     reasons = []
+    warnings = []
     metrics = {}
     
     # Resolution
@@ -104,7 +105,9 @@ def check_image_quality(image: np.ndarray) -> Dict[str, Any]:
     metrics["blur_score"] = round(blur_score, 2)
     
     if blur_score < QUALITY_THRESHOLDS["min_blur_score"]:
-        reasons.append("Image blurry")
+        reasons.append("Image severely blurry")
+    elif blur_score < QUALITY_THRESHOLDS["good_blur_score"]:
+        warnings.append("Slight blur on fine text")
     
     # Brightness
     brightness = check_brightness(image)
@@ -115,49 +118,26 @@ def check_image_quality(image: np.ndarray) -> Dict[str, Any]:
     elif brightness > QUALITY_THRESHOLDS["max_brightness"]:
         reasons.append("Image too bright")
     
-    # Edge ratio (basic visibility check)
+    # Edge ratio
     edge_ratio = check_edge_ratio(image)
     metrics["edge_ratio"] = round(edge_ratio, 4)
     
     if edge_ratio < QUALITY_THRESHOLDS["min_edge_ratio"]:
         reasons.append("Label not clearly visible")
-    elif edge_ratio > QUALITY_THRESHOLDS["max_edge_ratio"]:
-        reasons.append("Image too noisy")
     
-    status = "GOOD" if len(reasons) == 0 else "BAD"
+    if len(reasons) > 0:
+        status = "BAD"
+    elif len(warnings) > 0:
+        status = "ACCEPTABLE"
+    else:
+        status = "GOOD"
+    
+    all_notes = reasons + warnings
     
     return {
         "status": status,
-        "reasons": reasons,
+        "reasons": all_notes,
+        "issues": all_notes,
         "metrics": metrics
     }
 
-
-if __name__ == "__main__":
-    # Quick test
-    import numpy as np
-    
-    # Good image
-    good_img = np.zeros((480, 640, 3), dtype=np.uint8)
-    good_img[:] = (200, 200, 200)
-    cv2.putText(good_img, 'Test Text', (50, 240), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 3)
-    
-    result = check_image_quality(good_img)
-    print("Good image:", result)
-    
-    # Blurry image
-    blurry_img = cv2.GaussianBlur(good_img, (21, 21), 0)
-    result = check_image_quality(blurry_img)
-    print("Blurry image:", result)
-    
-    # Dark image
-    dark_img = np.zeros((480, 640, 3), dtype=np.uint8)
-    dark_img[:] = (20, 20, 20)
-    result = check_image_quality(dark_img)
-    print("Dark image:", result)
-    
-    # Bright image
-    bright_img = np.zeros((480, 640, 3), dtype=np.uint8)
-    bright_img[:] = (240, 240, 240)
-    result = check_image_quality(bright_img)
-    print("Bright image:", result)
