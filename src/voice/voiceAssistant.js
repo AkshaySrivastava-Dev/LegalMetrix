@@ -24,7 +24,12 @@ export const PROMPT_KEYS = {
   DARK_IMAGE: 'DARK_IMAGE',
   PRICE_MISMATCH: 'PRICE_MISMATCH',
   MRP_CHANGED: 'MRP_CHANGED',
-  FALLBACK_360: 'FALLBACK_360'
+  FALLBACK_360: 'FALLBACK_360',
+  CAPTURE_360_START: 'CAPTURE_360_START',
+  ROTATE_RIGHT: 'ROTATE_RIGHT',
+  ROTATE_BACK: 'ROTATE_BACK',
+  ROTATE_LEFT: 'ROTATE_LEFT',
+  CAPTURE_360_COMPLETE: 'CAPTURE_360_COMPLETE'
 };
 
 // Predefined Legal Metrology Audio Translations
@@ -33,6 +38,31 @@ export const VOICE_DICTIONARY = {
     en: 'Rotate the package slowly.',
     hi: 'पैकेज को धीरे-धीरे घुमाएं।',
     te: 'ప్యాకేజీని నెమ్మదిగా తిప్పండి.'
+  },
+  [PROMPT_KEYS.CAPTURE_360_START]: {
+    en: '360 degree inspection started. Keep front label centered.',
+    hi: '360 डिग्री निरीक्षण शुरू। सामने के लेबल को बीच में रखें।',
+    te: '360 డిగ్రీల తనిఖీ ప్రారంభమైంది. ముందు లేబుల్‌ను మధ్యలో ఉంచండి.'
+  },
+  [PROMPT_KEYS.ROTATE_RIGHT]: {
+    en: 'Rotate slowly to the right side.',
+    hi: 'दाहिनी तरफ धीरे-धीरे घुमाएं।',
+    te: 'కుడి వైపుకు నెమ్మదిగా తిప్పండి.'
+  },
+  [PROMPT_KEYS.ROTATE_BACK]: {
+    en: 'Rotate to the back panel.',
+    hi: 'पीछे के हिस्से की तरफ घुमाएं।',
+    te: 'వెనుక భాగానికి తిప్పండి.'
+  },
+  [PROMPT_KEYS.ROTATE_LEFT]: {
+    en: 'Rotate to the left side.',
+    hi: 'बाईं तरफ घुमाएं।',
+    te: 'ఎడమ వైపుకు తిప్పండి.'
+  },
+  [PROMPT_KEYS.CAPTURE_360_COMPLETE]: {
+    en: '360 degree capture complete. Analyzing package declarations.',
+    hi: '360 डिग्री कैप्चर पूरा हुआ। पैकेजिंग का विश्लेषण किया जा रहा है।',
+    te: '360 డిగ్రీల క్యాప్చర్ పూర్తయింది. ప్యాకేజీ వివరాలు విశ్లేషించబడుతున్నాయి.'
   },
   [PROMPT_KEYS.IMAGE_UNCLEAR]: {
     en: 'Image is unclear. Please retake.',

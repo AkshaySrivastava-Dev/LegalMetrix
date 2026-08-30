@@ -3,32 +3,45 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>LegalMetrix • Packaged Commodity Compliance Inspector</title>
+  <title>LegalMetrix • Packaged Commodity Inspector</title>
   <style>
     :root {
-      --bg-app: #090d16;
-      --bg-surface: #111827;
-      --bg-card: #1f2937;
-      --bg-subtle: #0f172a;
-      --border: #374151;
-      --border-subtle: #232d3f;
-      --text-main: #f9fafb;
-      --text-muted: #9ca3af;
-      --text-dim: #6b7280;
-      --primary: #2563eb;
-      --primary-hover: #1d4ed8;
-      --primary-subtle: rgba(37, 99, 235, 0.15);
-      --success: #10b981;
-      --success-subtle: rgba(16, 185, 129, 0.15);
-      --danger: #ef4444;
-      --danger-subtle: rgba(239, 68, 68, 0.15);
-      --warning: #f59e0b;
-      --warning-subtle: rgba(245, 158, 11, 0.15);
-      --radius-sm: 6px;
-      --radius-md: 8px;
-      --radius-lg: 12px;
-      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      /* DESIGN.md Color System */
+      --canvas: #fdfcfc;        /* Eggshell canvas */
+      --surface: #f5f3f1;       /* Warm Taupe secondary surfaces */
+      --surface-card: #ffffff;  /* Card base */
+      --stone: #ebe8e4;         /* Stone hairline borders */
+      --ink: #000000;           /* Primary typography */
+      --graphite: #44403b;      /* Secondary typography / headings */
+      --smoke: #777169;         /* Body / muted text */
+      --ash: #a59f97;           /* Dim text / borders */
+      --violet-spark: #0447ff;  /* Product accent only */
+      --ember-orange: #ff4704;  /* Product accent only */
+
+      /* Semantic status colors (restrained) */
+      --status-pass-bg: #f0fdf4;
+      --status-pass-border: #bbf7d0;
+      --status-pass-text: #15803d;
+      
+      --status-fail-bg: #fef2f2;
+      --status-fail-border: #fecaca;
+      --status-fail-text: #b91c1c;
+
+      --status-review-bg: #fffbeb;
+      --status-review-border: #fde68a;
+      --status-review-text: #b45309;
+
+      /* Typography */
+      --font-display: "Waldenburg", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Segoe UI Mono", Menlo, Consolas, monospace;
+
+      /* Shapes */
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-card: 20px;
+      --radius-hero: 24px;
+      --radius-pill: 9999px;
     }
 
     * {
@@ -39,176 +52,177 @@
     }
 
     body {
-      font-family: var(--font-sans);
-      background-color: var(--bg-app);
-      color: var(--text-main);
-      line-height: 1.5;
-      padding: 12px;
+      font-family: var(--font-body);
+      font-weight: 400;
+      letter-spacing: +0.01em;
+      background-color: var(--canvas);
+      color: var(--graphite);
+      line-height: 1.6;
+      padding: 16px;
       min-height: 100vh;
       display: flex;
       justify-content: center;
     }
 
-    .app-container {
+    .app-wrapper {
       width: 100%;
-      max-width: 860px;
+      max-width: 880px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 16px;
     }
 
-    /* Top Bar */
-    .top-bar {
-      background-color: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 12px 16px;
+    /* Top Navigation Bar */
+    .header-bar {
+      background-color: var(--surface);
+      border: 1px solid var(--stone);
+      border-radius: var(--radius-card);
+      padding: 16px 22px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 12px;
     }
 
-    .brand-group {
+    .brand-meta {
       display: flex;
       flex-direction: column;
     }
 
-    .brand-title-row {
+    .brand-title-line {
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    .brand-name {
-      font-size: 1.25rem;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      color: #ffffff;
-    }
-
-    .gov-tag {
-      background: var(--primary-subtle);
-      border: 1px solid rgba(37, 99, 235, 0.4);
-      color: #93c5fd;
-      font-size: 0.68rem;
-      font-weight: 600;
-      padding: 2px 7px;
-      border-radius: 9999px;
+    .brand-heading {
+      font-family: var(--font-display);
+      font-weight: 300;
+      font-size: 1.35rem;
+      letter-spacing: -0.02em;
+      color: var(--ink);
       text-transform: uppercase;
+    }
+
+    .brand-tag {
+      background: #ffffff;
+      border: 1px solid var(--stone);
+      color: var(--smoke);
+      font-size: 0.68rem;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: var(--radius-pill);
       letter-spacing: 0.5px;
+      text-transform: uppercase;
     }
 
-    .brand-subtitle {
-      font-size: 0.75rem;
-      color: var(--text-muted);
+    .brand-subtext {
+      font-size: 0.76rem;
+      color: var(--smoke);
     }
 
-    .top-controls {
+    .header-controls {
       display: flex;
       align-items: center;
       gap: 8px;
       flex-wrap: wrap;
     }
 
-    /* Network Indicator */
-    .network-badge {
+    /* Network Switch Pill */
+    .network-pill {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background-color: var(--bg-subtle);
-      border: 1px solid var(--border);
+      background-color: #ffffff;
+      border: 1px solid var(--stone);
       padding: 4px 10px;
-      border-radius: 9999px;
+      border-radius: var(--radius-pill);
       font-size: 0.72rem;
-      font-weight: 600;
+      font-weight: 500;
+      color: var(--graphite);
     }
 
-    .dot {
-      width: 7px;
-      height: 7px;
+    .status-dot {
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
     }
-    .dot-online { background-color: var(--success); }
-    .dot-offline { background-color: var(--warning); }
+    .dot-active { background-color: var(--status-pass-text); }
+    .dot-inactive { background-color: var(--status-review-text); }
 
-    /* Switch */
-    .switch-wrap {
-      display: inline-flex;
-      align-items: center;
-      cursor: pointer;
-    }
-    .switch {
+    .switch-ui {
       position: relative;
       display: inline-block;
-      width: 28px;
-      height: 16px;
+      width: 26px;
+      height: 14px;
     }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .slider {
+    .switch-ui input { opacity: 0; width: 0; height: 0; }
+    .slider-ui {
       position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #4b5563; transition: .2s; border-radius: 16px;
+      background-color: var(--stone); transition: .2s; border-radius: 14px;
     }
-    .slider:before {
-      position: absolute; content: ""; height: 10px; width: 10px; left: 3px; bottom: 3px;
+    .slider-ui:before {
+      position: absolute; content: ""; height: 10px; width: 10px; left: 2px; bottom: 2px;
       background-color: white; transition: .2s; border-radius: 50%;
     }
-    input:checked + .slider { background-color: var(--success); }
-    input:checked + .slider:before { transform: translateX(12px); }
+    input:checked + .slider-ui { background-color: var(--ink); }
+    input:checked + .slider-ui:before { transform: translateX(12px); }
 
     /* Language Switcher */
-    .lang-switcher {
+    .lang-pill-group {
       display: flex;
-      background-color: var(--bg-subtle);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
+      background-color: #ffffff;
+      border: 1px solid var(--stone);
+      border-radius: var(--radius-pill);
       padding: 2px;
       gap: 2px;
     }
-    .lang-btn {
+    .lang-item {
       background: transparent;
       border: none;
-      color: var(--text-muted);
+      color: var(--smoke);
       font-size: 0.72rem;
-      font-weight: 600;
+      font-weight: 500;
       padding: 4px 8px;
-      border-radius: 4px;
+      border-radius: var(--radius-pill);
       cursor: pointer;
+      font-family: inherit;
     }
-    .lang-btn.active {
-      background-color: var(--primary);
+    .lang-item.active {
+      background-color: var(--ink);
       color: #ffffff;
     }
 
-    /* Navigation Tabs */
-    .nav-tabs-bar {
+    /* Tab Navigation */
+    .nav-bar {
       display: flex;
-      background-color: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
+      background-color: var(--surface);
+      border: 1px solid var(--stone);
+      border-radius: var(--radius-pill);
       padding: 4px;
       gap: 4px;
     }
-    .nav-tab-btn {
+    .nav-btn {
       flex: 1;
       background: transparent;
       border: none;
-      color: var(--text-muted);
+      color: var(--smoke);
       font-size: 0.8rem;
-      font-weight: 600;
-      padding: 8px 12px;
-      border-radius: var(--radius-sm);
+      font-weight: 500;
+      padding: 8px 14px;
+      border-radius: var(--radius-pill);
       cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s ease;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
-      transition: all 0.15s;
     }
-    .nav-tab-btn:hover { color: var(--text-main); background: var(--bg-card); }
-    .nav-tab-btn.active {
-      background-color: var(--primary);
+    .nav-btn:hover { color: var(--ink); background-color: #ffffff; }
+    .nav-btn.active {
+      background-color: var(--ink);
       color: #ffffff;
     }
 
@@ -217,390 +231,405 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      padding: 8px 14px;
-      border-radius: var(--radius-sm);
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: var(--radius-pill);
       font-size: 0.82rem;
-      font-weight: 600;
+      font-weight: 500;
       cursor: pointer;
       border: 1px solid transparent;
       transition: all 0.15s ease;
       font-family: inherit;
-      min-height: 40px;
+      min-height: 42px;
     }
-    .btn-primary {
-      background-color: var(--primary);
+    .btn-black {
+      background-color: var(--ink);
       color: #ffffff;
     }
-    .btn-primary:hover { background-color: var(--primary-hover); }
-    .btn-outline {
-      background-color: transparent;
-      border-color: var(--border);
-      color: var(--text-main);
+    .btn-black:hover { background-color: #222222; }
+    .btn-stone {
+      background-color: var(--surface);
+      border-color: var(--stone);
+      color: var(--ink);
     }
-    .btn-outline:hover { background-color: var(--bg-card); border-color: var(--text-muted); }
-    .btn-success { background-color: var(--success); color: #ffffff; }
-    .btn-success:hover { background-color: #059669; }
-    .btn-sm { padding: 4px 10px; font-size: 0.75rem; min-height: 32px; }
-    .btn-block { width: 100%; }
+    .btn-stone:hover { background-color: #ffffff; }
+    .btn-sm {
+      padding: 6px 14px;
+      font-size: 0.75rem;
+      min-height: 32px;
+    }
+    .btn-full { width: 100%; }
 
     /* Surface Card */
-    .surface-card {
-      background-color: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 16px;
+    .hero-card {
+      background-color: var(--surface-card);
+      border: 1px solid var(--stone);
+      border-radius: var(--radius-hero);
+      padding: 28px 24px;
     }
 
-    .card-title-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--border-subtle);
+    .editorial-header {
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--stone);
+      padding-bottom: 16px;
     }
-    .card-title {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--text-main);
+    .display-title {
+      font-family: var(--font-display);
+      font-weight: 300;
+      font-size: 1.55rem;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+    .editorial-desc {
+      font-size: 0.82rem;
+      color: var(--smoke);
     }
 
-    /* Scanner Mode Selector */
-    .scanner-actions-grid {
+    /* Scan Action Cards Grid */
+    .scan-choices-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-bottom: 14px;
+      gap: 12px;
+      margin-bottom: 20px;
     }
-    @media (max-width: 580px) {
-      .scanner-actions-grid { grid-template-columns: 1fr; }
+    @media (max-width: 600px) {
+      .scan-choices-grid { grid-template-columns: 1fr; }
     }
 
-    .scan-mode-card {
-      background-color: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 14px 12px;
+    .scan-choice-card {
+      background-color: var(--surface);
+      border: 1px solid var(--stone);
+      border-radius: var(--radius-card);
+      padding: 20px 16px;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
       gap: 6px;
       cursor: pointer;
-      transition: all 0.15s;
+      transition: all 0.15s ease;
     }
-    .scan-mode-card:hover {
-      border-color: var(--primary);
-      background-color: #243248;
+    .scan-choice-card:hover {
+      border-color: var(--ink);
+      background-color: #ffffff;
     }
-    .scan-mode-card.drag-over {
-      border-color: var(--primary);
-      background-color: var(--primary-subtle);
+    .scan-choice-card.drag-over {
+      border-color: var(--ink);
+      background-color: #ffffff;
     }
-    .scan-mode-icon {
-      font-size: 1.6rem;
+    .choice-icon {
+      font-size: 1.5rem;
+      margin-bottom: 2px;
     }
-    .scan-mode-title {
+    .choice-title {
       font-size: 0.85rem;
-      font-weight: 600;
-      color: #ffffff;
+      font-weight: 500;
+      color: var(--ink);
     }
-    .scan-mode-desc {
+    .choice-desc {
       font-size: 0.72rem;
-      color: var(--text-muted);
+      color: var(--smoke);
+      line-height: 1.3;
     }
 
     /* Category Selector */
-    .category-row {
-      margin-bottom: 14px;
+    .category-group {
+      margin-bottom: 20px;
     }
-    .field-label {
+    .section-label {
       display: block;
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       text-transform: uppercase;
-      color: var(--text-dim);
-      font-weight: 600;
-      margin-bottom: 6px;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.05em;
+      color: var(--ash);
+      font-weight: 500;
+      margin-bottom: 8px;
     }
-    .cat-pill-group {
+    .category-pills {
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
     }
-    .cat-btn {
-      background-color: var(--bg-subtle);
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      padding: 5px 11px;
-      border-radius: var(--radius-sm);
-      font-size: 0.75rem;
-      font-weight: 600;
+    .cat-item-btn {
+      background-color: var(--surface);
+      border: 1px solid var(--stone);
+      color: var(--graphite);
+      padding: 6px 12px;
+      border-radius: var(--radius-pill);
+      font-size: 0.76rem;
+      font-weight: 500;
       cursor: pointer;
+      font-family: inherit;
+      transition: 0.15s;
     }
-    .cat-btn.active {
-      background-color: var(--primary);
-      border-color: var(--primary);
+    .cat-item-btn.active {
+      background-color: var(--ink);
+      border-color: var(--ink);
       color: #ffffff;
     }
 
-    /* File Preview */
-    .preview-container {
+    /* File Preview Box */
+    .preview-box {
       display: none;
-      background-color: var(--bg-subtle);
-      border: 1px solid var(--border);
+      background-color: var(--surface);
+      border: 1px solid var(--stone);
       border-radius: var(--radius-md);
-      padding: 10px 12px;
+      padding: 12px 14px;
       align-items: center;
       gap: 12px;
-      margin-bottom: 14px;
+      margin-bottom: 20px;
     }
-    .preview-container.active { display: flex; }
-    .preview-img {
-      width: 56px;
-      height: 56px;
+    .preview-box.active { display: flex; }
+    .preview-thumb {
+      width: 52px;
+      height: 52px;
       object-fit: cover;
       border-radius: var(--radius-sm);
-      border: 1px solid var(--border);
+      border: 1px solid var(--stone);
     }
-    .preview-details {
+    .preview-info {
       flex: 1;
       overflow: hidden;
-      font-size: 0.8rem;
     }
-    .preview-name {
-      font-weight: 600;
-      color: var(--text-main);
+    .preview-filename-text {
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: var(--ink);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .preview-size {
-      color: var(--text-muted);
+    .preview-size-text {
       font-size: 0.72rem;
+      color: var(--smoke);
     }
 
     /* Loading State */
-    .loading-box {
+    .loading-state-wrap {
       display: none;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 28px 12px;
+      padding: 36px 16px;
       gap: 10px;
       text-align: center;
     }
-    .spinner {
-      width: 28px;
-      height: 28px;
-      border: 3px solid rgba(37, 99, 235, 0.2);
-      border-top-color: var(--primary);
+    .subtle-spinner {
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--stone);
+      border-top-color: var(--ink);
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     /* Results Section */
-    .results-wrap {
+    .results-section {
       display: none;
       flex-direction: column;
-      gap: 14px;
-      margin-top: 14px;
+      gap: 16px;
+      margin-top: 24px;
+      border-top: 1px solid var(--stone);
+      padding-top: 20px;
     }
 
-    .status-banner {
-      padding: 12px 16px;
+    .compliance-banner {
+      padding: 14px 18px;
       border-radius: var(--radius-md);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-weight: 700;
-      font-size: 0.95rem;
+      font-weight: 500;
+      font-size: 0.92rem;
+      letter-spacing: 0.02em;
     }
-    .status-compliant {
-      background: var(--success-subtle);
-      border: 1px solid rgba(16, 185, 129, 0.4);
-      color: #34d399;
+    .banner-pass {
+      background-color: var(--status-pass-bg);
+      border: 1px solid var(--status-pass-border);
+      color: var(--status-pass-text);
     }
-    .status-non-compliant {
-      background: var(--danger-subtle);
-      border: 1px solid rgba(239, 68, 68, 0.4);
-      color: #f87171;
+    .banner-fail {
+      background-color: var(--status-fail-bg);
+      border: 1px solid var(--status-fail-border);
+      color: var(--status-fail-text);
     }
-    .status-needs-review {
-      background: var(--warning-subtle);
-      border: 1px solid rgba(245, 158, 11, 0.4);
-      color: #fbbf24;
+    .banner-review {
+      background-color: var(--status-review-bg);
+      border: 1px solid var(--status-review-border);
+      color: var(--status-review-text);
     }
 
-    /* Declarations Grid */
-    .declarations-grid {
+    /* Declarations Table / Cards */
+    .declarations-list {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
       gap: 8px;
-      margin-top: 8px;
+      margin-top: 10px;
     }
-    .declaration-item {
-      background-color: var(--bg-subtle);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-sm);
-      padding: 8px 10px;
+    .decl-cell {
+      background-color: var(--surface);
+      border: 1px solid var(--stone);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
     }
-    .decl-label {
+    .decl-field-name {
       font-size: 0.68rem;
       text-transform: uppercase;
-      color: var(--text-dim);
-      font-weight: 600;
+      color: var(--smoke);
+      font-weight: 500;
       display: block;
       margin-bottom: 2px;
     }
-    .decl-value {
+    .decl-field-val {
       font-size: 0.82rem;
-      font-weight: 600;
-      color: var(--text-main);
+      font-weight: 500;
+      color: var(--ink);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .decl-not-detected {
-      color: var(--text-dim);
+    .decl-missing {
+      color: var(--ash);
       font-style: italic;
       font-weight: 400;
     }
 
-    /* Rules Findings List */
-    .findings-list {
+    /* Rules Checklist */
+    .checklist-wrap {
       list-style: none;
       display: flex;
       flex-direction: column;
       gap: 6px;
-      margin-top: 8px;
+      margin-top: 10px;
     }
-    .finding-row {
-      background-color: var(--bg-subtle);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-sm);
-      padding: 8px 12px;
+    .checklist-row {
+      background-color: var(--surface);
+      border: 1px solid var(--stone);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       font-size: 0.8rem;
       gap: 8px;
     }
-    .finding-row.pass { border-left: 3px solid var(--success); }
-    .finding-row.fail { border-left: 3px solid var(--danger); }
-    .finding-row.review { border-left: 3px solid var(--warning); }
-
-    .tag-badge {
+    .pill-badge {
       font-size: 0.68rem;
-      font-weight: 700;
-      padding: 2px 6px;
-      border-radius: 3px;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: var(--radius-pill);
       text-transform: uppercase;
     }
-    .tag-pass { background: var(--success-subtle); color: #34d399; }
-    .tag-fail { background: var(--danger-subtle); color: #f87171; }
-    .tag-review { background: var(--warning-subtle); color: #fbbf24; }
+    .pill-pass { background-color: var(--status-pass-bg); border: 1px solid var(--status-pass-border); color: var(--status-pass-text); }
+    .pill-fail { background-color: var(--status-fail-bg); border: 1px solid var(--status-fail-border); color: var(--status-fail-text); }
+    .pill-review { background-color: var(--status-review-bg); border: 1px solid var(--status-review-border); color: var(--status-review-text); }
 
     /* Ingredients & Safety Section */
-    .safety-card {
-      background-color: var(--bg-subtle);
-      border: 1px solid var(--border);
+    .safety-block {
+      background-color: var(--surface);
+      border: 1px solid var(--stone);
+      border-radius: var(--radius-card);
+      padding: 18px 20px;
+    }
+    .advisory-box-warn {
+      background-color: var(--status-review-bg);
+      border: 1px solid var(--status-review-border);
       border-radius: var(--radius-md);
-      padding: 14px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+      font-size: 0.78rem;
+      color: var(--status-review-text);
     }
-    .safety-notice-warn {
-      background: var(--warning-subtle);
-      border: 1px solid rgba(245, 158, 11, 0.35);
-      border-left: 3px solid var(--warning);
-      border-radius: var(--radius-sm);
+    .advisory-box-ok {
+      background-color: var(--status-pass-bg);
+      border: 1px solid var(--status-pass-border);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      margin-bottom: 12px;
+      font-size: 0.78rem;
+      color: var(--status-pass-text);
+    }
+    .flagged-item-pill {
+      background-color: #ffffff;
+      border: 1px solid var(--stone);
+      border-radius: var(--radius-md);
       padding: 10px 12px;
-      margin-bottom: 10px;
-    }
-    .safety-notice-ok {
-      background: var(--success-subtle);
-      border: 1px solid rgba(16, 185, 129, 0.35);
-      border-left: 3px solid var(--success);
-      border-radius: var(--radius-sm);
-      padding: 10px 12px;
-      margin-bottom: 10px;
-    }
-
-    .flagged-item-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-sm);
-      padding: 8px 10px;
       margin-bottom: 6px;
       font-size: 0.78rem;
     }
 
-    .ingredient-tags-wrap {
+    .ingredient-pills-row {
       display: flex;
       flex-wrap: wrap;
       gap: 4px;
       margin-top: 8px;
     }
-    .ing-tag {
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: 4px;
-      padding: 2px 7px;
+    .ing-pill {
+      background-color: #ffffff;
+      border: 1px solid var(--stone);
+      border-radius: var(--radius-pill);
+      padding: 3px 9px;
       font-size: 0.72rem;
-      color: #e5e7eb;
+      color: var(--graphite);
     }
 
     /* Comparison Banner (Shrinkflation) */
-    .comparison-box {
+    .comparison-card {
       display: none;
-      background: rgba(245, 158, 11, 0.08);
-      border: 1px solid rgba(245, 158, 11, 0.3);
-      border-radius: var(--radius-md);
-      padding: 12px 14px;
+      background-color: var(--surface);
+      border: 1px solid var(--stone);
+      border-radius: var(--radius-card);
+      padding: 16px 20px;
     }
-    .comparison-box.active { display: block; }
-    .comp-grid {
+    .comparison-card.active { display: block; }
+    .comp-grid-box {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 8px;
+      gap: 12px;
+      margin-top: 10px;
     }
     @media (max-width: 500px) {
-      .comp-grid { grid-template-columns: 1fr; }
+      .comp-grid-box { grid-template-columns: 1fr; }
     }
-    .comp-column {
-      background: var(--bg-subtle);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-sm);
-      padding: 8px 10px;
+    .comp-column-item {
+      background-color: #ffffff;
+      border: 1px solid var(--stone);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
       font-size: 0.78rem;
     }
 
     /* History Table */
-    .history-controls {
+    .history-card-wrap {
+      background-color: var(--surface-card);
+      border: 1px solid var(--stone);
+      border-radius: var(--radius-hero);
+      padding: 24px;
+    }
+    .table-tools {
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 8px;
-      margin-bottom: 10px;
+      margin-bottom: 14px;
       flex-wrap: wrap;
     }
-    .search-field {
-      background: var(--bg-subtle);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      color: var(--text-main);
-      padding: 6px 10px;
-      font-size: 0.8rem;
+    .search-input-field {
+      background-color: #ffffff;
+      border: 1px solid var(--stone);
+      border-radius: var(--radius-pill);
+      color: var(--ink);
+      padding: 6px 14px;
+      font-size: 0.78rem;
       outline: none;
-      min-width: 180px;
+      min-width: 200px;
     }
-
-    .table-scroll {
+    .table-scroller {
       overflow-x: auto;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
+      border: 1px solid var(--stone);
+      border-radius: var(--radius-md);
     }
     table {
       width: 100%;
@@ -609,307 +638,327 @@
       text-align: left;
     }
     th {
-      background-color: var(--bg-subtle);
-      padding: 8px 12px;
+      background-color: var(--surface);
+      padding: 10px 14px;
       font-size: 0.7rem;
       text-transform: uppercase;
-      color: var(--text-dim);
-      border-bottom: 1px solid var(--border);
+      color: var(--smoke);
+      border-bottom: 1px solid var(--stone);
+      font-weight: 500;
     }
     td {
-      padding: 8px 12px;
-      border-bottom: 1px solid var(--border-subtle);
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--stone);
       vertical-align: middle;
+      color: var(--graphite);
     }
-    tr:hover td { background-color: #1a2333; }
+    tr:hover td { background-color: var(--surface); }
 
     /* Modals */
-    .modal-backdrop {
+    .modal-overlay-bg {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.75);
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(2px);
       display: none;
       align-items: center;
       justify-content: center;
       z-index: 1000;
-      padding: 12px;
-    }
-    .modal-backdrop.open { display: flex; }
-    .modal-window {
-      background-color: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
       padding: 16px;
+    }
+    .modal-overlay-bg.open { display: flex; }
+    .modal-card {
+      background-color: var(--surface-card);
+      border: 1px solid var(--stone);
+      border-radius: var(--radius-hero);
+      padding: 24px;
       width: 100%;
-      max-width: 640px;
+      max-width: 620px;
       max-height: 90vh;
       overflow-y: auto;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
     }
-    .modal-head {
+    .modal-header-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--stone);
     }
-    .btn-close {
+    .btn-close-modal {
       background: transparent;
       border: none;
-      color: var(--text-muted);
-      font-size: 1.3rem;
+      color: var(--smoke);
+      font-size: 1.4rem;
       cursor: pointer;
+      line-height: 1;
     }
 
-    /* 360 Video Viewfinder */
-    .viewfinder-wrap {
+    /* 360 Video Viewfinder & Stepper */
+    .camera-frame-box {
       position: relative;
       background: #000;
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-card);
       overflow: hidden;
       width: 100%;
       aspect-ratio: 4 / 3;
-      margin-bottom: 12px;
-      border: 1px solid var(--border);
+      margin-bottom: 14px;
+      border: 1px solid var(--stone);
     }
-    .viewfinder-video {
+    .camera-video-el {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
-    .progress-bar-wrap {
-      background-color: var(--bg-subtle);
-      border-radius: 9999px;
-      height: 8px;
-      overflow: hidden;
-      margin: 8px 0;
+    
+    /* 360 Phase Stepper Bar */
+    .stepper-phases-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+      margin-bottom: 8px;
     }
-    .progress-bar-fill {
+    .step-pill-indicator {
+      flex: 1;
+      text-align: center;
+      padding: 6px 4px;
+      border-radius: var(--radius-pill);
+      font-size: 0.7rem;
+      font-weight: 500;
+      background-color: var(--surface);
+      color: var(--smoke);
+      border: 1px solid var(--stone);
+      transition: all 0.2s ease;
+    }
+    .step-pill-indicator.active {
+      background-color: var(--ink);
+      color: #ffffff;
+      border-color: var(--ink);
+    }
+    .step-pill-indicator.done {
+      background-color: var(--status-pass-bg);
+      color: var(--status-pass-text);
+      border-color: var(--status-pass-border);
+    }
+
+    /* Phase Progress Countdown Timer */
+    .phase-timer-container {
+      background-color: var(--surface);
+      border: 1px solid var(--stone);
+      border-radius: var(--radius-pill);
+      height: 12px;
+      overflow: hidden;
+      margin: 10px 0 14px 0;
+      position: relative;
+    }
+    .phase-timer-bar {
       height: 100%;
       width: 0%;
-      background-color: var(--primary);
-      transition: width 0.3s linear;
+      background-color: var(--ink);
+      transition: width 0.2s linear;
     }
 
-    /* Bounding Box Visualizer */
-    .bbox-canvas-wrap {
-      position: relative;
-      background: #000;
-      border-radius: var(--radius-sm);
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      max-height: 360px;
-      margin-bottom: 10px;
-    }
-    .bbox-img { max-width: 100%; max-height: 360px; display: block; object-fit: contain; }
-    .bbox-canvas-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-
-    /* Toast */
+    /* Toast Notification Tray */
     .toast-tray {
       position: fixed;
-      bottom: 16px;
-      right: 16px;
+      bottom: 20px;
+      right: 20px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 8px;
       z-index: 2000;
     }
-    .toast-pill {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      color: var(--text-main);
-      padding: 8px 14px;
-      border-radius: var(--radius-sm);
+    .toast-pill-msg {
+      background-color: var(--ink);
+      color: #ffffff;
+      padding: 10px 16px;
+      border-radius: var(--radius-pill);
       font-size: 0.8rem;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      font-weight: 500;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       display: flex;
       align-items: center;
       gap: 8px;
-      animation: fadeIn 0.15s ease;
+      animation: slideToast 0.2s ease;
     }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideToast { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* Views visibility */
-    .tab-view { display: none; }
-    .tab-view.active { display: flex; flex-direction: column; gap: 12px; }
+    /* Tabs Views */
+    .tab-section { display: none; }
+    .tab-section.active { display: flex; flex-direction: column; gap: 16px; }
   </style>
 </head>
 <body>
 
-<div class="app-container">
+<div class="app-wrapper">
 
-  <!-- Top Bar -->
-  <header class="top-bar">
-    <div class="brand-group">
-      <div class="brand-title-row">
-        <span class="brand-name">LegalMetrix</span>
-        <span class="gov-tag" id="govTag">Govt. of India</span>
+  <!-- Header Top Bar -->
+  <header class="header-bar">
+    <div class="brand-meta">
+      <div class="brand-title-line">
+        <h1 class="brand-heading">LEGALMETRIX</h1>
+        <span class="brand-tag" id="govTag">Govt. of India</span>
       </div>
-      <span class="brand-subtitle" id="brandSub">Packaged Commodity Compliance Inspector</span>
+      <span class="brand-subtext" id="brandSub">Packaged Commodity Compliance Inspector</span>
     </div>
 
-    <div class="top-controls">
-      <!-- Network Switch -->
-      <div class="network-badge">
-        <span class="dot dot-online" id="statusDot"></span>
+    <div class="header-controls">
+      <!-- Network Switch Pill -->
+      <div class="network-pill">
+        <span class="status-dot dot-active" id="statusDot"></span>
         <span id="networkLabel">Online</span>
-        <label class="switch-wrap">
-          <span class="switch">
-            <input type="checkbox" id="networkToggle" checked>
-            <span class="slider"></span>
-          </span>
+        <label class="switch-ui">
+          <input type="checkbox" id="networkToggle" checked>
+          <span class="slider-ui"></span>
         </label>
       </div>
 
       <!-- Language Selector -->
-      <div class="lang-switcher">
-        <button class="lang-btn active" data-lang="en">EN</button>
-        <button class="lang-btn" data-lang="hi">हिन्दी</button>
-        <button class="lang-btn" data-lang="te">తెలుగు</button>
+      <div class="lang-pill-group">
+        <button class="lang-item active" data-lang="en">EN</button>
+        <button class="lang-item" data-lang="hi">हिन्दी</button>
+        <button class="lang-item" data-lang="te">తెలుగు</button>
       </div>
     </div>
   </header>
 
   <!-- Navigation Bar -->
-  <nav class="nav-tabs-bar">
-    <button class="nav-tab-btn active" data-target="view-inspect">
-      <span>🔍</span> <span id="tabInspect">Inspect</span>
+  <nav class="nav-bar">
+    <button class="nav-btn active" data-target="view-inspect">
+      <span id="tabInspect">Inspect</span>
     </button>
-    <button class="nav-tab-btn" data-target="view-history">
-      <span>📋</span> <span id="tabHistory">History</span>
+    <button class="nav-btn" data-target="view-history">
+      <span id="tabHistory">History</span>
     </button>
-    <button class="nav-tab-btn" data-target="view-diagnostics">
-      <span>⚙️</span> <span id="tabDiagnostics">Scenarios & 360</span>
+    <button class="nav-btn" data-target="view-diagnostics">
+      <span id="tabDiagnostics">Scenarios & 360</span>
     </button>
   </nav>
 
   <!-- 1. INSPECT VIEW (Primary Home Flow) -->
-  <main class="tab-view active" id="view-inspect">
+  <main class="tab-section active" id="view-inspect">
     
-    <div class="surface-card">
-      <div class="card-title-row">
-        <h2 class="card-title" id="secInspectTitle">Inspect Packaged Commodity</h2>
-        <span style="font-size: 0.72rem; color: var(--text-dim);" id="engineTag">Legal Metrology Rules 2011 • NVIDIA OCR v2</span>
+    <div class="hero-card">
+      <div class="editorial-header">
+        <h2 class="display-title" id="secInspectTitle">Inspect Product</h2>
+        <p class="editorial-desc" id="secInspectSub">Scan a packaged commodity to verify Legal Metrology declarations, statutory unit pricing, and ingredient safety signals.</p>
       </div>
 
       <!-- Category Selector -->
-      <div class="category-row">
-        <span class="field-label" id="labelCategory">Commodity Category</span>
-        <div class="cat-pill-group">
-          <button class="cat-btn active" data-cat="">⚡ Auto-Detect</button>
-          <button class="cat-btn" data-cat="food">Food & Groceries</button>
-          <button class="cat-btn" data-cat="beverage">Beverage</button>
-          <button class="cat-btn" data-cat="personal_care">Personal Care</button>
-          <button class="cat-btn" data-cat="household">Household</button>
+      <div class="category-group">
+        <span class="section-label" id="labelCategory">Commodity Category</span>
+        <div class="category-pills">
+          <button class="cat-item-btn active" data-cat="">Auto-Detect</button>
+          <button class="cat-item-btn" data-cat="food">Food & Groceries</button>
+          <button class="cat-item-btn" data-cat="beverage">Beverage</button>
+          <button class="cat-item-btn" data-cat="personal_care">Personal Care</button>
+          <button class="cat-item-btn" data-cat="household">Household</button>
         </div>
         <input type="hidden" id="selectedCategory" value="">
       </div>
 
       <!-- Primary Action Cards -->
-      <div class="scanner-actions-grid">
+      <div class="scan-choices-grid">
         <!-- Single Photo Camera -->
-        <div class="scan-mode-card" id="btnOpenSingleCamera">
-          <span class="scan-mode-icon">📷</span>
-          <span class="scan-mode-title" id="lblSingleCam">Camera Scan</span>
-          <span class="scan-mode-desc" id="descSingleCam">Capture single front label photo</span>
+        <div class="scan-choice-card" id="btnOpenSingleCamera">
+          <span class="choice-icon">📷</span>
+          <span class="choice-title" id="lblSingleCam">Camera</span>
+          <span class="choice-desc" id="descSingleCam">Capture single front label photo</span>
         </div>
 
         <!-- 360 Rotate Inspection -->
-        <div class="scan-mode-card" id="btnOpen360Inspection">
-          <span class="scan-mode-icon">🔄</span>
-          <span class="scan-mode-title" id="lbl360Cam">360° Rotate Scan</span>
-          <span class="scan-mode-desc" id="desc360Cam">Rotate package slowly for full multi-panel scan</span>
+        <div class="scan-choice-card" id="btnOpen360Inspection">
+          <span class="choice-icon">🔄</span>
+          <span class="choice-title" id="lbl360Cam">360° Inspect</span>
+          <span class="choice-desc" id="desc360Cam">Guided 20-second 4-side rotation</span>
         </div>
 
         <!-- File Upload / Dropzone -->
-        <div class="scan-mode-card" id="dropzonePhoto">
-          <span class="scan-mode-icon">📁</span>
-          <span class="scan-mode-title" id="lblUpload">Upload Photo</span>
-          <span class="scan-mode-desc" id="descUpload">Browse or drop JPEG/PNG label</span>
+        <div class="scan-choice-card" id="dropzonePhoto">
+          <span class="choice-icon">📁</span>
+          <span class="choice-title" id="lblUpload">Upload</span>
+          <span class="choice-desc" id="descUpload">Browse JPEG/PNG packaging image</span>
           <input type="file" id="fileInputPhoto" accept="image/jpeg,image/png,image/webp" style="display: none;">
         </div>
       </div>
 
       <!-- Selected File Preview -->
-      <div class="preview-container" id="filePreviewContainer">
-        <img id="filePreviewImg" class="preview-img" src="" alt="Selected product">
-        <div class="preview-details">
-          <div class="preview-name" id="previewFileName">filename.jpg</div>
-          <div class="preview-size" id="previewFileSize">0 KB</div>
+      <div class="preview-box" id="filePreviewBox">
+        <img id="filePreviewImg" class="preview-thumb" src="" alt="Selected product">
+        <div class="preview-info">
+          <div class="preview-filename-text" id="previewFileName">filename.jpg</div>
+          <div class="preview-size-text" id="previewFileSize">0 KB</div>
         </div>
-        <button class="btn btn-outline btn-sm" id="btnRemoveSelected">✕ Remove</button>
+        <button class="btn btn-stone btn-sm" id="btnRemoveSelected">Remove</button>
       </div>
 
       <!-- Scan Submission Button -->
-      <button class="btn btn-primary btn-block" id="btnExecuteScan">
-        <span>🚀</span> <span id="lblBtnScan">Scan & Evaluate Compliance</span>
+      <button class="btn btn-black btn-full" id="btnExecuteScan">
+        <span id="lblBtnScan">Scan & Evaluate Compliance</span>
       </button>
 
-      <!-- Loading Step State -->
-      <div class="loading-box" id="scanLoadingBox">
-        <div class="spinner"></div>
-        <strong style="color: #ffffff; font-size: 0.9rem;" id="loadingStepTitle">Processing Label...</strong>
-        <span style="font-size: 0.75rem; color: var(--text-muted);" id="loadingStepSub">Extracting declarations with NVIDIA Nemotron OCR v2...</span>
+      <!-- Loading State -->
+      <div class="loading-state-wrap" id="scanLoadingState">
+        <div class="subtle-spinner"></div>
+        <strong style="color: var(--ink); font-size: 0.9rem;" id="loadingStepTitle">Processing Label...</strong>
+        <span style="font-size: 0.76rem; color: var(--smoke);" id="loadingStepSub">Extracting declarations with NVIDIA Nemotron OCR v2...</span>
       </div>
 
       <!-- Results Container -->
-      <div class="results-wrap" id="resultsWrap">
+      <div class="results-section" id="resultsWrap">
 
         <!-- Compliance Status Banner -->
-        <div class="status-banner" id="statusBanner">
+        <div class="compliance-banner banner-pass" id="statusBanner">
           <span id="statusBannerText">COMPLIANT</span>
-          <span id="statusCategoryBadge" style="font-size: 0.72rem; text-transform: uppercase;">FOOD</span>
+          <span id="statusCategoryBadge" class="brand-tag" style="background:#fff;">FOOD</span>
         </div>
 
-        <!-- Product & Extracted Declarations -->
-        <div style="background-color: var(--bg-subtle); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 12px;">
-          <h3 id="resProductName" style="font-size: 1rem; font-weight: 600; color: #fff; margin-bottom: 8px;">Product Name</h3>
-          <span class="field-label" id="lblDetectedDecl">Statutory Declarations (Rule 6)</span>
-          <div class="declarations-grid" id="declarationsGrid"></div>
+        <!-- Product Name & Declarations -->
+        <div style="background-color: var(--surface); border: 1px solid var(--stone); border-radius: var(--radius-card); padding: 18px 20px;">
+          <h3 id="resProductName" style="font-family: var(--font-display); font-weight: 300; font-size: 1.25rem; color: var(--ink); margin-bottom: 8px;">Product Name</h3>
+          <span class="section-label" id="lblDetectedDecl">Statutory Declarations (Rule 6)</span>
+          <div class="declarations-list" id="declarationsGrid"></div>
         </div>
 
         <!-- Ingredients & Safety Section -->
-        <div class="safety-card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <h4 style="font-size: 0.9rem; font-weight: 600; color: #fff;" id="lblIngSafety">
-              Ingredients & Safety Watchlist
+        <div class="safety-block">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h4 style="font-family: var(--font-display); font-weight: 300; font-size: 1.1rem; color: var(--ink);" id="lblIngSafety">
+              Ingredients & Safety
             </h4>
-            <span class="tag-badge" style="background: rgba(37, 99, 235, 0.15); color: #93c5fd;" id="tagSurveillance">STATUTORY SURVEILLANCE</span>
+            <span class="brand-tag" id="tagSurveillance">STATUTORY REVIEW</span>
           </div>
 
           <div id="safetyNoticeBox"></div>
           <div id="safetyFlagsContainer"></div>
 
           <!-- Expandable Ingredients -->
-          <div style="margin-top: 8px;">
-            <button class="btn btn-outline btn-sm" id="btnToggleIngredients" style="width: 100%; justify-content: space-between;">
-              <span id="lblToggleIng">Extracted Ingredients (<span id="ingCount">0</span>)</span>
+          <div style="margin-top: 10px;">
+            <button class="btn btn-stone btn-sm" id="btnToggleIngredients" style="width: 100%; justify-content: space-between;">
+              <span id="lblToggleIng">Ingredients (<span id="ingCount">0</span>)</span>
               <span id="arrowIng">▼</span>
             </button>
-            <div id="ingTagsContainer" class="ingredient-tags-wrap" style="display: none;"></div>
+            <div id="ingTagsContainer" class="ingredient-pills-row" style="display: none;"></div>
           </div>
         </div>
 
         <!-- Legal Metrology Statutory Findings -->
-        <div style="background-color: var(--bg-subtle); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 12px;">
-          <h4 style="font-size: 0.82rem; color: var(--text-dim); text-transform: uppercase; font-weight: 600; margin-bottom: 6px;" id="lblRuleChecklist">
-            Legal Metrology (Packaged Commodities) Rules 2011 Checklist
-          </h4>
-          <ul class="findings-list" id="findingsListUl"></ul>
+        <div style="background-color: var(--surface); border: 1px solid var(--stone); border-radius: var(--radius-card); padding: 18px 20px;">
+          <span class="section-label" id="lblRuleChecklist">Legal Metrology (Packaged Commodities) Rules 2011</span>
+          <ul class="checklist-wrap" id="findingsListUl"></ul>
         </div>
 
         <!-- Officer Action Toolbar -->
         <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-          <button class="btn btn-outline btn-sm" id="btnShowBbox" style="flex: 1;">
-            <span>📸</span> <span id="lblBbox">OCR Bounding Boxes</span>
+          <button class="btn btn-stone btn-sm" id="btnShowBbox" style="flex: 1;">
+            <span id="lblBbox">OCR Bounding Boxes</span>
           </button>
-          <button class="btn btn-outline btn-sm" id="btnShowReview" style="flex: 1;">
-            <span>✍️</span> <span id="lblReview">Officer Review</span>
+          <button class="btn btn-stone btn-sm" id="btnShowReview" style="flex: 1;">
+            <span id="lblReview">Officer Review</span>
           </button>
-          <button class="btn btn-success btn-sm" id="btnGenNotice" style="flex: 1;">
-            <span>📄</span> <span id="lblNotice">Statutory Notice</span>
+          <button class="btn btn-black btn-sm" id="btnGenNotice" style="flex: 1;">
+            <span id="lblNotice">Statutory Notice</span>
           </button>
         </div>
 
@@ -917,44 +966,46 @@
     </div>
 
     <!-- Shrinkflation / Same Product Comparison Banner -->
-    <div class="comparison-box" id="shrinkflationBox">
-      <strong style="color: #fbbf24; font-size: 0.85rem; display: block;" id="lblCompAlert">
-        🔍 Same-Product Historical Comparison Alert
+    <div class="comparison-card" id="shrinkflationBox">
+      <strong style="color: var(--ember-orange); font-size: 0.85rem; display: block;" id="lblCompAlert">
+        Same-Product Historical Comparison Alert
       </strong>
       <div id="compGridContainer"></div>
-      <ul id="compChangesList" style="margin-top: 6px; font-size: 0.78rem; color: var(--text-muted); list-style: none;"></ul>
+      <ul id="compChangesList" style="margin-top: 8px; font-size: 0.78rem; color: var(--smoke); list-style: none;"></ul>
     </div>
 
   </main>
 
   <!-- 2. HISTORY VIEW -->
-  <section class="tab-view" id="view-history">
-    <div class="surface-card">
-      <div class="card-title-row">
-        <h2 class="card-title" id="lblHistTitle">Inspection History Log</h2>
-        <div style="display: flex; gap: 6px;">
-          <button class="btn btn-primary btn-sm" id="btnSyncHistory">
-            <span>🔄</span> <span id="lblSyncBtn">Sync Server</span>
-          </button>
-          <button class="btn btn-outline btn-sm" id="btnExportHistoryCsv">
-            <span>📥</span> CSV
-          </button>
-          <button class="btn btn-outline btn-sm" id="btnClearHistory">
-            <span>🗑️</span> Reset
-          </button>
+  <section class="tab-section" id="view-history">
+    <div class="history-card-wrap">
+      <div class="editorial-header">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+          <h2 class="display-title" id="lblHistTitle">Inspection History</h2>
+          <div style="display: flex; gap: 6px;">
+            <button class="btn btn-black btn-sm" id="btnSyncHistory">
+              <span id="lblSyncBtn">Sync Server</span>
+            </button>
+            <button class="btn btn-stone btn-sm" id="btnExportHistoryCsv">
+              CSV Export
+            </button>
+            <button class="btn btn-stone btn-sm" id="btnClearHistory">
+              Reset
+            </button>
+          </div>
         </div>
       </div>
 
-      <div class="history-controls">
-        <div class="cat-pill-group">
-          <button class="cat-btn active" data-filter="ALL">All (<span id="histCountAll">0</span>)</button>
-          <button class="cat-btn" data-filter="pending">Pending (<span id="histCountPending">0</span>)</button>
-          <button class="cat-btn" data-filter="synced">Synced (<span id="histCountSynced">0</span>)</button>
+      <div class="table-tools">
+        <div class="category-pills">
+          <button class="cat-item-btn active" data-filter="ALL">All (<span id="histCountAll">0</span>)</button>
+          <button class="cat-item-btn" data-filter="pending">Pending (<span id="histCountPending">0</span>)</button>
+          <button class="cat-item-btn" data-filter="synced">Synced (<span id="histCountSynced">0</span>)</button>
         </div>
-        <input type="text" class="search-field" id="historySearchInput" placeholder="Search product, ID...">
+        <input type="text" class="search-input-field" id="historySearchInput" placeholder="Search product, ID...">
       </div>
 
-      <div class="table-scroll">
+      <div class="table-scroller">
         <table>
           <thead>
             <tr>
@@ -969,7 +1020,7 @@
           </thead>
           <tbody id="historyTableBody">
             <tr>
-              <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 24px;">
+              <td colspan="7" style="text-align: center; color: var(--smoke); padding: 28px;">
                 No inspections recorded yet.
               </td>
             </tr>
@@ -980,15 +1031,12 @@
   </section>
 
   <!-- 3. DIAGNOSTICS & SCENARIOS VIEW -->
-  <section class="tab-view" id="view-diagnostics">
-    <div class="surface-card">
-      <div class="card-title-row">
-        <h2 class="card-title" id="lblDiagTitle">SIH Demo Scenarios & 360° Testing</h2>
-        <span style="font-size: 0.72rem; color: var(--text-dim);">Automated Test Fixtures</span>
+  <section class="tab-section" id="view-diagnostics">
+    <div class="history-card-wrap">
+      <div class="editorial-header">
+        <h2 class="display-title" id="lblDiagTitle">SIH Scenarios & Diagnostics</h2>
+        <p class="editorial-desc" id="lblDiagDesc">Execute any of the 13 predefined operational test scenarios for independent verification:</p>
       </div>
-      <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 12px;" id="lblDiagDesc">
-        Execute any of the 13 predefined SIH test scenarios for independent verification:
-      </p>
       <div id="diagnosticsListGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;"></div>
     </div>
   </section>
@@ -996,96 +1044,101 @@
 </div>
 
 <!-- Single Camera Modal -->
-<div class="modal-backdrop" id="singleCamModal">
-  <div class="modal-window" style="max-width: 480px;">
-    <div class="modal-head">
-      <h3 style="font-size: 0.95rem; color: #fff;" id="lblSingleCamModal">Live Camera Capture</h3>
-      <button class="btn-close" id="btnCloseSingleCam">&times;</button>
+<div class="modal-overlay-bg" id="singleCamModal">
+  <div class="modal-card" style="max-width: 480px;">
+    <div class="modal-header-row">
+      <h3 style="font-family: var(--font-display); font-weight: 300; font-size: 1.15rem; color: var(--ink);" id="lblSingleCamModal">Camera Capture</h3>
+      <button class="btn-close-modal" id="btnCloseSingleCam">&times;</button>
     </div>
-    <div class="viewfinder-wrap">
-      <video id="singleCamVideo" class="viewfinder-video" autoplay playsinline></video>
+    <div class="camera-frame-box">
+      <video id="singleCamVideo" class="camera-video-el" autoplay playsinline></video>
       <canvas id="singleCamCanvas" style="display: none;"></canvas>
     </div>
     <div style="display: flex; gap: 8px;">
-      <button class="btn btn-outline btn-sm" id="btnCancelSingleCam" style="flex: 1;">Cancel</button>
-      <button class="btn btn-primary btn-sm" id="btnSnapSingleCam" style="flex: 2;">
-        <span>📸</span> Capture Photo
+      <button class="btn btn-stone btn-sm" id="btnCancelSingleCam" style="flex: 1;">Cancel</button>
+      <button class="btn btn-black btn-sm" id="btnSnapSingleCam" style="flex: 2;">
+        Capture Photo
       </button>
     </div>
   </div>
 </div>
 
-<!-- 360 Video / Rotation Modal -->
-<div class="modal-backdrop" id="rotate360Modal">
-  <div class="modal-window" style="max-width: 520px;">
-    <div class="modal-head">
+<!-- 360° Rotate Scan Guided Modal (20+ Seconds Timing Implementation) -->
+<div class="modal-overlay-bg" id="rotate360Modal">
+  <div class="modal-card" style="max-width: 520px;">
+    <div class="modal-header-row">
       <div>
-        <h3 style="font-size: 0.95rem; color: #fff;" id="lbl360Modal">360° Package Inspection</h3>
-        <p style="font-size: 0.72rem; color: var(--text-muted);" id="lbl360Guide">Rotate the package slowly</p>
+        <h3 style="font-family: var(--font-display); font-weight: 300; font-size: 1.15rem; color: var(--ink);" id="lbl360Modal">360° Product Inspection</h3>
+        <p style="font-size: 0.75rem; color: var(--smoke);" id="lbl360Guide">Rotate the package slowly</p>
       </div>
-      <button class="btn-close" id="btnClose360">&times;</button>
+      <button class="btn-close-modal" id="btnClose360">&times;</button>
     </div>
 
-    <div class="viewfinder-wrap">
-      <video id="video360" class="viewfinder-video" autoplay playsinline></video>
+    <!-- Stepper Indicator -->
+    <div class="stepper-phases-row">
+      <div class="step-pill-indicator" id="phaseFrontPill">1. Front (5s)</div>
+      <div class="step-pill-indicator" id="phaseRightPill">2. Right (5s)</div>
+      <div class="step-pill-indicator" id="phaseBackPill">3. Back (5s)</div>
+      <div class="step-pill-indicator" id="phaseLeftPill">4. Left (5s)</div>
+    </div>
+
+    <div class="camera-frame-box">
+      <video id="video360" class="camera-video-el" autoplay playsinline></video>
       <canvas id="canvas360" style="display: none;"></canvas>
     </div>
 
-    <!-- Progress Indicator -->
-    <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-dim); margin-bottom: 2px;">
-      <span id="stepFront">1. Front</span>
-      <span id="stepRight">2. Right</span>
-      <span id="stepBack">3. Back</span>
-      <span id="stepLeft">4. Left</span>
-      <span id="stepDone">Complete</span>
-    </div>
-    <div class="progress-bar-wrap">
-      <div class="progress-bar-fill" id="progress360Fill"></div>
+    <!-- Phase Guidance and Countdown Timer -->
+    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem;">
+      <strong style="color: var(--ink);" id="phaseInstructionText">Keep front label centered</strong>
+      <span style="color: var(--smoke); font-family: var(--font-mono); font-size: 0.74rem;" id="phaseCountdownText">0s / 5s</span>
     </div>
 
-    <div style="display: flex; gap: 8px; margin-top: 10px;">
-      <button class="btn btn-outline btn-sm" id="btnCancel360" style="flex: 1;">Cancel</button>
-      <button class="btn btn-primary btn-sm" id="btnStart360Record" style="flex: 2;">
-        <span>🔄</span> Start 360° Scan
+    <div class="phase-timer-container">
+      <div class="phase-timer-bar" id="phaseTimerBar"></div>
+    </div>
+
+    <div style="display: flex; gap: 8px; margin-top: 6px;">
+      <button class="btn btn-stone btn-sm" id="btnCancel360" style="flex: 1;">Cancel</button>
+      <button class="btn btn-stone btn-sm" id="btnPause360" style="flex: 1; display: none;">Pause</button>
+      <button class="btn btn-black btn-sm" id="btnStart360Record" style="flex: 2;">
+        Start 360° Scan
       </button>
     </div>
   </div>
 </div>
 
-<!-- Inspection Details / Bounding Box / Manual Review Modal -->
-<div class="modal-backdrop" id="auditDetailModal">
-  <div class="modal-window" style="max-width: 720px;">
-    <div class="modal-head">
+<!-- Inspection Audit & Visual Bounding Box Modal -->
+<div class="modal-overlay-bg" id="auditDetailModal">
+  <div class="modal-card" style="max-width: 720px;">
+    <div class="modal-header-row">
       <div>
-        <h3 id="modalAuditTitle" style="font-size: 0.95rem; color: #fff;">Inspection Audit & Visual Review</h3>
-        <p style="font-size: 0.7rem; color: var(--text-dim);" id="modalAuditSub">ID: INSP-...</p>
+        <h3 id="modalAuditTitle" style="font-family: var(--font-display); font-weight: 300; font-size: 1.15rem; color: var(--ink);">Inspection Review</h3>
+        <p style="font-size: 0.72rem; color: var(--smoke);" id="modalAuditSub">ID: INSP-...</p>
       </div>
       <div style="display: flex; gap: 6px; align-items: center;">
-        <button class="btn btn-success btn-sm" id="btnModalNotice">
-          <span>📄</span> Statutory Notice
+        <button class="btn btn-black btn-sm" id="btnModalNotice">
+          Statutory Notice
         </button>
-        <button class="btn-close" id="btnCloseAuditModal">&times;</button>
+        <button class="btn-close-modal" id="btnCloseAuditModal">&times;</button>
       </div>
     </div>
 
-    <!-- Canvas with bounding boxes -->
-    <div class="bbox-canvas-wrap">
-      <img id="bboxImgElement" class="bbox-img" src="" alt="Visual Evidence">
-      <canvas id="bboxCanvasOverlay" class="bbox-canvas-overlay"></canvas>
+    <div style="position: relative; background: #000; border-radius: var(--radius-md); overflow: hidden; display: flex; justify-content: center; align-items: center; max-height: 360px; margin-bottom: 12px;">
+      <img id="bboxImgElement" style="max-width: 100%; max-height: 360px; display: block; object-fit: contain;" src="" alt="Evidence">
+      <canvas id="bboxCanvasOverlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></canvas>
     </div>
 
-    <!-- Officer Verification Form -->
-    <div style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px; margin-top: 10px;">
-      <h4 style="font-size: 0.8rem; color: #fff; margin-bottom: 6px;" id="lblOfficerForm">✍️ Officer Declaration Confirmation</h4>
+    <div style="background-color: var(--surface); border: 1px solid var(--stone); border-radius: var(--radius-md); padding: 14px;">
+      <h4 style="font-size: 0.82rem; font-weight: 500; color: var(--ink); margin-bottom: 8px;" id="lblOfficerForm">Officer Confirmation & Correction</h4>
       <div id="officerInputsContainer"></div>
-      <button class="btn btn-primary btn-sm btn-block" id="btnSaveOfficerVerification" style="margin-top: 8px;">
-        <span>💾</span> Save Verification
+      <button class="btn btn-black btn-sm btn-full" id="btnSaveOfficerVerification" style="margin-top: 10px;">
+        Save Verification
       </button>
     </div>
   </div>
 </div>
 
-<!-- Toast Container -->
+<!-- Toast Notification Tray -->
 <div class="toast-tray" id="toastTray"></div>
 
 <!-- Application Logic -->
@@ -1113,59 +1166,61 @@
       tabInspect: "Inspect",
       tabHistory: "History",
       tabDiagnostics: "Scenarios & 360",
-      secInspectTitle: "Inspect Packaged Commodity",
-      engineTag: "Legal Metrology Rules 2011 • NVIDIA OCR v2",
+      secInspectTitle: "Inspect Product",
+      secInspectSub: "Scan a packaged commodity to verify Legal Metrology declarations, statutory unit pricing, and ingredient safety signals.",
       labelCategory: "Commodity Category",
-      lblSingleCam: "Camera Scan",
+      lblSingleCam: "Camera",
       descSingleCam: "Capture single front label photo",
-      lbl360Cam: "360° Rotate Scan",
-      desc360Cam: "Rotate package slowly for full multi-panel scan",
-      lblUpload: "Upload Photo",
-      descUpload: "Browse or drop JPEG/PNG label",
+      lbl360Cam: "360° Inspect",
+      desc360Cam: "Guided 20-second 4-side rotation",
+      lblUpload: "Upload",
+      descUpload: "Browse JPEG/PNG packaging image",
       lblBtnScan: "Scan & Evaluate Compliance",
       lblDetectedDecl: "Statutory Declarations (Rule 6)",
-      lblIngSafety: "Ingredients & Safety Watchlist",
-      lblRuleChecklist: "Legal Metrology (Packaged Commodities) Rules 2011 Checklist",
+      lblIngSafety: "Ingredients & Safety",
+      tagSurveillance: "STATUTORY REVIEW",
+      lblRuleChecklist: "Legal Metrology (Packaged Commodities) Rules 2011",
       lblBbox: "OCR Bounding Boxes",
       lblReview: "Officer Review",
       lblNotice: "Statutory Notice",
-      lblCompAlert: "🔍 Same-Product Historical Comparison Alert",
-      lblHistTitle: "Inspection History Log",
+      lblCompAlert: "Same-Product Historical Comparison Alert",
+      lblHistTitle: "Inspection History",
       lblSyncBtn: "Sync Server",
-      lblDiagTitle: "SIH Demo Scenarios & 360° Testing",
-      lblDiagDesc: "Execute any of the 13 predefined SIH test scenarios for independent verification:",
-      lblSingleCamModal: "Live Camera Capture",
-      lbl360Modal: "360° Package Inspection",
+      lblDiagTitle: "SIH Scenarios & Diagnostics",
+      lblDiagDesc: "Execute any of the 13 predefined operational test scenarios for independent verification:",
+      lblSingleCamModal: "Camera Capture",
+      lbl360Modal: "360° Product Inspection",
       lbl360Guide: "Rotate the package slowly"
     },
     hi: {
       govTag: "भारत सरकार",
-      brandSub: "पैकेज्ड कमोडिटी अनुपालन निरीक्षक",
+      brandSub: "पैकेज्ड उत्पाद अनुपालन निरीक्षक",
       tabInspect: "जांच",
       tabHistory: "इतिहास",
-      tabDiagnostics: "परिदृश्य और 360",
-      secInspectTitle: "पैकेज्ड उत्पाद की जांच करें",
-      engineTag: "विधिक मापविज्ञान नियम 2011 • एनवीडिया ओसीआर",
+      tabDiagnostics: "परिदृश्य व 360",
+      secInspectTitle: "उत्पाद की जांच करें",
+      secInspectSub: "विधिक मापविज्ञान घोषणाओं, इकाई मूल्य और सुरक्षा संकेतों को सत्यापित करने के लिए पैकेज स्कैन करें।",
       labelCategory: "उत्पाद श्रेणी",
-      lblSingleCam: "कैमरा स्कैन",
-      descSingleCam: "सामने के लेबल की फोटो खींचें",
-      lbl360Cam: "360° रोटेट स्कैन",
-      desc360Cam: "सभी कोणों के स्कैन के लिए पैकेज को धीरे-धीरे घुमाएं",
-      lblUpload: "फोटो अपलोड करें",
-      descUpload: "लेबल फोटो चुनें या खींचें",
+      lblSingleCam: "कैमरा",
+      descSingleCam: "सामने के लेबल का फोटो लें",
+      lbl360Cam: "360° निरीक्षण",
+      desc360Cam: "20 सेकंड का 4-तरफा निर्देशित स्कैन",
+      lblUpload: "अपलोड",
+      descUpload: "पैकेजिंग इमेज ब्राउज़ करें",
       lblBtnScan: "स्कैन करें और अनुपालन जांचें",
       lblDetectedDecl: "वैधानिक घोषणाएं (नियम 6)",
-      lblIngSafety: "सामग्री और सुरक्षा वॉचलिस्ट",
-      lblRuleChecklist: "विधिक मापविज्ञान (पैक की गई वस्तुएं) नियम 2011 चेकलिस्ट",
+      lblIngSafety: "सामग्री व सुरक्षा",
+      tagSurveillance: "वैधानिक समीक्षा",
+      lblRuleChecklist: "विधिक मापविज्ञान (पैक की गई वस्तुएं) नियम 2011",
       lblBbox: "ओसीआर बाउंडिंग बॉक्स",
       lblReview: "अधिकारी समीक्षा",
       lblNotice: "वैधानिक नोटिस",
-      lblCompAlert: "🔍 उत्पाद तुलना और मूल्य अलर्ट",
-      lblHistTitle: "निरीक्षण इतिहास लॉग",
+      lblCompAlert: "उत्पाद तुलना और मूल्य अलर्ट",
+      lblHistTitle: "निरीक्षण इतिहास",
       lblSyncBtn: "सर्वर सिंक करें",
-      lblDiagTitle: "एसोसिएशन डेमो परिदृश्य और 360° परीक्षण",
+      lblDiagTitle: "डेमो परिदृश्य व डायग्नोस्टिक्स",
       lblDiagDesc: "सत्यापन के लिए 13 पूर्वनिर्धारित परिदृश्यों में से कोई भी चलाएं:",
-      lblSingleCamModal: "लाइव कैमरा कैप्चर",
+      lblSingleCamModal: "कैमरा कैप्चर",
       lbl360Modal: "360° पैकेज निरीक्षण",
       lbl360Guide: "पैकेज को धीरे-धीरे घुमाएं"
     },
@@ -1174,29 +1229,30 @@
       brandSub: "ప్యాకేజ్డ్ కమోడిటీ వర్తింపు ఇన్స్పెక్టర్",
       tabInspect: "తనిఖీ",
       tabHistory: "చరిత్ర",
-      tabDiagnostics: "సన్నివేశాలు & 360",
-      secInspectTitle: "ప్యాకేజ్డ్ వస్తువును తనిఖీ చేయండి",
-      engineTag: "లీగల్ మెట్రాలజీ నిబంధనలు 2011 • ఎన్విడియా ఓసీఆర్",
+      tabDiagnostics: "దృశ్యాలు & 360",
+      secInspectTitle: "వస్తువును తనిఖీ చేయండి",
+      secInspectSub: "చట్టబద్ధమైన ప్రకటనలు, యూనిట్ ధర మరియు భద్రతా అంశాలను తనిఖీ చేయడానికి ప్యాకేజీని స్కాన్ చేయండి.",
       labelCategory: "వస్తువు వర్గం",
-      lblSingleCam: "కెమెరా స్కాన్",
+      lblSingleCam: "కెమెరా",
       descSingleCam: "ముందు లేబుల్ ఫోటో తీయండి",
-      lbl360Cam: "360° రొటేట్ స్కాన్",
-      desc360Cam: "మొత్తం స్కాన్ కోసం ప్యాకేజీని నెమ్మదిగా తిప్పండి",
-      lblUpload: "ఫోటో అప్‌లోడ్ చేయండి",
-      descUpload: "లేబుల్ ఫోటో ఎంచుకోండి",
+      lbl360Cam: "360° తనిఖీ",
+      desc360Cam: "20 సెకన్ల 4-వైపుల రొటేషన్ స్కాన్",
+      lblUpload: "అప్‌లోడ్",
+      descUpload: "ప్యాకేజింగ్ చిత్రం ఎంచుకోండి",
       lblBtnScan: "స్కాన్ చేసి తనిఖీ చేయండి",
       lblDetectedDecl: "చట్టబద్ధమైన ప్రకటనలు (రూల్ 6)",
-      lblIngSafety: "పదార్థాలు & భద్రతా పరిశీలన",
-      lblRuleChecklist: "లీగల్ మెట్రాలజీ నిబంధనలు 2011 చెక్‌లిస్ట్",
+      lblIngSafety: "పదార్థాలు & భద్రత",
+      tagSurveillance: "చట్టబద్ధమైన సమీక్ష",
+      lblRuleChecklist: "లీగల్ మెట్రాలజీ నిబంధనలు 2011",
       lblBbox: "ఓసీఆర్ సరిహద్దులు",
       lblReview: "అధికారి సమీక్ష",
       lblNotice: "చట్టబద్ధమైన నోటీసు",
-      lblCompAlert: "🔍 మునుపటి తనిఖీ పోలిక హెచ్చరిక",
-      lblHistTitle: "తనిఖీ చరిత్ర లాగ్",
+      lblCompAlert: "మునుపటి తనిఖీ పోలిక హెచ్చరిక",
+      lblHistTitle: "తనిఖీ చరిత్ర",
       lblSyncBtn: "సర్వర్ సింక్ చేయండి",
-      lblDiagTitle: "డెమో దృశ్యాలు & 360° పరీక్షలు",
+      lblDiagTitle: "డెమో దృశ్యాలు & పరీక్షలు",
       lblDiagDesc: "ధృవీకరణ కోసం 13 దృశ్యాలలో దేనినైనా ఎంచుకోండి:",
-      lblSingleCamModal: "లైవ్ కెమెరా క్యాప్చర్",
+      lblSingleCamModal: "కెమెరా క్యాప్చర్",
       lbl360Modal: "360° ప్యాకేజీ తనిఖీ",
       lbl360Guide: "ప్యాకేజీని నెమ్మదిగా తిప్పండి"
     }
@@ -1210,7 +1266,49 @@
   let activePreviewDataUrl = null;
   let activeStream = null;
   let currentInspection = null;
-  let is360Scanning = false;
+
+  // 360 State Machine Variables
+  let is360Running = false;
+  let is360Paused = false;
+  let current360PhaseIndex = 0;
+  let phaseTimerInterval = null;
+  let sampledPhaseFrames = { front: [], right: [], back: [], left: [] };
+
+  // 360 Phase Configuration (Minimum 5000ms each = 20s total minimum)
+  const ROTATION_PHASES = [
+    {
+      id: 'front',
+      name: '1. Front',
+      pillId: 'phaseFrontPill',
+      guideText: 'Keep front label centered',
+      voiceKey: PROMPT_KEYS.CAPTURE_360_START,
+      durationMs: 5000
+    },
+    {
+      id: 'right',
+      name: '2. Right',
+      pillId: 'phaseRightPill',
+      guideText: 'Rotate slowly to the right side',
+      voiceKey: PROMPT_KEYS.ROTATE_RIGHT,
+      durationMs: 5000
+    },
+    {
+      id: 'back',
+      name: '3. Back',
+      pillId: 'phaseBackPill',
+      guideText: 'Rotate to the back panel',
+      voiceKey: PROMPT_KEYS.ROTATE_BACK,
+      durationMs: 5000
+    },
+    {
+      id: 'left',
+      name: '4. Left',
+      pillId: 'phaseLeftPill',
+      guideText: 'Rotate to the left side',
+      voiceKey: PROMPT_KEYS.ROTATE_LEFT,
+      durationMs: 5000
+    }
+  ];
 
   // Initialize DB and Sync
   await initDB();
@@ -1230,22 +1328,22 @@
   const networkToggle = document.getElementById('networkToggle');
   const statusDot = document.getElementById('statusDot');
   const networkLabel = document.getElementById('networkLabel');
-  const navTabBtns = document.querySelectorAll('.nav-tab-btn');
-  const tabViews = document.querySelectorAll('.tab-view');
+  const navTabBtns = document.querySelectorAll('.nav-btn');
+  const tabViews = document.querySelectorAll('.tab-section');
 
   const selectedCategory = document.getElementById('selectedCategory');
   const btnOpenSingleCamera = document.getElementById('btnOpenSingleCamera');
   const btnOpen360Inspection = document.getElementById('btnOpen360Inspection');
   const dropzonePhoto = document.getElementById('dropzonePhoto');
   const fileInputPhoto = document.getElementById('fileInputPhoto');
-  const filePreviewContainer = document.getElementById('filePreviewContainer');
+  const filePreviewBox = document.getElementById('filePreviewBox');
   const filePreviewImg = document.getElementById('filePreviewImg');
   const previewFileName = document.getElementById('previewFileName');
   const previewFileSize = document.getElementById('previewFileSize');
   const btnRemoveSelected = document.getElementById('btnRemoveSelected');
   const btnExecuteScan = document.getElementById('btnExecuteScan');
 
-  const scanLoadingBox = document.getElementById('scanLoadingBox');
+  const scanLoadingState = document.getElementById('scanLoadingState');
   const loadingStepTitle = document.getElementById('loadingStepTitle');
   const loadingStepSub = document.getElementById('loadingStepSub');
   const resultsWrap = document.getElementById('resultsWrap');
@@ -1279,8 +1377,11 @@
   const canvas360 = document.getElementById('canvas360');
   const btnClose360 = document.getElementById('btnClose360');
   const btnCancel360 = document.getElementById('btnCancel360');
+  const btnPause360 = document.getElementById('btnPause360');
   const btnStart360Record = document.getElementById('btnStart360Record');
-  const progress360Fill = document.getElementById('progress360Fill');
+  const phaseInstructionText = document.getElementById('phaseInstructionText');
+  const phaseCountdownText = document.getElementById('phaseCountdownText');
+  const phaseTimerBar = document.getElementById('phaseTimerBar');
 
   const auditDetailModal = document.getElementById('auditDetailModal');
   const btnCloseAuditModal = document.getElementById('btnCloseAuditModal');
@@ -1301,9 +1402,8 @@
   // Show Toast
   function showToast(message, type = 'info') {
     const toast = document.createElement('div');
-    toast.className = 'toast-pill';
-    const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warn' ? '⚠️' : 'ℹ️';
-    toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+    toast.className = 'toast-pill-msg';
+    toast.innerHTML = `<span>${message}</span>`;
     document.getElementById('toastTray').appendChild(toast);
     setTimeout(() => {
       toast.style.opacity = '0';
@@ -1329,12 +1429,12 @@
       const el = document.getElementById(key);
       if (el) el.textContent = dict[key];
     });
-    document.querySelectorAll('.lang-btn').forEach(b => {
+    document.querySelectorAll('.lang-item').forEach(b => {
       b.classList.toggle('active', b.dataset.lang === lang);
     });
   }
 
-  document.querySelectorAll('.lang-btn').forEach(btn => {
+  document.querySelectorAll('.lang-item').forEach(btn => {
     btn.addEventListener('click', () => {
       updateLanguage(btn.dataset.lang);
       showToast(`Language: ${btn.textContent}`, 'info');
@@ -1354,10 +1454,10 @@
   });
 
   // Commodity Category Pills
-  document.querySelectorAll('.cat-btn').forEach(btn => {
+  document.querySelectorAll('.cat-item-btn').forEach(btn => {
     if (btn.dataset.cat !== undefined) {
       btn.addEventListener('click', () => {
-        document.querySelectorAll('.cat-btn').forEach(b => {
+        document.querySelectorAll('.cat-item-btn').forEach(b => {
           if (b.dataset.cat !== undefined) b.classList.remove('active');
         });
         btn.classList.add('active');
@@ -1387,7 +1487,7 @@
     reader.onload = (e) => {
       activePreviewDataUrl = e.target.result;
       filePreviewImg.src = activePreviewDataUrl;
-      filePreviewContainer.classList.add('active');
+      filePreviewBox.classList.add('active');
     };
     reader.readAsDataURL(file);
   }
@@ -1396,7 +1496,7 @@
     activeSelectedFile = null;
     activePreviewDataUrl = null;
     fileInputPhoto.value = '';
-    filePreviewContainer.classList.remove('active');
+    filePreviewBox.classList.remove('active');
     filePreviewImg.src = '';
   }
 
@@ -1473,7 +1573,9 @@
     }, 'image/jpeg', 0.95);
   });
 
-  // 360° Rotate Scan Mode
+  // ==========================================
+  // 360° ROTATE SCAN STATE MACHINE (20s TIMING)
+  // ==========================================
   async function open360Inspection() {
     try {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -1484,64 +1586,156 @@
         video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
       });
       video360.srcObject = activeStream;
-      progress360Fill.style.width = '0%';
+      reset360State();
       rotate360Modal.classList.add('open');
-      is360Scanning = false;
     } catch (err) {
       showToast('Camera error: ' + err.message, 'error');
     }
   }
 
+  function reset360State() {
+    is360Running = false;
+    is360Paused = false;
+    current360PhaseIndex = 0;
+    if (phaseTimerInterval) clearInterval(phaseTimerInterval);
+    phaseTimerBar.style.width = '0%';
+    phaseCountdownText.textContent = '0s / 5s';
+    phaseInstructionText.textContent = 'Keep front label centered';
+    btnStart360Record.style.display = 'inline-flex';
+    btnPause360.style.display = 'none';
+    sampledPhaseFrames = { front: [], right: [], back: [], left: [] };
+
+    ROTATION_PHASES.forEach(p => {
+      const el = document.getElementById(p.pillId);
+      if (el) { el.className = 'step-pill-indicator'; }
+    });
+  }
+
   function close360Inspection() {
+    if (phaseTimerInterval) clearInterval(phaseTimerInterval);
     if (activeStream) {
       activeStream.getTracks().forEach(t => t.stop());
       activeStream = null;
     }
     rotate360Modal.classList.remove('open');
-    is360Scanning = false;
+    reset360State();
   }
 
   btnOpen360Inspection.addEventListener('click', open360Inspection);
   btnClose360.addEventListener('click', close360Inspection);
   btnCancel360.addEventListener('click', close360Inspection);
 
-  // Execute 360 Capture Sequence (Front -> Right -> Back -> Left)
-  btnStart360Record.addEventListener('click', async () => {
-    if (is360Scanning) return;
-    is360Scanning = true;
-    btnStart360Record.disabled = true;
+  // Start 360 Sequence
+  btnStart360Record.addEventListener('click', () => {
+    if (is360Running) return;
+    is360Running = true;
+    btnStart360Record.style.display = 'none';
+    btnPause360.style.display = 'inline-flex';
+    run360Phase(0);
+  });
 
-    speak(PROMPT_KEYS.ROTATE_PACKAGE, currentLang);
-    showToast('Rotate the package slowly...', 'info');
+  // Pause / Resume 360
+  btnPause360.addEventListener('click', () => {
+    is360Paused = !is360Paused;
+    btnPause360.textContent = is360Paused ? 'Resume' : 'Pause';
+  });
 
-    const sampledFrames = [];
-    const totalSteps = 4;
+  // Execute Each 5-Second Phase Sequentially
+  async function run360Phase(phaseIdx) {
+    if (!is360Running || phaseIdx >= ROTATION_PHASES.length) {
+      finish360Capture();
+      return;
+    }
+
+    current360PhaseIndex = phaseIdx;
+    const phase = ROTATION_PHASES[phaseIdx];
+
+    // Update UI Indicators
+    ROTATION_PHASES.forEach((p, idx) => {
+      const el = document.getElementById(p.pillId);
+      if (el) {
+        if (idx < phaseIdx) el.className = 'step-pill-indicator done';
+        else if (idx === phaseIdx) el.className = 'step-pill-indicator active';
+        else el.className = 'step-pill-indicator';
+      }
+    });
+
+    phaseInstructionText.textContent = phase.guideText;
+    speak(phase.voiceKey, currentLang);
+
+    // Setup 5000ms timer
+    let elapsedMs = 0;
+    const phaseDuration = phase.durationMs;
+    const sampleIntervalMs = 1000;
+    let lastSampleMs = 0;
+
     canvas360.width = video360.videoWidth || 640;
     canvas360.height = video360.videoHeight || 480;
     const ctx = canvas360.getContext('2d');
 
-    for (let step = 1; step <= totalSteps; step++) {
-      progress360Fill.style.width = `${(step / totalSteps) * 100}%`;
-      ctx.drawImage(video360, 0, 0, canvas360.width, canvas360.height);
+    return new Promise((resolve) => {
+      if (phaseTimerInterval) clearInterval(phaseTimerInterval);
 
-      const frameBlob = await new Promise(resolve => canvas360.toBlob(resolve, 'image/jpeg', 0.9));
-      if (frameBlob) {
-        sampledFrames.push(new File([frameBlob], `frame_${step}.jpg`, { type: 'image/jpeg' }));
+      phaseTimerInterval = setInterval(async () => {
+        if (is360Paused) return;
+
+        elapsedMs += 100;
+        const progressPct = Math.min((elapsedMs / phaseDuration) * 100, 100);
+        phaseTimerBar.style.width = `${progressPct}%`;
+        const secondsCount = (elapsedMs / 1000).toFixed(1);
+        phaseCountdownText.textContent = `${secondsCount}s / 5.0s`;
+
+        // Sample a frame every 1000ms
+        if (elapsedMs - lastSampleMs >= sampleIntervalMs) {
+          lastSampleMs = elapsedMs;
+          ctx.drawImage(video360, 0, 0, canvas360.width, canvas360.height);
+          canvas360.toBlob((blob) => {
+            if (blob) {
+              const frameFile = new File([blob], `${phase.id}_sample_${elapsedMs}.jpg`, { type: 'image/jpeg' });
+              sampledPhaseFrames[phase.id].push(frameFile);
+            }
+          }, 'image/jpeg', 0.9);
+        }
+
+        // Phase finished after full 5000ms minimum window
+        if (elapsedMs >= phaseDuration) {
+          clearInterval(phaseTimerInterval);
+          // Mark current phase as done
+          const el = document.getElementById(phase.pillId);
+          if (el) el.className = 'step-pill-indicator done';
+          
+          // Move to next phase
+          await run360Phase(phaseIdx + 1);
+          resolve();
+        }
+      }, 100);
+    });
+  }
+
+  // Complete 360 Capture Sequence
+  async function finish360Capture() {
+    is360Running = false;
+    speak(PROMPT_KEYS.CAPTURE_360_COMPLETE, currentLang);
+    showToast('360° capture complete! Analyzing package...', 'info');
+
+    // Pick best representative frame from each of the 4 phases
+    const finalFrames = [];
+    ['front', 'right', 'back', 'left'].forEach((phaseId) => {
+      const frames = sampledPhaseFrames[phaseId];
+      if (frames && frames.length > 0) {
+        // Pick the middle/best sample
+        const bestIdx = Math.floor(frames.length / 2);
+        finalFrames.push(frames[bestIdx]);
       }
-      if (step < totalSteps) {
-        await new Promise(r => setTimeout(r, 900));
-      }
-    }
+    });
 
     close360Inspection();
-    btnStart360Record.disabled = false;
 
-    if (sampledFrames.length > 0) {
-      // Use the first frame for primary thumbnail and submit 360 payload
-      setSelectedImage(sampledFrames[0]);
-      await submit360Scan(sampledFrames);
+    if (finalFrames.length > 0) {
+      setSelectedImage(finalFrames[0]);
+      await submit360Scan(finalFrames);
     }
-  });
+  }
 
   // Submit 360 Scan to Backend
   async function submit360Scan(framesList) {
@@ -1573,7 +1767,7 @@
     }
 
     resultsWrap.style.display = 'none';
-    scanLoadingBox.style.display = 'flex';
+    scanLoadingState.style.display = 'flex';
     loadingStepTitle.textContent = 'Analyzing 360° Package Panels...';
     loadingStepSub.textContent = 'Aggregating multi-angle OCR text with MultiImageFusion...';
 
@@ -1594,7 +1788,7 @@
     } catch (err) {
       console.error('360 Scan Error:', err);
       showToast(`360 Scan Error: ${err.message}`, 'error');
-      scanLoadingBox.style.display = 'none';
+      scanLoadingState.style.display = 'none';
     }
   }
 
@@ -1608,18 +1802,18 @@
 
   // Display Scan Result
   function displayScanResult(record) {
-    scanLoadingBox.style.display = 'none';
+    scanLoadingState.style.display = 'none';
     resultsWrap.style.display = 'flex';
 
     const status = record.overall_status || record.compliance_status || 'UNKNOWN';
     const isCompliant = status === 'COMPLIANT';
     const isNonCompliant = status === 'NON_COMPLIANT';
 
-    statusBanner.className = 'status-banner ' + (
-      isCompliant ? 'status-compliant' :
-      isNonCompliant ? 'status-non-compliant' : 'status-needs-review'
+    statusBanner.className = 'compliance-banner ' + (
+      isCompliant ? 'banner-pass' :
+      isNonCompliant ? 'banner-fail' : 'banner-review'
     );
-    statusBannerText.textContent = isCompliant ? '✓ COMPLIANT' : isNonCompliant ? '✕ NON-COMPLIANT' : '⚠ NEEDS MANUAL REVIEW';
+    statusBannerText.textContent = isCompliant ? 'COMPLIANT' : isNonCompliant ? 'NON-COMPLIANT' : 'NEEDS REVIEW';
     statusCategoryBadge.textContent = (record.category || 'Commodity').toUpperCase();
 
     const findings = record.findings || record.checks || [];
@@ -1641,40 +1835,39 @@
     const mfgName = declMap.manufacturer || record.manufacturer;
     const origin = declMap.country_of_origin || record.country_of_origin;
     const consumerCare = declMap.consumer_care || record.consumer_care;
-    const barcode = record.barcode || 'Verified';
 
     declarationsGrid.innerHTML = `
-      <div class="declaration-item">
-        <span class="decl-label">MRP (Max Price)</span>
-        <span class="decl-value ${mrp ? '' : 'decl-not-detected'}">${mrp ? '₹' + mrp : 'Not detected'}</span>
+      <div class="decl-cell">
+        <span class="decl-field-name">MRP (Max Price)</span>
+        <span class="decl-field-val ${mrp ? '' : 'decl-missing'}">${mrp ? '₹' + mrp : 'Not detected'}</span>
       </div>
-      <div class="declaration-item">
-        <span class="decl-label">Net Quantity</span>
-        <span class="decl-value ${netQty ? '' : 'decl-not-detected'}">${netQty || 'Not detected'}</span>
+      <div class="decl-cell">
+        <span class="decl-field-name">Net Quantity</span>
+        <span class="decl-field-val ${netQty ? '' : 'decl-missing'}">${netQty || 'Not detected'}</span>
       </div>
-      <div class="declaration-item">
-        <span class="decl-label">Unit Sale Price</span>
-        <span class="decl-value ${usp ? '' : 'decl-not-detected'}" style="color: #93c5fd;">${usp || 'Not detected'}</span>
+      <div class="decl-cell">
+        <span class="decl-field-name">Unit Sale Price</span>
+        <span class="decl-field-val ${usp ? '' : 'decl-missing'}" style="color: var(--ink);">${usp || 'Not detected'}</span>
       </div>
-      <div class="declaration-item">
-        <span class="decl-label">Mfg Date / PKD</span>
-        <span class="decl-value ${mfg ? '' : 'decl-not-detected'}">${mfg || 'Not detected'}</span>
+      <div class="decl-cell">
+        <span class="decl-field-name">Mfg Date / PKD</span>
+        <span class="decl-field-val ${mfg ? '' : 'decl-missing'}">${mfg || 'Not detected'}</span>
       </div>
-      <div class="declaration-item">
-        <span class="decl-label">Best Before / Exp</span>
-        <span class="decl-value ${expiry ? '' : 'decl-not-detected'}">${expiry || 'Not specified'}</span>
+      <div class="decl-cell">
+        <span class="decl-field-name">Best Before / Exp</span>
+        <span class="decl-field-val ${expiry ? '' : 'decl-missing'}">${expiry || 'Not specified'}</span>
       </div>
-      <div class="declaration-item">
-        <span class="decl-label">Manufacturer / Packer</span>
-        <span class="decl-value ${mfgName ? '' : 'decl-not-detected'}" title="${mfgName || ''}">${mfgName || 'Not detected'}</span>
+      <div class="decl-cell">
+        <span class="decl-field-name">Manufacturer / Packer</span>
+        <span class="decl-field-val ${mfgName ? '' : 'decl-missing'}" title="${mfgName || ''}">${mfgName || 'Not detected'}</span>
       </div>
-      <div class="declaration-item">
-        <span class="decl-label">Country of Origin</span>
-        <span class="decl-value ${origin ? '' : 'decl-not-detected'}">${origin || 'India'}</span>
+      <div class="decl-cell">
+        <span class="decl-field-name">Country of Origin</span>
+        <span class="decl-field-val ${origin ? '' : 'decl-missing'}">${origin || 'India'}</span>
       </div>
-      <div class="declaration-item">
-        <span class="decl-label">Consumer Care</span>
-        <span class="decl-value ${consumerCare ? '' : 'decl-not-detected'}">${consumerCare ? 'Declared' : 'Not detected'}</span>
+      <div class="decl-cell">
+        <span class="decl-field-name">Consumer Care</span>
+        <span class="decl-field-val ${consumerCare ? '' : 'decl-missing'}">${consumerCare ? 'Declared' : 'Not detected'}</span>
       </div>
     `;
 
@@ -1685,41 +1878,37 @@
 
     ingCount.textContent = ingredients.length;
     if (ingredients.length > 0) {
-      ingTagsContainer.innerHTML = ingredients.map(i => `<span class="ing-tag">${i}</span>`).join('');
+      ingTagsContainer.innerHTML = ingredients.map(i => `<span class="ing-pill">${i}</span>`).join('');
     } else {
-      ingTagsContainer.innerHTML = `<span style="font-size: 0.72rem; color: var(--text-dim);">Ingredients not detected from the scanned label.</span>`;
+      ingTagsContainer.innerHTML = `<span style="font-size: 0.74rem; color: var(--smoke);">Ingredients not detected from the scanned label.</span>`;
     }
 
     if (safetyRes.review_required && flags.length > 0) {
       safetyNoticeBox.innerHTML = `
-        <div class="safety-notice-warn">
-          <strong style="color: #fbbf24; font-size: 0.82rem; display: block; margin-bottom: 2px;">
-            ⚠️ WARNING — Safety Review Required (${flags.length} Component${flags.length > 1 ? 's' : ''} Flagged)
+        <div class="advisory-box-warn">
+          <strong style="color: var(--status-review-text); font-size: 0.82rem; display: block; margin-bottom: 2px;">
+            WARNING — Safety Review Required (${flags.length} Component${flags.length > 1 ? 's' : ''} Flagged)
           </strong>
-          <span style="font-size: 0.74rem; color: #cbd5e1;">
-            Configured safety watchlist match detected. Verify applicable statutory labelling and advisory requirements under Food Safety & Legal Metrology regulations.
-          </span>
+          <span>Configured safety watchlist match detected. Verify applicable statutory labelling and advisory requirements under Food Safety & Legal Metrology regulations.</span>
         </div>
       `;
       safetyFlagsContainer.innerHTML = flags.map(flag => `
-        <div class="flagged-item-card">
+        <div class="flagged-item-pill">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
-            <strong style="color: #fff;">${flag.name}</strong>
-            <span class="tag-badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">${flag.code || flag.category}</span>
+            <strong style="color: var(--ink);">${flag.name}</strong>
+            <span class="pill-badge pill-review">${flag.code || flag.category}</span>
           </div>
-          <p style="color: #9ca3af; font-size: 0.72rem;"><strong>Reason:</strong> ${flag.reason}</p>
-          <span style="color: #6b7280; font-size: 0.68rem;">Ref: ${flag.statutory_reference || flag.statutoryReference || 'FSSAI / Legal Metrology'}</span>
+          <p style="color: var(--smoke); font-size: 0.74rem;"><strong>Reason:</strong> ${flag.reason}</p>
+          <span style="color: var(--ash); font-size: 0.68rem;">Ref: ${flag.statutory_reference || flag.statutoryReference || 'FSSAI / Legal Metrology'}</span>
         </div>
       `).join('');
     } else {
       safetyNoticeBox.innerHTML = `
-        <div class="safety-notice-ok">
-          <strong style="color: #34d399; font-size: 0.82rem; display: block; margin-bottom: 2px;">
+        <div class="advisory-box-ok">
+          <strong style="color: var(--status-pass-text); font-size: 0.82rem; display: block; margin-bottom: 2px;">
             ✓ No configured safety-watchlist components detected.
           </strong>
-          <span style="font-size: 0.74rem; color: #cbd5e1;">
-            Ingredients text analyzed. No statutory warning advisories or restricted additive alerts flagged.
-          </span>
+          <span>Ingredients text analyzed. No statutory warning advisories or restricted additive alerts flagged.</span>
         </div>
       `;
       safetyFlagsContainer.innerHTML = '';
@@ -1728,13 +1917,13 @@
     // Rules Evaluation Checklist
     findingsListUl.innerHTML = findings.map(f => {
       const isPass = f.result === 'PASS';
-      const badge = isPass ? '<span class="tag-badge tag-pass">PASS</span>' : '<span class="tag-badge tag-fail">FAIL</span>';
+      const badge = isPass ? '<span class="pill-badge pill-pass">PASS</span>' : '<span class="pill-badge pill-fail">FAIL</span>';
       const desc = isPass ? (f.requirement || f.field) : (f.message || f.reason || `${f.field}: Mandatory statutory requirement missing`);
       return `
-        <li class="finding-row ${isPass ? 'pass' : 'fail'}">
+        <li class="checklist-row">
           <div>
-            <strong style="color: #fff; font-size: 0.75rem;">${f.rule_id || f.field}:</strong>
-            <span style="color: var(--text-muted); font-size: 0.75rem; margin-left: 4px;">${desc}</span>
+            <strong style="color: var(--ink); font-size: 0.75rem;">${f.rule_id || f.field}:</strong>
+            <span style="color: var(--smoke); font-size: 0.75rem; margin-left: 4px;">${desc}</span>
           </div>
           ${badge}
         </li>
@@ -1802,20 +1991,20 @@
       const prev = comparison.latestPrevious;
       if (prev) {
         compGridContainer.innerHTML = `
-          <div class="comp-grid">
-            <div class="comp-column" style="border-left: 3px solid var(--primary);">
-              <span class="decl-label">Previous Batch (${prev.inspection_id || 'Prior'})</span>
+          <div class="comp-grid-box">
+            <div class="comp-column-item">
+              <span class="decl-field-name">Previous Batch (${prev.inspection_id || 'Prior'})</span>
               <div>Net Qty: <strong>${prev.net_quantity || 'N/A'}</strong></div>
               <div>MRP: <strong>₹${prev.mrp || 'N/A'}</strong></div>
             </div>
-            <div class="comp-column" style="border-left: 3px solid var(--warning);">
-              <span class="decl-label">Current Batch (${newRec.inspection_id})</span>
+            <div class="comp-column-item">
+              <span class="decl-field-name">Current Batch (${newRec.inspection_id})</span>
               <div>Net Qty: <strong>${newRec.net_quantity || 'N/A'}</strong></div>
               <div>MRP: <strong>₹${newRec.mrp || 'N/A'}</strong></div>
             </div>
           </div>
-          ${comparison.shrinkflationDetected ? '<div style="margin-top: 6px; font-size: 0.75rem; color: #f87171; font-weight: 700;">🚨 SHRINKFLATION ALERT: Quantity reduced without proportional price decrease</div>' : ''}
-          ${comparison.priceHikeDetected ? '<div style="margin-top: 6px; font-size: 0.75rem; color: #fbbf24; font-weight: 700;">📈 PRICE HIKE: MRP increased over prior inspection</div>' : ''}
+          ${comparison.shrinkflationDetected ? '<div style="margin-top: 8px; font-size: 0.76rem; color: var(--status-fail-text); font-weight: 500;">🚨 SHRINKFLATION ALERT: Quantity reduced without proportional price decrease</div>' : ''}
+          ${comparison.priceHikeDetected ? '<div style="margin-top: 8px; font-size: 0.76rem; color: var(--status-review-text); font-weight: 500;">📈 PRICE HIKE: MRP increased over prior inspection</div>' : ''}
         `;
       }
       compChangesList.innerHTML = comparison.changesDetected.map(c => `<li>• ${c}</li>`).join('');
@@ -1860,7 +2049,7 @@
     }
 
     resultsWrap.style.display = 'none';
-    scanLoadingBox.style.display = 'flex';
+    scanLoadingState.style.display = 'flex';
     loadingStepTitle.textContent = 'Processing Packaging Image...';
     loadingStepSub.textContent = 'Extracting declarations with NVIDIA Nemotron OCR v2...';
     btnExecuteScan.disabled = true;
@@ -1882,7 +2071,7 @@
     } catch (err) {
       console.error('Scan Error:', err);
       showToast(`Scan Error: ${err.message}`, 'error');
-      scanLoadingBox.style.display = 'none';
+      scanLoadingState.style.display = 'none';
     } finally {
       btnExecuteScan.disabled = false;
     }
@@ -1913,7 +2102,7 @@
     if (records.length === 0) {
       historyTableBody.innerHTML = `
         <tr>
-          <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 24px;">
+          <td colspan="7" style="text-align: center; color: var(--smoke); padding: 28px;">
             No inspection records found.
           </td>
         </tr>
@@ -1924,22 +2113,22 @@
     historyTableBody.innerHTML = records.map(r => {
       const isPass = r.compliance_status === 'COMPLIANT';
       const isFail = r.compliance_status === 'NON_COMPLIANT';
-      const statusBadge = isPass ? '<span class="tag-badge tag-pass">COMPLIANT</span>' :
-                          isFail ? '<span class="tag-badge tag-fail">NON-COMPLIANT</span>' :
-                                   '<span class="tag-badge tag-review">REVIEW</span>';
-      const syncBadge = r.sync_status === 'synced' ? '<span class="tag-badge tag-pass">SYNCED</span>' :
-                        r.sync_status === 'pending' ? '<span class="tag-badge tag-review">PENDING</span>' :
-                                                      '<span class="tag-badge tag-fail">FAILED</span>';
+      const statusBadge = isPass ? '<span class="pill-badge pill-pass">COMPLIANT</span>' :
+                          isFail ? '<span class="pill-badge pill-fail">NON-COMPLIANT</span>' :
+                                   '<span class="pill-badge pill-review">REVIEW</span>';
+      const syncBadge = r.sync_status === 'synced' ? '<span class="pill-badge pill-pass">SYNCED</span>' :
+                        r.sync_status === 'pending' ? '<span class="pill-badge pill-review">PENDING</span>' :
+                                                      '<span class="pill-badge pill-fail">FAILED</span>';
       return `
         <tr>
-          <td style="font-family: var(--font-mono); font-size: 0.72rem; color: #93c5fd;">${r.inspection_id}</td>
-          <td><strong>${r.product_name}</strong></td>
-          <td style="color: var(--text-muted);">${r.category}</td>
-          <td>${r.mrp ? '₹' + r.mrp : 'N/A'} <span style="font-size: 0.68rem; color: var(--text-dim);">(${r.net_quantity || ''})</span></td>
+          <td style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--ink);">${r.inspection_id}</td>
+          <td><strong style="color: var(--ink);">${r.product_name}</strong></td>
+          <td style="color: var(--smoke);">${r.category}</td>
+          <td>${r.mrp ? '₹' + r.mrp : 'N/A'} <span style="font-size: 0.68rem; color: var(--ash);">(${r.net_quantity || ''})</span></td>
           <td>${statusBadge}</td>
           <td>${syncBadge}</td>
           <td>
-            <button class="btn btn-outline btn-sm" onclick="window.openAuditModal('${r.inspection_id}')">
+            <button class="btn btn-stone btn-sm" onclick="window.openAuditModal('${r.inspection_id}')">
               View
             </button>
           </td>
@@ -1949,9 +2138,9 @@
   }
 
   // Filter Buttons in History
-  document.querySelectorAll('#view-history .cat-btn').forEach(btn => {
+  document.querySelectorAll('#view-history .cat-item-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('#view-history .cat-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('#view-history .cat-item-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       activeHistoryFilter = btn.dataset.filter;
       refreshHistoryTable();
@@ -2005,11 +2194,11 @@
     diagnosticsListGrid.innerHTML = '';
     testScenarios.forEach(sc => {
       const btn = document.createElement('button');
-      btn.className = 'btn btn-outline';
-      btn.style.cssText = 'padding: 8px 10px; text-align: left; display: flex; flex-direction: column; gap: 2px; align-items: flex-start;';
+      btn.className = 'btn btn-stone btn-sm';
+      btn.style.cssText = 'padding: 10px 12px; text-align: left; display: flex; flex-direction: column; gap: 2px; align-items: flex-start; border-radius: var(--radius-md);';
       btn.innerHTML = `
-        <strong style="color: #93c5fd; font-size: 0.75rem;">#${sc.scenario_id} ${sc.scenario_name}</strong>
-        <span style="font-size: 0.68rem; color: var(--text-muted);">${sc.product_name}</span>
+        <strong style="color: var(--ink); font-size: 0.76rem;">#${sc.scenario_id} ${sc.scenario_name}</strong>
+        <span style="font-size: 0.68rem; color: var(--smoke);">${sc.product_name}</span>
       `;
       btn.onclick = async () => {
         const isOnline = syncManager.isOnline();
@@ -2059,10 +2248,10 @@
             const w = (det.box[1][0] - det.box[0][0]) * sx;
             const h = (det.box[2][1] - det.box[0][1]) * sy;
 
-            ctx.strokeStyle = '#2563eb';
+            ctx.strokeStyle = '#0447ff';
             ctx.lineWidth = 2;
             ctx.strokeRect(x, y, w, h);
-            ctx.fillStyle = 'rgba(37, 99, 235, 0.12)';
+            ctx.fillStyle = 'rgba(4, 71, 255, 0.1)';
             ctx.fillRect(x, y, w, h);
           }
         });
@@ -2072,22 +2261,22 @@
     // Populate Officer Form
     const officerInputs = document.getElementById('officerInputsContainer');
     officerInputs.innerHTML = `
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 0.78rem;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.78rem;">
         <div>
-          <label style="color: var(--text-dim); font-size: 0.68rem;">Product Name:</label>
-          <input type="text" id="editPName" class="search-field" style="width: 100%;" value="${item.product_name || ''}">
+          <label style="color: var(--smoke); font-size: 0.68rem; display: block; margin-bottom: 2px;">Product Name:</label>
+          <input type="text" id="editPName" class="search-input-field" style="width: 100%; border-radius: var(--radius-sm);" value="${item.product_name || ''}">
         </div>
         <div>
-          <label style="color: var(--text-dim); font-size: 0.68rem;">MRP (₹):</label>
-          <input type="text" id="editPMrp" class="search-field" style="width: 100%;" value="${item.mrp || ''}">
+          <label style="color: var(--smoke); font-size: 0.68rem; display: block; margin-bottom: 2px;">MRP (₹):</label>
+          <input type="text" id="editPMrp" class="search-input-field" style="width: 100%; border-radius: var(--radius-sm);" value="${item.mrp || ''}">
         </div>
         <div>
-          <label style="color: var(--text-dim); font-size: 0.68rem;">Net Quantity:</label>
-          <input type="text" id="editPQty" class="search-field" style="width: 100%;" value="${item.net_quantity || ''}">
+          <label style="color: var(--smoke); font-size: 0.68rem; display: block; margin-bottom: 2px;">Net Quantity:</label>
+          <input type="text" id="editPQty" class="search-input-field" style="width: 100%; border-radius: var(--radius-sm);" value="${item.net_quantity || ''}">
         </div>
         <div>
-          <label style="color: var(--text-dim); font-size: 0.68rem;">Manufacturer:</label>
-          <input type="text" id="editPMfg" class="search-field" style="width: 100%;" value="${item.manufacturer || ''}">
+          <label style="color: var(--smoke); font-size: 0.68rem; display: block; margin-bottom: 2px;">Manufacturer:</label>
+          <input type="text" id="editPMfg" class="search-input-field" style="width: 100%; border-radius: var(--radius-sm);" value="${item.manufacturer || ''}">
         </div>
       </div>
     `;
@@ -2134,11 +2323,11 @@
     const isOnline = e.target.checked;
     syncManager.setSimulatedOffline(!isOnline);
     if (isOnline) {
-      statusDot.className = 'dot dot-online';
+      statusDot.className = 'status-dot dot-active';
       networkLabel.textContent = 'Online';
       showToast('Online mode active. Background sync enabled.', 'info');
     } else {
-      statusDot.className = 'dot dot-offline';
+      statusDot.className = 'status-dot dot-inactive';
       networkLabel.textContent = 'Offline (Rural)';
       showToast('Offline Mode: Scans will save locally as PENDING.', 'warn');
     }
