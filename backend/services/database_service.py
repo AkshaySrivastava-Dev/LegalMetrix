@@ -24,47 +24,62 @@ def get_db_path() -> Path:
     return db_path
 
 
+_initialized = False
+
+
+def _ensure_schema(conn: sqlite3.Connection) -> None:
+    """Creates the inspections table and indexes if they do not exist."""
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS inspections (
+            inspection_id TEXT PRIMARY KEY,
+            product_name TEXT,
+            brand TEXT,
+            category TEXT,
+            variant TEXT,
+            mrp TEXT,
+            net_quantity TEXT,
+            manufacturer TEXT,
+            confidence REAL DEFAULT 0.0,
+            compliance_status TEXT DEFAULT 'UNKNOWN',
+            violations TEXT DEFAULT '[]',
+            checks TEXT DEFAULT '[]',
+            evidence TEXT DEFAULT '{}',
+            source TEXT DEFAULT 'image',
+            file_path TEXT,
+            created_at TEXT NOT NULL,
+            sync_status TEXT DEFAULT 'synced'
+        );
+        """
+    )
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_insp_created_at ON inspections(created_at DESC);")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_insp_product ON inspections(brand, product_name);")
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_insp_sync_status ON inspections(sync_status);")
+    conn.commit()
+
+
 def get_connection() -> sqlite3.Connection:
-    """Returns a SQLite connection with row factory enabled."""
-    conn = sqlite3.connect(str(get_db_path()), timeout=20.0)
+    """Returns a SQLite connection with row factory enabled, ensuring schema is initialized."""
+    global _initialized
+    db_path = get_db_path()
+    conn = sqlite3.connect(str(db_path), timeout=20.0)
     conn.row_factory = sqlite3.Row
+    if not _initialized:
+        _ensure_schema(conn)
+        _initialized = True
     return conn
 
 
 def init_db() -> None:
     """Initializes the inspections table and indexes if they do not exist."""
+    global _initialized
     db_path = get_db_path()
     logger.info(f"Initializing SQLite database at: {db_path}")
+    with sqlite3.connect(str(db_path), timeout=20.0) as conn:
+        _ensure_schema(conn)
+        _initialized = True
 
-    with get_connection() as conn:
-        cursor = conn.cursor()
-        cursor.execute(
-            """
-            CREATE TABLE IF NOT EXISTS inspections (
-                inspection_id TEXT PRIMARY KEY,
-                product_name TEXT,
-                brand TEXT,
-                category TEXT,
-                variant TEXT,
-                mrp TEXT,
-                net_quantity TEXT,
-                manufacturer TEXT,
-                confidence REAL DEFAULT 0.0,
-                compliance_status TEXT DEFAULT 'UNKNOWN',
-                violations TEXT DEFAULT '[]',
-                checks TEXT DEFAULT '[]',
-                evidence TEXT DEFAULT '{}',
-                source TEXT DEFAULT 'image',
-                file_path TEXT,
-                created_at TEXT NOT NULL,
-                sync_status TEXT DEFAULT 'synced'
-            );
-            """
-        )
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_insp_created_at ON inspections(created_at DESC);")
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_insp_product ON inspections(brand, product_name);")
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_insp_sync_status ON inspections(sync_status);")
-        conn.commit()
 
 
 def _row_to_dict(row: sqlite3.Row) -> Dict[str, Any]:
