@@ -20,6 +20,8 @@ CREATE TABLE IF NOT EXISTS public.inspections (
     expiry_date TEXT,
     batch_number TEXT,
     barcode TEXT,
+    fssai_license TEXT,
+    fssai_status TEXT DEFAULT 'NOT_VERIFIED',
     overall_confidence NUMERIC(4, 3) DEFAULT 0.000,
     is_offline BOOLEAN DEFAULT false,
     sync_status TEXT DEFAULT 'SYNCED',
@@ -31,6 +33,7 @@ CREATE TABLE IF NOT EXISTS public.inspections (
     safety_payload JSONB DEFAULT '{}'::jsonb,
     health_payload JSONB DEFAULT '{}'::jsonb,
     fraud_payload JSONB DEFAULT '{}'::jsonb,
+    fssai_payload JSONB DEFAULT '{}'::jsonb,
     quality_payload JSONB DEFAULT '{}'::jsonb,
     image_urls JSONB DEFAULT '{}'::jsonb
 );
@@ -50,6 +53,7 @@ CREATE TABLE IF NOT EXISTS public.inspection_reviews (
 CREATE INDEX IF NOT EXISTS idx_inspections_created_at ON public.inspections(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_inspections_brand ON public.inspections(brand);
 CREATE INDEX IF NOT EXISTS idx_inspections_status ON public.inspections(status);
+CREATE INDEX IF NOT EXISTS idx_inspections_fssai_status ON public.inspections(fssai_status);
 CREATE INDEX IF NOT EXISTS idx_inspections_sync_status ON public.inspections(sync_status);
 
 ALTER TABLE public.inspections ENABLE ROW LEVEL SECURITY;
