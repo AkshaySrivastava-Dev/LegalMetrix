@@ -336,6 +336,17 @@ async def scan_product_image(
         result["raw_ocr_count"] = len(ai_result.get("raw_ocr", []))
         result["ocr_detections"] = ai_result.get("raw_ocr", [])
 
+        # Ingredients & Safety Analysis
+        ing_field = ai_fields.get("ingredients") or {}
+        safety_field = ai_fields.get("safety_analysis") or {}
+        ingredients_list = ing_field.get("list") or []
+        raw_ingredients_text = ing_field.get("value")
+        safety_data = safety_field.get("data") or {}
+
+        result["ingredients"] = ingredients_list
+        result["raw_ingredients_text"] = raw_ingredients_text
+        result["safety_analysis"] = safety_data
+
         # Authoritative SQLite persistence
         try:
             sqlite_payload = {
@@ -352,6 +363,8 @@ async def scan_product_image(
                 "violations": [f for f in result.get("findings", []) if f.get("result") == "FAIL"],
                 "checks": result.get("findings", []),
                 "evidence": evidences,
+                "ingredients": ingredients_list,
+                "safety_analysis": safety_data,
                 "source": "image",
                 "sync_status": "synced",
             }
@@ -500,6 +513,17 @@ async def scan_360_video(
         result["raw_ocr_count"] = sum(len(r.get("raw_ocr", [])) for r in single_results.values())
         result["ocr_detections"] = [det for r in single_results.values() for det in r.get("raw_ocr", [])]
 
+        # Ingredients & Safety Analysis
+        ing_field = fused_fields.get("ingredients") or {}
+        safety_field = fused_fields.get("safety_analysis") or {}
+        ingredients_list = ing_field.get("list") or []
+        raw_ingredients_text = ing_field.get("value")
+        safety_data = safety_field.get("data") or {}
+
+        result["ingredients"] = ingredients_list
+        result["raw_ingredients_text"] = raw_ingredients_text
+        result["safety_analysis"] = safety_data
+
         # Authoritative SQLite persistence
         try:
             sqlite_payload = {
@@ -516,6 +540,8 @@ async def scan_360_video(
                 "violations": [f for f in result.get("findings", []) if f.get("result") == "FAIL"],
                 "checks": result.get("findings", []),
                 "evidence": evidences,
+                "ingredients": ingredients_list,
+                "safety_analysis": safety_data,
                 "source": "video_360",
                 "sync_status": "synced",
             }

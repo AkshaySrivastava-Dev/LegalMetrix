@@ -90,6 +90,9 @@ class ComplianceEvaluationResponse(BaseModel):
     image_quality: Optional[Dict[str, Any]] = Field(None, description="Optional image quality diagnostic metrics")
     raw_ocr_count: Optional[int] = Field(None, description="Count of raw OCR text lines detected")
     ocr_detections: Optional[List[Dict[str, Any]]] = Field(None, description="Raw OCR token detections and bounding boxes")
+    ingredients: Optional[List[str]] = Field(None, description="Extracted structured ingredients list")
+    raw_ingredients_text: Optional[str] = Field(None, description="Raw extracted ingredients text")
+    safety_analysis: Optional[Dict[str, Any]] = Field(None, description="Statutory safety watchlist & allergen analysis")
 
 
 # ------------------ Manual Review Schemas ------------------ #

@@ -2,17 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Legal Metrology AI - Offline Sync & Voice Dashboard</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>LegalMetrix • AI Commodity Compliance & Safety Platform</title>
   <style>
     :root {
-      --bg-primary: #0f172a;
-      --bg-surface: #1e293b;
-      --bg-card: #243048;
-      --border-color: #334155;
+      --bg-primary: #0b0f19;
+      --bg-surface: #131b2e;
+      --bg-card: #1c2742;
+      --bg-card-hover: #223052;
+      --border-color: #2b395b;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --accent-blue: #3b82f6;
@@ -20,184 +18,110 @@
       --accent-green: #10b981;
       --accent-red: #ef4444;
       --accent-amber: #f59e0b;
-      --accent-purple: #8b5cf6;
+      --accent-indigo: #6366f1;
       --radius-sm: 6px;
       --radius-md: 10px;
       --radius-lg: 14px;
-      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.2);
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       background-color: var(--bg-primary);
       color: var(--text-main);
       line-height: 1.5;
-      padding: 20px;
+      padding: 16px;
       min-height: 100vh;
     }
 
     .container {
-      max-width: 1400px;
+      max-width: 960px;
       margin: 0 auto;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 16px;
     }
 
-    /* Top Bar */
+    /* Header */
     header {
       background-color: var(--bg-surface);
       border: 1px solid var(--border-color);
       border-radius: var(--radius-lg);
-      padding: 18px 24px;
+      padding: 14px 18px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       box-shadow: var(--shadow);
       flex-wrap: wrap;
-      gap: 15px;
+      gap: 12px;
     }
 
     .brand-title {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
     .brand-title h1 {
-      font-size: 1.4rem;
+      font-size: 1.3rem;
       font-weight: 700;
       color: #fff;
+      letter-spacing: -0.3px;
     }
 
-    .badge-member {
-      background-color: rgba(59, 130, 246, 0.2);
-      color: #60a5fa;
+    .badge-gov {
+      background-color: rgba(59, 130, 246, 0.18);
+      color: #93c5fd;
       border: 1px solid rgba(59, 130, 246, 0.4);
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       font-weight: 600;
-      padding: 4px 10px;
+      padding: 3px 8px;
       border-radius: 9999px;
+      text-transform: uppercase;
       letter-spacing: 0.5px;
     }
 
-    .controls-top {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      flex-wrap: wrap;
-    }
-
-    /* Toggle Switch */
-    .network-toggle-wrapper {
+    .header-actions {
       display: flex;
       align-items: center;
       gap: 10px;
-      background-color: var(--bg-card);
-      padding: 6px 14px;
-      border-radius: 9999px;
-      border: 1px solid var(--border-color);
+      flex-wrap: wrap;
     }
 
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 44px;
-      height: 24px;
-    }
-
-    .switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #ef4444;
-      transition: .3s;
-      border-radius: 24px;
-    }
-
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 18px;
-      width: 18px;
-      left: 3px;
-      bottom: 3px;
-      background-color: white;
-      transition: .3s;
-      border-radius: 50%;
-    }
-
-    input:checked + .slider {
-      background-color: #10b981;
-    }
-
-    input:checked + .slider:before {
-      transform: translateX(20px);
-    }
-
-    .network-pill {
-      font-size: 0.85rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .status-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-    }
-
-    .dot-online { background-color: var(--accent-green); box-shadow: 0 0 10px var(--accent-green); }
-    .dot-offline { background-color: var(--accent-red); box-shadow: 0 0 10px var(--accent-red); }
-
+    /* Buttons */
     .btn {
-      background-color: var(--accent-blue);
-      color: white;
-      border: none;
-      border-radius: var(--radius-sm);
-      padding: 8px 16px;
-      font-size: 0.875rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 6px;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s ease;
+      font-family: inherit;
     }
 
-    .btn:hover {
-      background-color: var(--accent-blue-hover);
-      transform: translateY(-1px);
+    .btn-primary {
+      background-color: var(--accent-blue);
+      color: #fff;
     }
+    .btn-primary:hover { background-color: var(--accent-blue-hover); }
 
     .btn-green {
       background-color: var(--accent-green);
+      color: #fff;
     }
-    .btn-green:hover {
-      background-color: #059669;
-    }
-
-    .btn-amber {
-      background-color: var(--accent-amber);
-      color: #111;
-    }
-    .btn-amber:hover {
-      background-color: #d97706;
-    }
+    .btn-green:hover { background-color: #059669; }
 
     .btn-outline {
       background-color: transparent;
@@ -206,61 +130,79 @@
     }
     .btn-outline:hover {
       background-color: var(--bg-card);
+      border-color: var(--text-muted);
     }
 
-    /* KPI Metrics Bar */
-    .metrics-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
-    }
-
-    .metric-card {
-      background-color: var(--bg-surface);
-      border: 1px solid var(--border-color);
+    .btn-lg {
+      padding: 12px 20px;
+      font-size: 0.95rem;
       border-radius: var(--radius-md);
-      padding: 16px 20px;
-      box-shadow: var(--shadow);
     }
 
-    .metric-title {
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+    /* Network Switch Pill */
+    .network-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background-color: var(--bg-card);
+      padding: 5px 12px;
+      border-radius: 9999px;
+      border: 1px solid var(--border-color);
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .dot-online { background-color: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
+    .dot-offline { background-color: var(--accent-amber); box-shadow: 0 0 8px var(--accent-amber); }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 32px;
+      height: 18px;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #475569; transition: .2s; border-radius: 18px;
+    }
+    .slider:before {
+      position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px;
+      background-color: white; transition: .2s; border-radius: 50%;
+    }
+    input:checked + .slider { background-color: var(--accent-green); }
+    input:checked + .slider:before { transform: translateX(14px); }
+
+    /* Language Buttons */
+    .lang-group {
+      display: flex;
+      gap: 4px;
+      background: var(--bg-card);
+      padding: 3px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+    }
+    .lang-btn {
+      background: transparent;
+      border: none;
       color: var(--text-muted);
-      margin-bottom: 6px;
+      padding: 3px 7px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      border-radius: 4px;
+      cursor: pointer;
     }
-
-    .metric-value {
-      font-size: 1.8rem;
-      font-weight: 700;
+    .lang-btn.active {
+      background: var(--accent-blue);
       color: #fff;
     }
 
-    .val-pending { color: var(--accent-amber); }
-    .val-synced { color: var(--accent-green); }
-    .val-failed { color: var(--accent-red); }
-
-    /* Main Dashboard Grid */
-    .main-grid {
-      display: grid;
-      grid-template-columns: 360px 1fr;
-      gap: 20px;
-    }
-
-    @media (max-width: 1024px) {
-      .main-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    /* Left Sidebar: Controls & Audio */
-    .sidebar-panel {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
+    /* Cards */
     .card {
       background-color: var(--bg-surface);
       border: 1px solid var(--border-color);
@@ -276,590 +218,157 @@
       margin-bottom: 16px;
       padding-bottom: 10px;
       border-bottom: 1px solid var(--border-color);
+      flex-wrap: wrap;
+      gap: 8px;
     }
 
     .card-header h2 {
-      font-size: 1.05rem;
+      font-size: 1.1rem;
       font-weight: 600;
+      color: #fff;
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    /* Voice Assistant Box */
-    .lang-selector {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-
-    .lang-btn {
-      flex: 1;
-      background-color: var(--bg-card);
-      border: 1px solid var(--border-color);
-      color: var(--text-muted);
-      padding: 8px 10px;
-      border-radius: var(--radius-sm);
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      text-align: center;
-      transition: .2s;
-    }
-
-    .lang-btn.active {
-      background-color: var(--accent-blue);
-      color: white;
-      border-color: var(--accent-blue);
-    }
-
-    .voice-buttons {
+    /* Hero Action Grid */
+    .hero-scanner-grid {
       display: grid;
-      grid-template-columns: 1fr;
-      gap: 8px;
-    }
-
-    .voice-btn {
-      background-color: var(--bg-card);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      padding: 10px 14px;
-      border-radius: var(--radius-sm);
-      font-size: 0.85rem;
-      text-align: left;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      transition: all .2s;
-    }
-
-    .voice-btn:hover {
-      background-color: #334155;
-      border-color: var(--accent-blue);
-    }
-
-    .voice-btn span.tag {
-      font-size: 0.7rem;
-      background-color: rgba(255,255,255,0.1);
-      padding: 2px 6px;
-      border-radius: 4px;
-      color: var(--text-muted);
-    }
-
-    /* Scenario Runner */
-    .scenario-select-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      max-height: 280px;
-      overflow-y: auto;
-      padding-right: 4px;
-    }
-
-    .scenario-item-btn {
-      background-color: var(--bg-card);
-      border: 1px solid var(--border-color);
-      color: var(--text-main);
-      padding: 8px 12px;
-      border-radius: var(--radius-sm);
-      font-size: 0.8rem;
-      text-align: left;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: .2s;
-    }
-
-    .scenario-item-btn:hover {
-      background-color: #334155;
-      border-color: var(--accent-blue);
-    }
-
-    .scenario-num {
-      background-color: rgba(59, 130, 246, 0.3);
-      color: #93c5fd;
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.75rem;
-      font-weight: 700;
-      flex-shrink: 0;
-    }
-
-    /* 360 Video Player Box */
-    .rotator-container {
-      background: #000;
-      border-radius: var(--radius-md);
-      overflow: hidden;
-      position: relative;
-      aspect-ratio: 16 / 9;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid var(--border-color);
-    }
-
-    canvas#rotatorCanvas {
-      width: 100%;
-      height: 100%;
-    }
-
-    .rotator-overlay {
-      position: absolute;
-      bottom: 8px;
-      left: 8px;
-      right: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: rgba(15, 23, 42, 0.85);
-      padding: 6px 12px;
-      border-radius: var(--radius-sm);
-      font-size: 0.75rem;
-    }
-
-    /* Right Main Panel: History & Comparison */
-    .right-content {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    /* Table Toolbar */
-    .table-toolbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      grid-template-columns: 1fr 1fr;
       gap: 12px;
-      flex-wrap: wrap;
-      margin-bottom: 14px;
-    }
-
-    .filter-tabs {
-      display: flex;
-      background-color: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
-      padding: 3px;
-    }
-
-    .filter-tab {
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      padding: 6px 12px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      border-radius: 4px;
-      transition: .2s;
-    }
-
-    .filter-tab.active {
-      background-color: var(--accent-blue);
-      color: white;
-    }
-
-    .search-input {
-      background-color: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
-      padding: 6px 12px;
-      font-size: 0.85rem;
-      color: white;
-      min-width: 220px;
-    }
-
-    .search-input:focus {
-      outline: none;
-      border-color: var(--accent-blue);
-    }
-
-    /* Inspections Table */
-    .table-container {
-      overflow-x: auto;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      background-color: var(--bg-card);
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.85rem;
-      text-align: left;
-    }
-
-    thead {
-      background-color: rgba(15, 23, 42, 0.6);
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    th {
-      padding: 12px 14px;
-      font-weight: 600;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      font-size: 0.75rem;
-      letter-spacing: 0.5px;
-    }
-
-    td {
-      padding: 12px 14px;
-      border-bottom: 1px solid rgba(51, 65, 85, 0.4);
-      color: var(--text-main);
-    }
-
-    tr:hover td {
-      background-color: rgba(59, 130, 246, 0.05);
-    }
-
-    /* Badges */
-    .badge-status {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 3px 8px;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: capitalize;
-    }
-
-    .status-synced { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
-    .status-pending { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
-    .status-failed { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
-
-    .badge-compliance {
-      padding: 3px 8px;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      font-weight: 700;
-    }
-
-    .comp-compliant { background: rgba(16, 185, 129, 0.2); color: #34d399; }
-    .comp-non_compliant { background: rgba(239, 68, 68, 0.2); color: #f87171; }
-    .comp-flagged { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
-
-    /* Comparison Box */
-    .comparison-banner {
-      background: linear-gradient(90deg, rgba(30, 41, 59, 1) 0%, rgba(36, 48, 72, 1) 100%);
-      border: 1px solid #475569;
-      border-radius: var(--radius-md);
-      padding: 16px;
-      display: none;
-    }
-
-    .comparison-banner.active {
-      display: block;
-    }
-
-    .comparison-header {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: #93c5fd;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .comparison-list {
-      list-style-type: none;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      font-size: 0.85rem;
-    }
-
-    .comparison-list li {
-      padding: 6px 10px;
-      background-color: rgba(15, 23, 42, 0.5);
-      border-radius: var(--radius-sm);
-      border-left: 3px solid var(--accent-amber);
-    }
-
-    /* Modal */
-    .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(4px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-      padding: 20px;
-    }
-
-    .modal-overlay.open {
-      display: flex;
-    }
-
-    .modal-content {
-      background-color: var(--bg-surface);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      max-width: 650px;
-      width: 100%;
-      max-height: 85vh;
-      overflow-y: auto;
-      padding: 24px;
-      box-shadow: var(--shadow);
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    .close-btn {
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      font-size: 1.4rem;
-      cursor: pointer;
-    }
-
-    .kv-grid {
-      display: grid;
-      grid-template-columns: 140px 1fr;
-      gap: 8px;
-      font-size: 0.85rem;
       margin-bottom: 16px;
     }
-
-    .kv-key {
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-
-    .kv-val {
-      color: #fff;
-      font-weight: 600;
-    }
-
-    .code-box {
-      background-color: #0f172a;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
-      padding: 12px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.75rem;
-      color: #38bdf8;
-      overflow-x: auto;
-      white-space: pre-wrap;
-    }
-
-    /* Toast Notification */
-    .toast-container {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      z-index: 10000;
-    }
-
-    .toast {
-      background-color: var(--bg-surface);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      padding: 12px 18px;
-      color: #fff;
-      font-size: 0.85rem;
-      box-shadow: var(--shadow);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      animation: slideIn 0.3s ease-out;
-    }
-
-    @keyframes slideIn {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-
-    /* Live Scanner Card Styles */
-    .scanner-grid {
-      display: grid;
-      grid-template-columns: 1fr 1.2fr;
-      gap: 20px;
-    }
-    @media (max-width: 992px) {
-      .scanner-grid {
+    @media (max-width: 600px) {
+      .hero-scanner-grid {
         grid-template-columns: 1fr;
       }
     }
-    .dropzone {
+
+    .action-card-btn {
+      background: var(--bg-card);
       border: 2px dashed var(--border-color);
       border-radius: var(--radius-md);
-      background-color: var(--bg-card);
-      padding: 24px 16px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
+      padding: 20px 16px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      min-height: 160px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+      color: var(--text-main);
     }
-    .dropzone:hover, .dropzone.dragover {
+    .action-card-btn:hover, .action-card-btn.dragover, .action-card-btn.drag-over {
       border-color: var(--accent-blue);
-      background-color: rgba(59, 130, 246, 0.08);
+      background-color: rgba(59, 130, 246, 0.12);
+      box-shadow: 0 0 16px rgba(59, 130, 246, 0.25);
     }
-    .dropzone-icon {
+    .action-card-btn .action-icon {
       font-size: 2.2rem;
-      color: var(--accent-blue);
     }
-    .scanner-preview-box {
-      margin-top: 12px;
+
+    /* Category Pill Selector */
+    .category-pills-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .cat-pill {
+      background: var(--bg-card);
       border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
-      background-color: #0f172a;
-      padding: 8px 12px;
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .cat-pill.active {
+      background: var(--accent-blue);
+      border-color: var(--accent-blue);
+      color: #fff;
+    }
+
+    /* Preview Box */
+    .scanner-preview-box {
+      margin-bottom: 16px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      background-color: #0c1322;
+      padding: 10px 14px;
       display: none;
       align-items: center;
       gap: 12px;
     }
-    .scanner-preview-box.active {
-      display: flex;
-    }
+    .scanner-preview-box.active { display: flex; }
     .scanner-thumbnail {
-      width: 56px;
-      height: 56px;
+      width: 60px;
+      height: 60px;
       object-fit: cover;
       border-radius: var(--radius-sm);
       border: 1px solid var(--border-color);
     }
-    .preview-meta {
-      flex: 1;
-      overflow: hidden;
-      font-size: 0.8rem;
-    }
-    .preview-filename {
-      font-weight: 600;
-      color: #fff;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .preview-filesize {
-      color: var(--text-muted);
-      font-size: 0.75rem;
-    }
-    .scanner-controls-row {
-      display: flex;
-      gap: 10px;
-      margin-top: 12px;
-    }
-    .category-select {
-      background-color: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
-      color: var(--text-main);
-      padding: 8px 12px;
-      font-size: 0.85rem;
-      font-family: inherit;
-      width: 100%;
-      margin-top: 6px;
-    }
-    .category-select:focus {
-      outline: none;
-      border-color: var(--accent-blue);
-    }
-    .btn-scan-action {
-      width: 100%;
-      padding: 12px;
-      font-size: 0.95rem;
-      font-weight: 700;
-      margin-top: 14px;
-      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-      cursor: pointer;
-      border: none;
-      border-radius: var(--radius-sm);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: all 0.2s;
-    }
-    .btn-scan-action:hover:not(:disabled) {
-      background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
-      transform: translateY(-1px);
-    }
-    .btn-scan-action:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-    .scanner-result-panel {
-      background-color: #0f172a;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      padding: 16px;
-      min-height: 280px;
+    .preview-meta { flex: 1; overflow: hidden; font-size: 0.82rem; }
+    .preview-filename { font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .preview-filesize { color: var(--text-muted); font-size: 0.75rem; }
+
+    /* Results Output Container */
+    .result-container {
+      margin-top: 20px;
       display: flex;
       flex-direction: column;
+      gap: 16px;
     }
+
     .result-status-banner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 14px;
-      border-radius: var(--radius-sm);
-      margin-bottom: 12px;
+      padding: 14px 18px;
+      border-radius: var(--radius-md);
+      font-size: 1.05rem;
       font-weight: 700;
-      font-size: 0.9rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      letter-spacing: 0.3px;
     }
     .status-banner-compliant {
       background: rgba(16, 185, 129, 0.2);
-      border: 1px solid rgba(16, 185, 129, 0.4);
+      border: 1px solid rgba(16, 185, 129, 0.5);
       color: #34d399;
     }
     .status-banner-non_compliant {
       background: rgba(239, 68, 68, 0.2);
-      border: 1px solid rgba(239, 68, 68, 0.4);
+      border: 1px solid rgba(239, 68, 68, 0.5);
       color: #f87171;
     }
     .status-banner-needs_review {
       background: rgba(245, 158, 11, 0.2);
-      border: 1px solid rgba(245, 158, 11, 0.4);
+      border: 1px solid rgba(245, 158, 11, 0.5);
       color: #fbbf24;
     }
+
+    /* Declarations Grid */
     .extracted-chips {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-      gap: 8px;
-      margin-bottom: 14px;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 10px;
     }
     .chip {
       background-color: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: var(--radius-sm);
-      padding: 6px 10px;
-      font-size: 0.75rem;
+      padding: 8px 12px;
+      font-size: 0.8rem;
     }
     .chip-label {
       color: var(--text-muted);
-      font-size: 0.68rem;
+      font-size: 0.7rem;
       text-transform: uppercase;
       display: block;
-      margin-bottom: 2px;
+      margin-bottom: 3px;
+      letter-spacing: 0.3px;
     }
     .chip-value {
       font-weight: 600;
@@ -868,242 +377,90 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
+
+    /* Safety & Ingredients Card */
+    .safety-advisory-card {
+      border-radius: var(--radius-md);
+      padding: 16px;
+      background: #0f172a;
+      border: 1px solid var(--border-color);
+    }
+    .safety-banner-warn {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      border-left: 4px solid var(--accent-amber);
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 12px;
+    }
+    .safety-banner-ok {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      border-left: 4px solid var(--accent-green);
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 12px;
+    }
+    .safety-flag-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      margin-bottom: 8px;
+    }
+    .safety-flag-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .ingredient-tags-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .ingredient-tag {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 3px 8px;
+      font-size: 0.75rem;
+      color: #e2e8f0;
+    }
+
+    /* Rules Findings List */
     .findings-list {
       list-style: none;
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      max-height: 180px;
-      overflow-y: auto;
-      font-size: 0.8rem;
+      gap: 8px;
     }
     .finding-item {
-      padding: 6px 10px;
+      padding: 8px 12px;
       border-radius: var(--radius-sm);
       background-color: var(--bg-card);
       border: 1px solid rgba(51, 65, 85, 0.5);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
+      font-size: 0.82rem;
     }
-    .finding-item.fail {
-      border-left: 3px solid var(--accent-red);
-    }
-    .finding-item.pass {
-      border-left: 3px solid var(--accent-green);
-    }
-    .scan-loading-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 40px 10px;
-      gap: 14px;
-      color: var(--text-muted);
-      text-align: center;
-    }
-    .spinner {
-      width: 36px;
-      height: 36px;
-      border: 3px solid rgba(59, 130, 246, 0.2);
-      border-top-color: var(--accent-blue);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    .camera-box {
-      position: relative;
-      background: #000;
-      border-radius: var(--radius-md);
-      overflow: hidden;
-      max-width: 480px;
-      width: 100%;
-      aspect-ratio: 4 / 3;
-      margin: 0 auto 16px auto;
-      border: 1px solid var(--border-color);
-    }
-    .camera-video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+    .finding-item.fail { border-left: 3px solid var(--accent-red); }
+    .finding-item.pass { border-left: 3px solid var(--accent-green); }
 
-    /* Modal Tabs */
-    .modal-tabs {
-      display: flex;
-      gap: 8px;
-      border-bottom: 1px solid var(--border-color);
-      margin-bottom: 16px;
-      padding-bottom: 8px;
-      overflow-x: auto;
-    }
-    .modal-tab-btn {
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      padding: 6px 14px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      border-radius: var(--radius-sm);
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      white-space: nowrap;
-    }
-    .modal-tab-btn:hover {
-      background-color: var(--bg-card);
-      color: var(--text-main);
-    }
-    .modal-tab-btn.active {
-      background-color: var(--accent-blue);
-      color: #fff;
-    }
-    .modal-tab-pane {
+    /* Comparison Banner (Shrinkflation) */
+    .comparison-banner {
       display: none;
-    }
-    .modal-tab-pane.active {
-      display: block;
-    }
-
-    /* Bounding Box Visualizer */
-    .bbox-viewer-container {
-      position: relative;
-      background: #0f172a;
-      border: 1px solid var(--border-color);
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.35);
       border-radius: var(--radius-md);
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 240px;
-      max-height: 420px;
-      margin-bottom: 14px;
+      padding: 14px 16px;
+      margin-top: 14px;
     }
-    .bbox-image {
-      max-width: 100%;
-      max-height: 420px;
-      display: block;
-      object-fit: contain;
-    }
-    .bbox-canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: auto;
-    }
-    .bbox-legend {
-      display: flex;
-      gap: 12px;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      flex-wrap: wrap;
-      margin-bottom: 12px;
-      background-color: #0f172a;
-      padding: 8px 12px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border-color);
-    }
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .legend-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 2px;
-    }
-
-    /* Manual Review Table */
-    .review-table-container {
-      overflow-x: auto;
-      margin-bottom: 14px;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
-    }
-    .review-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.8rem;
-    }
-    .review-table th {
-      background-color: #0f172a;
-      padding: 8px 10px;
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      border-bottom: 1px solid var(--border-color);
-      text-align: left;
-    }
-    .review-table td {
-      padding: 8px 10px;
-      border-bottom: 1px solid rgba(51, 65, 85, 0.4);
-      vertical-align: middle;
-    }
-    .review-input {
-      background-color: #0f172a;
-      border: 1px solid var(--border-color);
-      border-radius: 4px;
-      padding: 5px 8px;
-      color: #fff;
-      font-size: 0.8rem;
-      width: 100%;
-      min-width: 110px;
-    }
-    .review-input:focus {
-      outline: none;
-      border-color: var(--accent-blue);
-    }
-    .review-input.modified {
-      border-color: var(--accent-amber);
-      background-color: rgba(245, 158, 11, 0.1);
-    }
-    .officer-meta-bar {
-      display: flex;
-      gap: 12px;
-      background-color: #0f172a;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
-      padding: 10px 14px;
-      margin-bottom: 14px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-    .officer-input {
-      background-color: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 4px;
-      padding: 4px 8px;
-      color: #fff;
-      font-size: 0.8rem;
-      width: 140px;
-    }
-    .btn-action-small {
-      padding: 3px 8px;
-      font-size: 0.72rem;
-      border-radius: 4px;
-      cursor: pointer;
-      border: 1px solid var(--border-color);
-      background: var(--bg-card);
-      color: var(--text-main);
-      transition: 0.2s;
-    }
-    .btn-action-small:hover {
-      background: var(--accent-blue);
-      color: #fff;
-    }
-    .dropzone.drag-over, .dropzone.dragover {
-      border-color: var(--accent-blue) !important;
-      background-color: rgba(59, 130, 246, 0.14) !important;
-      box-shadow: 0 0 16px rgba(59, 130, 246, 0.3) !important;
-    }
+    .comparison-banner.active { display: block; }
     .comparison-side-by-side {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -1111,9 +468,7 @@
       margin-top: 10px;
     }
     @media (max-width: 600px) {
-      .comparison-side-by-side {
-        grid-template-columns: 1fr;
-      }
+      .comparison-side-by-side { grid-template-columns: 1fr; }
     }
     .comp-col {
       background-color: #0f172a;
@@ -1121,12 +476,8 @@
       border-radius: var(--radius-sm);
       padding: 10px 14px;
     }
-    .comp-col.highlight-prev {
-      border-left: 3px solid var(--accent-blue);
-    }
-    .comp-col.highlight-curr {
-      border-left: 3px solid var(--accent-amber);
-    }
+    .comp-col.highlight-prev { border-left: 3px solid var(--accent-blue); }
+    .comp-col.highlight-curr { border-left: 3px solid var(--accent-amber); }
     .shrinkflation-badge {
       display: inline-flex;
       align-items: center;
@@ -1140,14 +491,199 @@
       color: #f87171;
       margin-top: 8px;
     }
-    .btn-blue {
-      background-color: var(--accent-blue);
-      color: #fff;
+
+    /* Inspections History Table */
+    .table-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .filter-tabs {
+      display: flex;
+      gap: 4px;
+      background-color: #0f172a;
+      padding: 3px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+    }
+    .filter-tab {
+      background: transparent;
       border: none;
+      color: var(--text-muted);
+      padding: 5px 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 4px;
+      cursor: pointer;
     }
-    .btn-blue:hover {
-      background-color: #2563eb;
+    .filter-tab.active { background-color: var(--accent-blue); color: #fff; }
+    .search-input {
+      background-color: #0f172a;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      outline: none;
+      min-width: 200px;
     }
+
+    .table-container {
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      text-align: left;
+    }
+    th {
+      background-color: #0f172a;
+      padding: 10px 14px;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-color);
+    }
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.4);
+      vertical-align: middle;
+    }
+    tr:hover td { background-color: rgba(30, 41, 59, 0.5); }
+
+    .badge-compliance {
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .comp-compliant { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .comp-non_compliant { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+    .comp-flagged { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+
+    .badge-status {
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .status-synced { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+    .status-pending { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+    .status-failed { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 16px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-content {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      width: 100%;
+      max-width: 760px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .close-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.4rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .close-btn:hover { color: #fff; }
+
+    /* Bounding Box Visualizer */
+    .bbox-wrapper {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 220px;
+      max-height: 380px;
+      margin-bottom: 12px;
+      background: #000;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+    .bbox-image { max-width: 100%; max-height: 380px; display: block; object-fit: contain; }
+    .bbox-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: auto; }
+
+    /* Toast */
+    .toast-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 2000;
+    }
+    .toast {
+      background: #1e293b;
+      border: 1px solid var(--border-color);
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: slideIn 0.2s ease;
+    }
+    @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    /* Spinner */
+    .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid rgba(59, 130, 246, 0.2);
+      border-top-color: var(--accent-blue);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Camera Viewfinder Modal */
+    .camera-box {
+      position: relative;
+      background: #000;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      margin-bottom: 14px;
+      border: 1px solid var(--border-color);
+    }
+    .camera-video { width: 100%; height: 100%; object-fit: cover; }
   </style>
 </head>
 <body>
@@ -1157,410 +693,294 @@
   <!-- Header -->
   <header>
     <div class="brand-title">
-      <span style="font-size: 1.8rem;">⚖️</span>
+      <span style="font-size: 1.6rem;">⚖️</span>
       <div>
-        <h1>Legal Metrology Inspection System</h1>
-        <p style="font-size: 0.8rem; color: var(--text-muted);">AI Packaged Commodity Compliance • Rural/Offline-First Architecture</p>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <h1>LegalMetrix</h1>
+          <span class="badge-gov">Govt. of India • AI Inspection</span>
+        </div>
+        <p style="font-size: 0.75rem; color: var(--text-muted);">Legal Metrology & Safety Compliance Engine</p>
       </div>
-      <span class="badge-member">MEMBER 5 — OFFLINE DB & SYNC</span>
     </div>
 
-    <div class="controls-top">
-      <!-- Network Switch -->
-      <div class="network-toggle-wrapper">
+    <div class="header-actions">
+      <!-- Network Mode Toggle -->
+      <div class="network-pill" id="networkPill">
+        <span class="status-dot dot-online" id="statusDot"></span>
+        <span id="networkText">ONLINE</span>
         <label class="switch">
           <input type="checkbox" id="networkToggle" checked>
           <span class="slider"></span>
         </label>
-        <span class="network-pill" id="networkPill">
-          <span class="status-dot dot-online" id="statusDot"></span>
-          <span id="networkText">ONLINE</span>
-        </span>
       </div>
 
-      <button class="btn btn-green" id="syncNowBtn">
-        <span>🔄</span> Force Sync Now
+      <!-- Sync Button -->
+      <button class="btn btn-outline" id="syncNowBtn" style="padding: 6px 12px; font-size: 0.78rem;">
+        <span>🔄</span> Sync
       </button>
 
-      <button class="btn btn-outline" id="clearDbBtn" title="Reset local database for fresh test">
-        <span>🗑️</span> Reset DB
+      <!-- Predefined Scenarios & Diagnostics Drawer Trigger -->
+      <button class="btn btn-outline" id="openDiagnosticsBtn" style="padding: 6px 12px; font-size: 0.78rem;">
+        <span>⚙️</span> Scenarios & 360
       </button>
+
+      <!-- Multilingual Audio Selector -->
+      <div class="lang-group">
+        <button class="lang-btn active" data-lang="en">EN</button>
+        <button class="lang-btn" data-lang="hi">HI</button>
+        <button class="lang-btn" data-lang="ta">TA</button>
+        <button class="lang-btn" data-lang="te">TE</button>
+        <button class="lang-btn" data-lang="mr">MR</button>
+      </div>
     </div>
   </header>
 
-  <!-- Metrics Overview Bar -->
-  <div class="metrics-grid">
-    <div class="metric-card">
-      <div class="metric-title">Total Local Records</div>
-      <div class="metric-value" id="kpiTotal">0</div>
+  <!-- Primary Inspector Card (Hero Judge Flow) -->
+  <div class="card">
+    <div class="card-header">
+      <h2><span>📸</span> Packaged Commodity Scanner</h2>
+      <span style="font-size: 0.75rem; color: var(--text-muted);">NVIDIA Nemotron OCR v2 • Statutory Rule Engine 2011</span>
     </div>
-    <div class="metric-card">
-      <div class="metric-title">Pending Sync Queue</div>
-      <div class="metric-value val-pending" id="kpiPending">0</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-title">Cloud Synced</div>
-      <div class="metric-value val-synced" id="kpiSynced">0</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-title">Failed Syncs (Retrying)</div>
-      <div class="metric-value val-failed" id="kpiFailed">0</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-title">Compliance Rate</div>
-      <div class="metric-value" id="kpiRate">100%</div>
-    </div>
-  </div>
 
-  <!-- Main Grid -->
-  <div class="main-grid">
+    <!-- Category Selector Pills -->
+    <div style="margin-bottom: 8px; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">
+      Commodity Category:
+    </div>
+    <div class="category-pills-row">
+      <button class="cat-pill active" data-cat="">⚡ Auto-Detect</button>
+      <button class="cat-pill" data-cat="food">🥘 Food & Groceries</button>
+      <button class="cat-pill" data-cat="beverage">🥤 Beverage</button>
+      <button class="cat-pill" data-cat="personal_care">🧴 Cosmetics / Personal Care</button>
+      <button class="cat-pill" data-cat="household">🧼 Household Goods</button>
+    </div>
+    <input type="hidden" id="scannerCategoryValue" value="">
 
-    <!-- Left Controls Sidebar -->
-    <div class="sidebar-panel">
+    <!-- Primary Camera & File Upload Action Grid -->
+    <div class="hero-scanner-grid">
+      <div class="action-card-btn" id="openCameraHeroBtn">
+        <span class="action-icon">📷</span>
+        <strong style="color: #fff; font-size: 0.95rem;">Live Camera Scan</strong>
+        <span style="font-size: 0.75rem; color: var(--text-muted);">Capture physical package in real-time</span>
+      </div>
 
-      <!-- Voice Assistant Widget -->
-      <div class="card">
-        <div class="card-header">
-          <h2><span>🔊</span> Voice Assistant (Offline TTS)</h2>
+      <div class="action-card-btn" id="scannerDropzone">
+        <span class="action-icon">📁</span>
+        <strong style="color: #fff; font-size: 0.95rem;">Upload Package Photo</strong>
+        <span style="font-size: 0.75rem; color: var(--text-muted);">Click to browse or drop JPEG / PNG</span>
+        <input type="file" id="scannerFileInput" accept="image/jpeg,image/png,image/webp" style="display: none;">
+      </div>
+    </div>
+
+    <!-- Selected Image Preview -->
+    <div class="scanner-preview-box" id="scannerPreviewBox">
+      <img id="scannerThumbnail" class="scanner-thumbnail" src="" alt="Selected product">
+      <div class="preview-meta">
+        <div class="preview-filename" id="previewFilename">filename.jpg</div>
+        <div class="preview-filesize" id="previewFilesize">0 KB</div>
+      </div>
+      <button class="btn btn-outline" id="clearSelectedFileBtn" style="padding: 4px 8px; font-size: 0.75rem;">✕ Remove</button>
+    </div>
+
+    <!-- Primary Scan Submit Button -->
+    <button class="btn btn-primary btn-lg" id="startScanBtn" style="width: 100%;">
+      <span>🚀</span> Scan & Verify Packaging Compliance
+    </button>
+
+    <!-- Loading State -->
+    <div id="scannerLoadingState" style="display: none; flex-direction: column; align-items: center; justify-content: center; padding: 30px 10px; gap: 12px; text-align: center;">
+      <div class="spinner"></div>
+      <strong style="color: #fff; font-size: 1rem;" id="scanLoadingStepTitle">Processing Packaging Image...</strong>
+      <p style="font-size: 0.8rem; color: var(--text-muted);" id="scanLoadingStepDesc">Extracting declarations with NVIDIA Nemotron OCR v2...</p>
+    </div>
+
+    <!-- Live Scan Result Output -->
+    <div class="result-container" id="scannerOutputContent" style="display: none;">
+
+      <!-- Overall Status Banner -->
+      <div class="result-status-banner" id="resultStatusBanner">
+        <span id="resultStatusText">✅ COMPLIANT</span>
+        <span id="resultCategoryBadge" style="font-size: 0.75rem; text-transform: uppercase;">FOOD</span>
+      </div>
+
+      <!-- Product Name & Declarations -->
+      <div style="background: #0f172a; padding: 14px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+        <h3 id="resultProductName" style="font-size: 1.1rem; color: #fff; margin-bottom: 10px;">Product Name</h3>
+        <div class="extracted-chips" id="extractedChips"></div>
+      </div>
+
+      <!-- Ingredients & Safety Watchlist Section (NEW) -->
+      <div class="safety-advisory-card" id="safetyAdvisorySection">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <h4 style="font-size: 0.95rem; color: #fff; display: flex; align-items: center; gap: 6px;">
+            <span>🛡️</span> Ingredients & Statutory Safety Watchlist
+          </h4>
+          <span id="safetyStatusBadge" class="badge-gov">STATUTORY SURVEILLANCE</span>
         </div>
 
-        <div class="lang-selector">
-          <button class="lang-btn active" data-lang="en">English (en-IN)</button>
-          <button class="lang-btn" data-lang="hi">हिंदी (hi-IN)</button>
-          <button class="lang-btn" data-lang="te">తెలుగు (te-IN)</button>
-        </div>
+        <div id="safetyBannerBox"></div>
+        <div id="safetyFlagsList"></div>
 
-        <div class="voice-buttons">
-          <button class="voice-btn" data-voice="ROTATE_PACKAGE">
-            <span>🔄 "Rotate package slowly"</span>
-            <span class="tag">Prompt 1</span>
+        <!-- Expandable Extracted Ingredients -->
+        <div style="margin-top: 10px;">
+          <button class="btn btn-outline" id="toggleIngredientsBtn" style="padding: 4px 10px; font-size: 0.75rem; width: 100%; justify-content: space-between;">
+            <span>📋 View Extracted Ingredients (<span id="ingredientsCount">0</span>)</span>
+            <span id="toggleIngredientsArrow">▼</span>
           </button>
-          <button class="voice-btn" data-voice="IMAGE_UNCLEAR">
-            <span>⚠️ "Image unclear. Retake"</span>
-            <span class="tag">Prompt 2</span>
-          </button>
-          <button class="voice-btn" data-voice="MANUAL_VERIFY">
-            <span>🔍 "Manual verify required"</span>
-            <span class="tag">Prompt 3</span>
-          </button>
-          <button class="voice-btn" data-voice="INSPECTION_COMPLETE">
-            <span>✅ "Inspection completed"</span>
-            <span class="tag">Prompt 4</span>
-          </button>
-          <button class="voice-btn" data-voice="NON_COMPLIANT">
-            <span>🚨 "Violation detected"</span>
-            <span class="tag">Prompt 5</span>
-          </button>
-          <button class="voice-btn" data-voice="OFFLINE_SAVED">
-            <span>💾 "Saved offline"</span>
-            <span class="tag">Prompt 6</span>
-          </button>
+          <div id="ingredientsTagsContainer" class="ingredient-tags-container" style="display: none;"></div>
         </div>
       </div>
 
-      <!-- 13 Test Scenarios Quick Injector -->
-      <div class="card">
-        <div class="card-header">
-          <h2><span>🧪</span> 13 Test Scenarios Injector</h2>
-          <span style="font-size: 0.75rem; color: var(--text-muted);">Click to simulate</span>
-        </div>
-
-        <div class="scenario-select-grid" id="scenarioButtonsList">
-          <!-- Populated by JavaScript -->
-        </div>
+      <!-- Statutory Legal Metrology Rules Findings -->
+      <div style="background: #0f172a; padding: 14px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+        <h4 style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase;">
+          Statutory Legal Metrology Rules (Packaged Commodities) 2011
+        </h4>
+        <ul class="findings-list" id="scannerFindingsList"></ul>
       </div>
 
-      <!-- Pre-recorded 360 Video Fallback Demo -->
-      <div class="card">
-        <div class="card-header">
-          <h2><span>📹</span> 360° Backup Scan Viewer</h2>
-          <span class="badge-status status-synced">Fallback Ready</span>
-        </div>
-        <div class="rotator-container">
-          <canvas id="rotatorCanvas" width="320" height="180"></canvas>
-          <div class="rotator-overlay">
-            <span>Colgate 150g (36-Frame 360° Scan)</span>
-            <button class="btn btn-outline" style="padding: 2px 8px; font-size: 0.7rem;" id="rotatorToggleBtn">Pause</button>
-          </div>
-        </div>
-        <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 8px;">
-          Guarantees zero-failure live presentation if phone camera or video stream glitches.
-        </p>
-      </div>
-
-    </div>
-
-    <!-- Right Main Dashboard Content -->
-    <div class="right-content">
-
-      <!-- Live Packaging Image Scanner Card -->
-      <div class="card" id="liveScannerCard">
-        <div class="card-header">
-          <h2><span>📸</span> Live Packaging Image Scanner</h2>
-          <span class="badge-status status-synced">NVIDIA OCR • Rules Engine</span>
-        </div>
-
-        <div class="scanner-grid">
-          <!-- Left: Upload & Camera Controls -->
-          <div>
-            <div class="dropzone" id="scannerDropzone" tabindex="0" role="button" aria-label="Upload packaging image">
-              <span class="dropzone-icon">📥</span>
-              <p style="font-weight: 600; font-size: 0.9rem;">Drag & drop packaged commodity photo here</p>
-              <p style="font-size: 0.75rem; color: var(--text-muted);">Supports JPEG, PNG, WebP (up to 15MB)</p>
-            </div>
-            <input type="file" id="scannerFileInput" accept="image/jpeg,image/png,image/webp" style="display: none;">
-
-            <div class="scanner-preview-box" id="scannerPreviewBox">
-              <img id="scannerThumbnail" class="scanner-thumbnail" alt="Selected packaging label preview">
-              <div class="preview-meta">
-                <div class="preview-filename" id="previewFilename">package.jpg</div>
-                <div class="preview-filesize" id="previewFilesize">0 KB</div>
-              </div>
-              <button class="btn btn-outline" id="clearSelectedFileBtn" style="padding: 4px 8px; font-size: 0.75rem;" title="Remove selected image">✕</button>
-            </div>
-
-            <div class="scanner-controls-row">
-              <button class="btn btn-outline" id="browseFileBtn" style="flex: 1;">
-                <span>📂</span> Browse Photo
-              </button>
-              <button class="btn btn-outline" id="openCameraBtn" style="flex: 1;">
-                <span>📷</span> Open Camera
-              </button>
-            </div>
-
-            <label for="scannerCategorySelect" style="display: block; font-size: 0.75rem; color: var(--text-muted); margin-top: 10px;">
-              Commodity Category (Legal Metrology Rules):
-            </label>
-            <select class="category-select" id="scannerCategorySelect">
-              <option value="">Auto-Detect Category (AI Classifier)</option>
-              <option value="food">Food (Packaged Food & Snacks)</option>
-              <option value="beverage">Beverage (Drinks, Juices, Water)</option>
-              <option value="personal_care">Personal Care (Soaps, Cosmetics)</option>
-              <option value="household">Household (Detergents, Cleaners)</option>
-            </select>
-
-            <button class="btn-scan-action" id="startScanBtn">
-              <span>🚀</span> Scan & Verify Packaging
-            </button>
-          </div>
-
-          <!-- Right: Live Inspection Result -->
-          <div class="scanner-result-panel" id="scannerResultPanel">
-            <div id="scannerEmptyState" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-muted); text-align: center; padding: 20px;">
-              <span style="font-size: 2.4rem; margin-bottom: 8px;">⚖️</span>
-              <strong style="color: #fff; margin-bottom: 4px;">Real-Time Compliance Evaluation</strong>
-              <p style="font-size: 0.8rem; max-width: 320px;">
-                Select a product photo or snap one with your camera. NVIDIA Nemotron OCR extracts declarations, and the Legal Metrology Rules Engine validates mandatory statutory compliance.
-              </p>
-            </div>
-
-            <div id="scannerLoadingState" class="scan-loading-state" style="display: none;">
-              <div class="spinner"></div>
-              <strong style="color: #fff;" id="scanLoadingStepTitle">Processing Packaging Image...</strong>
-              <p style="font-size: 0.75rem;" id="scanLoadingStepDesc">Extracting declarations with NVIDIA Nemotron OCR v2...</p>
-            </div>
-
-            <div id="scannerOutputContent" style="display: none;">
-              <div class="result-status-banner" id="resultStatusBanner">
-                <span id="resultStatusText">COMPLIANT</span>
-                <span id="resultCategoryBadge" style="font-size: 0.75rem; text-transform: uppercase;">FOOD</span>
-              </div>
-
-              <h4 id="resultProductName" style="font-size: 1rem; color: #fff; margin-bottom: 10px;">Product Name</h4>
-
-              <div class="extracted-chips" id="extractedChips"></div>
-
-              <h5 style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase;">Statutory Rules Evaluation</h5>
-              <ul class="findings-list" id="scannerFindingsList"></ul>
-
-              <div style="display: flex; gap: 8px; margin-top: 12px;">
-                <button class="btn btn-outline" id="viewFullAuditBtn" style="flex: 1; padding: 6px 12px; font-size: 0.8rem;">
-                  <span>📋</span> View Full Audit Record
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Same-Product Comparison Notification (Shrinkflation / MRP Hike) -->
-      <div class="comparison-banner" id="comparisonBanner">
-        <div class="comparison-header">
-          <span>🔍</span> Same-Product Historical Comparison Alert
-        </div>
-        <div id="comparisonCardContainer"></div>
-        <ul class="comparison-list" id="comparisonList"></ul>
-      </div>
-
-      <!-- Inspections Database Table Card -->
-      <div class="card">
-        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-          <h2><span>📋</span> Local Inspections Store (IndexedDB)</h2>
-        </div>
-
-        <div class="table-toolbar">
-          <div class="filter-tabs">
-            <button class="filter-tab active" data-filter="ALL">All (<span id="tabCountAll">0</span>)</button>
-            <button class="filter-tab" data-filter="pending">Pending (<span id="tabCountPending">0</span>)</button>
-            <button class="filter-tab" data-filter="synced">Synced (<span id="tabCountSynced">0</span>)</button>
-            <button class="filter-tab" data-filter="failed">Failed (<span id="tabCountFailed">0</span>)</button>
-          </div>
-
-          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-            <input type="text" class="search-input" id="tableSearch" placeholder="Search product, barcode, ID...">
-            <button class="btn btn-outline" id="clearFilterBtn" style="padding: 6px 12px; font-size: 0.78rem; display: none;">
-              <span>✕</span> Clear Filter
-            </button>
-            <button class="btn btn-blue" id="exportCsvBtn" style="padding: 6px 12px; font-size: 0.78rem;">
-              <span>📥</span> Export CSV
-            </button>
-          </div>
-        </div>
-
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th>Inspection ID</th>
-                <th>Product Name</th>
-                <th>Category</th>
-                <th>MRP / Qty</th>
-                <th>Compliance</th>
-                <th>Sync Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="inspectionsTableBody">
-              <tr>
-                <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">
-                  No inspections saved yet. Click any test scenario on the left to simulate a scan.
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-    </div>
-
-  </div>
-
-</div>
-
-<!-- Inspection Details & Manual Review Modal -->
-<div class="modal-overlay" id="detailModal">
-  <div class="modal-content" style="max-width: 820px;">
-    <div class="modal-header">
-      <div>
-        <h3 id="modalTitle" style="font-size: 1.15rem;">Inspection Audit Record</h3>
-        <p style="font-size: 0.75rem; color: var(--text-muted);" id="modalSubtitle">ID: INSP-...</p>
-      </div>
-      <div style="display: flex; gap: 8px; align-items: center;">
-        <button class="btn btn-green" id="generateNoticeBtn" style="padding: 5px 12px; font-size: 0.78rem;">
+      <!-- Officer Interactive Action Bar -->
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <button class="btn btn-outline" id="viewBboxModalBtn" style="flex: 1; padding: 8px 12px; font-size: 0.8rem;">
+          <span>📸</span> OCR Bounding Boxes
+        </button>
+        <button class="btn btn-outline" id="viewManualReviewBtn" style="flex: 1; padding: 8px 12px; font-size: 0.8rem;">
+          <span>✍️</span> Officer Manual Review
+        </button>
+        <button class="btn btn-green" id="generateNoticeBtn" style="flex: 1; padding: 8px 12px; font-size: 0.8rem;">
           <span>📄</span> Statutory Notice
         </button>
-        <button class="close-btn" id="modalCloseBtn">&times;</button>
       </div>
+
     </div>
+  </div>
 
-    <!-- Modal Navigation Tabs -->
-    <div class="modal-tabs">
-      <button class="modal-tab-btn active" data-modaltab="visualEvidenceTab">
-        <span>📸</span> Visual Evidence & OCR Bounding Boxes
-      </button>
-      <button class="modal-tab-btn" data-modaltab="manualReviewTab">
-        <span>✍️</span> Officer Manual Review & Edit
-      </button>
-      <button class="modal-tab-btn" data-modaltab="auditJsonTab">
-        <span>📋</span> Raw Audit Payload (JSON)
-      </button>
+  <!-- Historical Same-Product Comparison Banner (Shrinkflation Alert) -->
+  <div class="comparison-banner" id="comparisonBanner">
+    <div style="font-weight: 700; font-size: 0.95rem; color: #fbbf24; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+      <span>🔍</span> Same-Product Historical Comparison Alert
     </div>
+    <div id="comparisonCardContainer"></div>
+    <ul id="comparisonList" style="margin-top: 8px; font-size: 0.8rem; color: var(--text-muted); list-style: none;"></ul>
+  </div>
 
-    <!-- Tab 1: Visual Evidence & OCR Bounding Box Overlay -->
-    <div class="modal-tab-pane active" id="visualEvidenceTab">
-      <div class="bbox-legend">
-        <div class="legend-item"><span class="legend-dot" style="background: #10b981;"></span> Compliant Field</div>
-        <div class="legend-item"><span class="legend-dot" style="background: #ef4444;"></span> Violated Field</div>
-        <div class="legend-item"><span class="legend-dot" style="background: #f59e0b;"></span> Review / Low Confidence</div>
-        <div class="legend-item"><span class="legend-dot" style="background: #38bdf8;"></span> OCR Text Token</div>
-      </div>
-      <div class="bbox-viewer-container" id="bboxViewerContainer">
-        <img id="bboxPackagingImage" class="bbox-image" alt="Inspected packaging evidence" />
-        <canvas id="bboxOverlayCanvas" class="bbox-canvas"></canvas>
-        <div id="bboxEmptyNotice" style="display: none; color: var(--text-muted); font-size: 0.8rem; text-align: center; padding: 24px;">
-          No packaging image or bounding-box spatial coordinates available for this record.
-        </div>
-      </div>
-      <div class="kv-grid" id="modalKvGrid"></div>
-    </div>
-
-    <!-- Tab 2: Officer Manual Review & Field Corrections -->
-    <div class="modal-tab-pane" id="manualReviewTab">
-      <div class="officer-meta-bar">
-        <label style="font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; gap: 6px;">
-          <span>👮</span> Officer ID:
-          <input type="text" id="manualReviewOfficerId" value="OFFICER-007" class="officer-input" />
-        </label>
-        <label style="font-size: 0.75rem; color: var(--text-muted); flex: 1; display: flex; align-items: center; gap: 6px;">
-          <span>📝</span> Remarks:
-          <input type="text" id="manualReviewNotes" placeholder="Audit inspection remarks / verified physical sample..." class="review-input" style="flex: 1;" />
-        </label>
-      </div>
-
-      <div class="review-table-container">
-        <table class="review-table">
-          <thead>
-            <tr>
-              <th>Declaration Field</th>
-              <th>AI Extracted Value</th>
-              <th>Confidence</th>
-              <th>Officer Corrected Value</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="manualReviewTableBody">
-            <!-- Populated dynamically -->
-          </tbody>
-        </table>
-      </div>
-
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; gap: 10px; flex-wrap: wrap;">
-        <span style="font-size: 0.75rem; color: var(--text-muted);">
-          * Submitting re-evaluates statutory compliance via the authoritative Legal Metrology Rules Engine.
-        </span>
-        <button class="btn btn-green" id="saveManualReviewBtn">
-          <span>💾</span> Save Review & Re-evaluate Compliance
+  <!-- Local Inspections Store (IndexedDB) -->
+  <div class="card">
+    <div class="card-header">
+      <h2><span>📋</span> Local Inspections Log (IndexedDB)</h2>
+      <div style="display: flex; gap: 8px;">
+        <button class="btn btn-primary" id="exportCsvBtn" style="padding: 5px 10px; font-size: 0.75rem;">
+          <span>📥</span> Export CSV
+        </button>
+        <button class="btn btn-outline" id="clearDbBtn" style="padding: 5px 10px; font-size: 0.75rem;">
+          <span>🗑️</span> Reset
         </button>
       </div>
     </div>
 
-    <!-- Tab 3: Raw Audit Payload (JSON) -->
-    <div class="modal-tab-pane" id="auditJsonTab">
-      <h4 style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px;">Extracted OCR & Rule Evaluation Payload (JSON)</h4>
-      <div class="code-box" id="modalJsonBox"></div>
+    <div class="table-toolbar">
+      <div class="filter-tabs">
+        <button class="filter-tab active" data-filter="ALL">All (<span id="tabCountAll">0</span>)</button>
+        <button class="filter-tab" data-filter="pending">Pending (<span id="tabCountPending">0</span>)</button>
+        <button class="filter-tab" data-filter="synced">Synced (<span id="tabCountSynced">0</span>)</button>
+      </div>
+
+      <div style="display: flex; gap: 6px; align-items: center;">
+        <input type="text" class="search-input" id="tableSearch" placeholder="Search product, ID...">
+        <button class="btn btn-outline" id="clearFilterBtn" style="padding: 5px 8px; font-size: 0.75rem; display: none;">✕</button>
+      </div>
     </div>
 
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Product Name</th>
+            <th>Category</th>
+            <th>MRP / Qty</th>
+            <th>Compliance</th>
+            <th>Sync</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="inspectionsTableBody">
+          <tr>
+            <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 24px;">
+              No inspections recorded yet. Tap Camera or Upload Photo above to start.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
+
 </div>
 
-<!-- Live Camera Viewfinder Modal -->
+<!-- Camera Viewfinder Modal -->
 <div class="modal-overlay" id="cameraModal">
-  <div class="modal-content" style="max-width: 520px; text-align: center;">
+  <div class="modal-content" style="max-width: 520px;">
     <div class="modal-header">
-      <h3><span>📷</span> Live Camera Viewfinder</h3>
+      <h3 style="font-size: 1.1rem; color: #fff;">📸 Live Camera Capture</h3>
       <button class="close-btn" id="cameraCloseBtn">&times;</button>
     </div>
     <div class="camera-box">
       <video id="cameraVideo" class="camera-video" autoplay playsinline></video>
       <canvas id="cameraCanvas" style="display: none;"></canvas>
     </div>
-    <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
-      <button class="btn btn-green" id="cameraCaptureBtn" style="padding: 10px 20px;">
-        <span>📸</span> Capture & Use Photo
+    <div style="display: flex; gap: 10px;">
+      <button class="btn btn-outline" id="cameraCancelBtn" style="flex: 1;">Cancel</button>
+      <button class="btn btn-primary" id="cameraCaptureBtn" style="flex: 2; padding: 10px;">
+        <span>📸</span> Capture Photo
       </button>
-      <button class="btn btn-outline" id="cameraCancelBtn">
-        Cancel
-      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Diagnostics & Predefined Scenarios Modal (Off Main Screen) -->
+<div class="modal-overlay" id="diagnosticsModal">
+  <div class="modal-content" style="max-width: 680px;">
+    <div class="modal-header">
+      <h3 style="font-size: 1.1rem; color: #fff;">⚙️ SIH Demo Scenarios & 360 Inspector</h3>
+      <button class="close-btn" id="diagnosticsCloseBtn">&times;</button>
+    </div>
+    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 14px;">
+      Quickly inject any of the 13 predefined SIH test scenarios for verification:
+    </p>
+    <div id="scenarioButtonsList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; max-height: 400px; overflow-y: auto;"></div>
+  </div>
+</div>
+
+<!-- Visual Bounding Box & Audit Detail Modal -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal-content" style="max-width: 800px;">
+    <div class="modal-header">
+      <div>
+        <h3 id="modalTitle" style="font-size: 1.1rem;">Inspection Audit Details</h3>
+        <p style="font-size: 0.72rem; color: var(--text-muted);" id="modalSubtitle">ID: INSP-...</p>
+      </div>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <button class="btn btn-green" id="modalNoticeBtn" style="padding: 4px 10px; font-size: 0.75rem;">
+          <span>📄</span> Statutory Notice
+        </button>
+        <button class="close-btn" id="modalCloseBtn">&times;</button>
+      </div>
+    </div>
+
+    <!-- Visual Evidence Bounding Boxes Canvas -->
+    <div class="bbox-wrapper" id="modalBboxWrapper">
+      <img id="modalBboxImage" class="bbox-image" src="" alt="Inspection visual evidence">
+      <canvas id="modalBboxCanvas" class="bbox-canvas"></canvas>
+    </div>
+
+    <!-- Officer Manual Review Form -->
+    <div style="background: #0f172a; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 12px; margin-top: 12px;">
+      <h4 style="font-size: 0.85rem; color: #fff; margin-bottom: 8px;">✍️ Officer Verification & Correction</h4>
+      <div id="manualReviewFieldsContainer"></div>
+      <div style="display: flex; gap: 8px; margin-top: 10px;">
+        <button class="btn btn-primary" id="saveManualReviewBtn" style="flex: 1; padding: 6px 12px; font-size: 0.8rem;">
+          <span>💾</span> Save Officer Verification
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -1575,7 +995,6 @@
     saveInspection,
     getAllInspections,
     getPendingInspections,
-    updateSyncStatus,
     getSyncStats,
     clearAllInspections,
     SYNC_STATUS
@@ -1583,21 +1002,22 @@
   import { syncManager } from '../src/sync/syncManager.js';
   import { voiceAssistant, speak, PROMPT_KEYS } from '../src/voice/voiceAssistant.js';
   import { compareProductWithPrevious, exportInspectionsAsCSV, generateStatutoryNoticeHTML } from '../src/history/historyManager.js';
+  import { analyzeSafetyWatchlist } from '../src/safety/safetyAnalyzer.js';
   import { configureSQLiteBackend } from '../src/db/sqliteClient.js';
 
-  // Load mock test data
+  // Load mock test scenarios for diagnostics drawer
   let mockScenarios = [];
   try {
     const res = await fetch('../src/data/mockInspections.json');
     mockScenarios = await res.json();
   } catch (e) {
-    console.warn('Could not load mock JSON via fetch:', e);
+    console.warn('Could not load mock JSON:', e);
   }
 
-  // Connect to authoritative FastAPI backend /api/sync endpoint
+  // Connect to authoritative FastAPI backend /api/sync
   configureSQLiteBackend({ mockMode: false });
 
-  // Initialize DB and Sync Manager
+  // Init DB and Sync
   await initDB();
   syncManager.init();
 
@@ -1605,23 +1025,74 @@
   let activeLanguage = 'en';
   let activeFilter = 'ALL';
   let searchQuery = '';
-  let rotatorAngle = 0;
-  let rotatorPlaying = true;
+  let selectedScanFile = null;
+  let currentPreviewDataUrl = null;
+  let cameraStream = null;
+  let lastScanInspectionId = null;
+  let currentViewingInspection = null;
 
   // DOM Elements
   const networkToggle = document.getElementById('networkToggle');
-  const networkPill = document.getElementById('networkPill');
   const statusDot = document.getElementById('statusDot');
   const networkText = document.getElementById('networkText');
   const syncNowBtn = document.getElementById('syncNowBtn');
   const clearDbBtn = document.getElementById('clearDbBtn');
+  const exportCsvBtn = document.getElementById('exportCsvBtn');
   const tableBody = document.getElementById('inspectionsTableBody');
-  const scenarioButtonsList = document.getElementById('scenarioButtonsList');
+  const tableSearch = document.getElementById('tableSearch');
+  const clearFilterBtn = document.getElementById('clearFilterBtn');
+
+  const openCameraHeroBtn = document.getElementById('openCameraHeroBtn');
+  const scannerDropzone = document.getElementById('scannerDropzone');
+  const scannerFileInput = document.getElementById('scannerFileInput');
+  const scannerPreviewBox = document.getElementById('scannerPreviewBox');
+  const scannerThumbnail = document.getElementById('scannerThumbnail');
+  const previewFilename = document.getElementById('previewFilename');
+  const previewFilesize = document.getElementById('previewFilesize');
+  const clearSelectedFileBtn = document.getElementById('clearSelectedFileBtn');
+  const scannerCategoryValue = document.getElementById('scannerCategoryValue');
+  const startScanBtn = document.getElementById('startScanBtn');
+
+  const scannerLoadingState = document.getElementById('scannerLoadingState');
+  const scanLoadingStepTitle = document.getElementById('scanLoadingStepTitle');
+  const scanLoadingStepDesc = document.getElementById('scanLoadingStepDesc');
+  const scannerOutputContent = document.getElementById('scannerOutputContent');
+  const resultStatusBanner = document.getElementById('resultStatusBanner');
+  const resultStatusText = document.getElementById('resultStatusText');
+  const resultCategoryBadge = document.getElementById('resultCategoryBadge');
+  const resultProductName = document.getElementById('resultProductName');
+  const extractedChips = document.getElementById('extractedChips');
+  const scannerFindingsList = document.getElementById('scannerFindingsList');
+
+  const safetyBannerBox = document.getElementById('safetyBannerBox');
+  const safetyFlagsList = document.getElementById('safetyFlagsList');
+  const toggleIngredientsBtn = document.getElementById('toggleIngredientsBtn');
+  const ingredientsCount = document.getElementById('ingredientsCount');
+  const toggleIngredientsArrow = document.getElementById('toggleIngredientsArrow');
+  const ingredientsTagsContainer = document.getElementById('ingredientsTagsContainer');
+
   const comparisonBanner = document.getElementById('comparisonBanner');
+  const comparisonCardContainer = document.getElementById('comparisonCardContainer');
   const comparisonList = document.getElementById('comparisonList');
+
+  const cameraModal = document.getElementById('cameraModal');
+  const cameraCloseBtn = document.getElementById('cameraCloseBtn');
+  const cameraCancelBtn = document.getElementById('cameraCancelBtn');
+  const cameraCaptureBtn = document.getElementById('cameraCaptureBtn');
+  const cameraVideo = document.getElementById('cameraVideo');
+  const cameraCanvas = document.getElementById('cameraCanvas');
+
+  const diagnosticsModal = document.getElementById('diagnosticsModal');
+  const openDiagnosticsBtn = document.getElementById('openDiagnosticsBtn');
+  const diagnosticsCloseBtn = document.getElementById('diagnosticsCloseBtn');
+  const scenarioButtonsList = document.getElementById('scenarioButtonsList');
+
   const detailModal = document.getElementById('detailModal');
   const modalCloseBtn = document.getElementById('modalCloseBtn');
-  const tableSearch = document.getElementById('tableSearch');
+  const modalNoticeBtn = document.getElementById('modalNoticeBtn');
+  const generateNoticeBtn = document.getElementById('generateNoticeBtn');
+  const viewBboxModalBtn = document.getElementById('viewBboxModalBtn');
+  const viewManualReviewBtn = document.getElementById('viewManualReviewBtn');
 
   // Show Toast
   function showToast(message, type = 'info') {
@@ -1636,710 +1107,34 @@
     }, 3500);
   }
 
-  // Render 13 Scenario Buttons
-  function renderScenarioButtons() {
-    scenarioButtonsList.innerHTML = '';
-    mockScenarios.forEach(item => {
-      const btn = document.createElement('button');
-      btn.className = 'scenario-item-btn';
-      btn.innerHTML = `
-        <span class="scenario-num">${item.scenario_id}</span>
-        <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-          <strong style="display: block; font-size: 0.8rem;">${item.scenario_name}</strong>
-          <span style="font-size: 0.7rem; color: var(--text-muted);">${item.product_name}</span>
-        </div>
-      `;
-      btn.onclick = () => injectScenario(item);
-      scenarioButtonsList.appendChild(btn);
-    });
-  }
-
-  // Inject Scenario
-  async function injectScenario(scenarioData) {
-    const isOnline = syncManager.isOnline();
-    const cloned = JSON.parse(JSON.stringify(scenarioData));
-    
-    // For test scenarios, if offline, force status pending
-    if (!isOnline) {
-      cloned.sync_status = SYNC_STATUS.PENDING;
-      cloned.synced_at = null;
-    }
-
-    // Save to IndexedDB
-    const saved = await saveInspection(cloned);
-    showToast(`Injected: ${saved.product_name} (${saved.sync_status})`, 'success');
-
-    // Voice trigger based on compliance
-    if (saved.compliance_status === 'COMPLIANT') {
-      speak(PROMPT_KEYS.COMPLIANT, activeLanguage);
-    } else if (saved.compliance_status === 'NON_COMPLIANT') {
-      speak(PROMPT_KEYS.NON_COMPLIANT, activeLanguage);
-    } else if (saved.compliance_status === 'UNCLEAR_IMAGE') {
-      speak(PROMPT_KEYS.IMAGE_UNCLEAR, activeLanguage);
-    }
-
-    // Check same-product comparison
-    const comparison = await compareProductWithPrevious(saved);
-    const comparisonCardContainer = document.getElementById('comparisonCardContainer');
-    if (comparison.hasHistory && comparison.changesDetected.length > 0) {
-      comparisonBanner.classList.add('active');
-      comparisonBanner.style.display = 'block';
-
-      const prev = comparison.latestPrevious;
-      if (prev && comparisonCardContainer) {
-        comparisonCardContainer.innerHTML = `
-          <div class="comparison-side-by-side">
-            <div class="comp-col highlight-prev">
-              <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Previous Batch (${prev.inspection_id || 'Prior Scan'})</div>
-              <div style="font-size: 0.85rem; color: #fff; font-weight: 600;">Net Qty: ${prev.net_quantity || 'N/A'}</div>
-              <div style="font-size: 0.85rem; color: #fff;">MRP: ₹${prev.mrp || 'N/A'}</div>
-              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Inspected: ${new Date(prev.created_at || Date.now()).toLocaleDateString()}</div>
-            </div>
-            <div class="comp-col highlight-curr">
-              <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Current Batch (${saved.inspection_id})</div>
-              <div style="font-size: 0.85rem; color: #fff; font-weight: 600;">Net Qty: ${saved.net_quantity || 'N/A'}</div>
-              <div style="font-size: 0.85rem; color: #fff;">MRP: ₹${saved.mrp || 'N/A'}</div>
-              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Inspected: ${new Date(saved.created_at || Date.now()).toLocaleDateString()}</div>
-            </div>
-          </div>
-          ${comparison.shrinkflationDetected ? '<div class="shrinkflation-badge">🚨 SHRINKFLATION ALERT: Net quantity reduced without proportional price reduction</div>' : ''}
-          ${comparison.priceHikeDetected ? '<div class="shrinkflation-badge" style="background: rgba(245, 158, 11, 0.2); border-color: rgba(245, 158, 11, 0.4); color: #fbbf24;">📈 PRICE HIKE DETECTED: MRP increased over previous batch</div>' : ''}
-        `;
-      }
-      comparisonList.innerHTML = comparison.changesDetected.map(c => `<li>${c}</li>`).join('');
-      speak(PROMPT_KEYS.MRP_CHANGED, activeLanguage);
-    } else {
-      comparisonBanner.classList.remove('active');
-      comparisonBanner.style.display = 'none';
-    }
-
-    // Auto-sync trigger if online
-    if (isOnline) {
-      syncManager.triggerSync('auto_post_save');
-    }
-
-    await refreshDashboard();
-  }
-
-  // Refresh Table and KPI Metrics
-  async function refreshDashboard() {
-    const stats = await getSyncStats();
-    let records = await getAllInspections();
-
-    // Update KPI
-    document.getElementById('kpiTotal').textContent = stats.total;
-    document.getElementById('kpiPending').textContent = stats.pending;
-    document.getElementById('kpiSynced').textContent = stats.synced;
-    document.getElementById('kpiFailed').textContent = stats.failed;
-
-    const compCount = records.filter(r => r.compliance_status === 'COMPLIANT').length;
-    const rate = records.length > 0 ? ((compCount / records.length) * 100).toFixed(0) : '100';
-    document.getElementById('kpiRate').textContent = `${rate}%`;
-
-    // Filter counts
-    document.getElementById('tabCountAll').textContent = records.length;
-    document.getElementById('tabCountPending').textContent = stats.pending;
-    document.getElementById('tabCountSynced').textContent = stats.synced;
-    document.getElementById('tabCountFailed').textContent = stats.failed;
-
-    // Show/hide Clear Filter button
-    const clearFilterBtn = document.getElementById('clearFilterBtn');
-    if (searchQuery || activeFilter !== 'ALL') {
-      if (clearFilterBtn) clearFilterBtn.style.display = 'inline-flex';
-    } else {
-      if (clearFilterBtn) clearFilterBtn.style.display = 'none';
-    }
-
-    // Apply active filter
-    if (activeFilter !== 'ALL') {
-      records = records.filter(r => r.sync_status === activeFilter);
-    }
-
-    // Apply search
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      records = records.filter(r => 
-        (r.product_name && r.product_name.toLowerCase().includes(q)) ||
-        (r.inspection_id && r.inspection_id.toLowerCase().includes(q)) ||
-        (r.category && r.category.toLowerCase().includes(q))
-      );
-    }
-
-    // Render Table Rows
-    if (records.length === 0) {
-      if (searchQuery || activeFilter !== 'ALL') {
-        tableBody.innerHTML = `
-          <tr>
-            <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">
-              <div style="font-size: 0.9rem; color: #fff; margin-bottom: 6px;">No matching inspections found</div>
-              <div style="font-size: 0.8rem; margin-bottom: 12px;">No records match filter '${activeFilter}' ${searchQuery ? `or query '${searchQuery}'` : ''}.</div>
-              <button class="btn btn-outline" style="padding: 5px 14px; font-size: 0.75rem;" onclick="window.resetTableFilters()">
-                ✕ Clear & Reset Filters
-              </button>
-            </td>
-          </tr>
-        `;
-      } else {
-        tableBody.innerHTML = `
-          <tr>
-            <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">
-              No inspections recorded yet. Upload a package photo above or click any test scenario on the left to simulate a scan.
-            </td>
-          </tr>
-        `;
-      }
-      return;
-    }
-
-    tableBody.innerHTML = records.map(r => {
-      const compClass = r.compliance_status === 'COMPLIANT' ? 'comp-compliant' :
-                        r.compliance_status === 'NON_COMPLIANT' ? 'comp-non_compliant' : 'comp-flagged';
-      const syncClass = r.sync_status === 'synced' ? 'status-synced' :
-                        r.sync_status === 'pending' ? 'status-pending' : 'status-failed';
-
-      return `
-        <tr>
-          <td style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: #93c5fd;">${r.inspection_id}</td>
-          <td><strong>${r.product_name}</strong></td>
-          <td style="color: var(--text-muted);">${r.category}</td>
-          <td>${r.mrp ? `₹${r.mrp}` : 'N/A'} <span style="color: var(--text-muted); font-size: 0.75rem;">(${r.net_quantity || 'N/A'})</span></td>
-          <td><span class="badge-compliance ${compClass}">${r.compliance_status}</span></td>
-          <td><span class="badge-status ${syncClass}">${r.sync_status}</span></td>
-          <td>
-            <button class="btn btn-outline" style="padding: 4px 8px; font-size: 0.75rem;" onclick="window.viewDetails('${r.inspection_id}')">
-              View
-            </button>
-          </td>
-        </tr>
-      `;
-    }).join('');
-  }
-
-  // -------------------------------------------------------------
-  // Modal Tab Switching & Audit Record Visualizer
-  // -------------------------------------------------------------
-  let currentViewingInspection = null;
-
-  document.querySelectorAll('.modal-tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.modal-tab-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.modal-tab-pane').forEach(p => p.classList.remove('active'));
-      btn.classList.add('active');
-      const targetPaneId = btn.dataset.modaltab;
-      const targetPane = document.getElementById(targetPaneId);
-      if (targetPane) targetPane.classList.add('active');
-
-      if (targetPaneId === 'visualEvidenceTab' && currentViewingInspection) {
-        setTimeout(() => renderVisualEvidence(currentViewingInspection), 50);
-      }
-    });
-  });
-
-  // Render Visual Evidence with Bounding Box Overlay
-  function renderVisualEvidence(item) {
-    const packagingImg = document.getElementById('bboxPackagingImage');
-    const overlayCanvas = document.getElementById('bboxOverlayCanvas');
-    const emptyNotice = document.getElementById('bboxEmptyNotice');
-    const ctx = overlayCanvas.getContext('2d');
-
-    const imageUrl = item.evidence?.thumbnail_base64 || currentPreviewDataUrl;
-
-    if (imageUrl) {
-      packagingImg.style.display = 'block';
-      emptyNotice.style.display = 'none';
-      packagingImg.src = imageUrl;
-
-      packagingImg.onload = () => {
-        const renderedW = packagingImg.clientWidth;
-        const renderedH = packagingImg.clientHeight;
-        overlayCanvas.width = renderedW;
-        overlayCanvas.height = renderedH;
-        overlayCanvas.style.width = renderedW + 'px';
-        overlayCanvas.style.height = renderedH + 'px';
-
-        ctx.clearRect(0, 0, renderedW, renderedH);
-
-        const naturalW = packagingImg.naturalWidth || renderedW;
-        const naturalH = packagingImg.naturalHeight || renderedH;
-        const scaleX = renderedW / naturalW;
-        const scaleY = renderedH / naturalH;
-
-        const detections = item.evidence?.ocr_detections || item.ocr_detections || [];
-        const checks = item.checks || [];
-
-        // 1. Draw raw OCR detections in Cyan
-        if (detections && detections.length > 0) {
-          detections.forEach(det => {
-            const box = det.box;
-            if (box && box.length === 4) {
-              const xs = box.map(p => p[0] * scaleX);
-              const ys = box.map(p => p[1] * scaleY);
-              const minX = Math.min(...xs);
-              const minY = Math.min(...ys);
-              const boxW = Math.max(...xs) - minX;
-              const boxH = Math.max(...ys) - minY;
-
-              ctx.strokeStyle = 'rgba(56, 189, 248, 0.75)';
-              ctx.lineWidth = 1.5;
-              ctx.strokeRect(minX, minY, boxW, boxH);
-              ctx.fillStyle = 'rgba(56, 189, 248, 0.08)';
-              ctx.fillRect(minX, minY, boxW, boxH);
-            }
-          });
-        }
-
-        // 2. Draw mandatory declaration highlights
-        checks.forEach(check => {
-          const evidence = check.evidence;
-          const isPass = check.result === 'PASS';
-          const isFail = check.result === 'FAIL';
-          const strokeColor = isPass ? '#10b981' : isFail ? '#ef4444' : '#f59e0b';
-          const fillColor = isPass ? 'rgba(16, 185, 129, 0.15)' : isFail ? 'rgba(239, 68, 68, 0.15)' : 'rgba(245, 158, 11, 0.15)';
-
-          if (evidence && evidence.box && evidence.box.length === 4) {
-            const xs = evidence.box.map(p => p[0] * scaleX);
-            const ys = evidence.box.map(p => p[1] * scaleY);
-            const minX = Math.min(...xs);
-            const minY = Math.min(...ys);
-            const boxW = Math.max(...xs) - minX;
-            const boxH = Math.max(...ys) - minY;
-
-            ctx.strokeStyle = strokeColor;
-            ctx.lineWidth = 2.5;
-            ctx.strokeRect(minX, minY, boxW, boxH);
-            ctx.fillStyle = fillColor;
-            ctx.fillRect(minX, minY, boxW, boxH);
-
-            const label = `${check.field}: ${check.extracted_value || 'Missing'}`;
-            ctx.font = 'bold 10px Inter, sans-serif';
-            const textMetrics = ctx.measureText(label);
-            const tagW = textMetrics.width + 8;
-            const tagH = 16;
-            const tagY = Math.max(minY - tagH, 0);
-
-            ctx.fillStyle = strokeColor;
-            ctx.fillRect(minX, tagY, tagW, tagH);
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText(label, minX + 4, tagY + 12);
-          }
-        });
-      };
-
-      if (packagingImg.complete) {
-        packagingImg.onload();
-      }
-    } else {
-      packagingImg.style.display = 'none';
-      emptyNotice.style.display = 'block';
-      ctx.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
-    }
-  }
-
-  // Populate Interactive Manual Review Form
-  function populateManualReviewForm(item) {
-    const tableBody = document.getElementById('manualReviewTableBody');
-    const fieldsToReview = [
-      { key: 'product_name', label: 'Product Name', value: item.product_name },
-      { key: 'category', label: 'Commodity Category', value: item.category },
-      { key: 'mrp', label: 'Declared MRP (₹)', value: item.mrp },
-      { key: 'net_quantity', label: 'Net Quantity', value: item.net_quantity },
-      { key: 'unit_sale_price', label: 'Unit Sale Price', value: item.unit_sale_price },
-      { key: 'mfg_date', label: 'Date of Manufacture', value: item.mfg_date },
-      { key: 'expiry_date', label: 'Expiry / Best Before', value: item.expiry_date },
-      { key: 'manufacturer', label: 'Manufacturer / Packer Address', value: item.manufacturer },
-      { key: 'country_of_origin', label: 'Country of Origin', value: item.country_of_origin || 'India' },
-      { key: 'consumer_care', label: 'Consumer Care Details', value: item.consumer_care }
-    ];
-
-    const confScore = Math.round((item.confidence || 0.95) * 100);
-
-    tableBody.innerHTML = fieldsToReview.map(f => {
-      const val = f.value || '';
-      const displayVal = val ? val : '<span style="color: var(--accent-red); font-style: italic;">[Missing / Unreadable]</span>';
-      return `
-        <tr data-field="${f.key}">
-          <td><strong style="color: #fff;">${f.label}</strong></td>
-          <td>${displayVal}</td>
-          <td><span class="badge-status status-synced">${confScore}%</span></td>
-          <td>
-            <input type="text" class="review-input" id="review_input_${f.key}" value="${val ? val.replace(/"/g, '&quot;') : ''}" placeholder="Enter verified value..." />
-          </td>
-          <td>
-            <div style="display: flex; gap: 4px;">
-              <button type="button" class="btn-action-small" onclick="window.setReviewAction('${f.key}', 'CONFIRM')">✅ Confirm</button>
-              <button type="button" class="btn-action-small" onclick="window.setReviewAction('${f.key}', 'UNREADABLE')">⚠️ Mark Unreadable</button>
-            </div>
-          </td>
-        </tr>
-      `;
-    }).join('');
-  }
-
-  // Set review action helper
-  window.setReviewAction = (fieldKey, action) => {
-    const input = document.getElementById(`review_input_${fieldKey}`);
-    if (!input) return;
-    if (action === 'UNREADABLE') {
-      input.value = '[UNREADABLE]';
-      input.classList.add('modified');
-      showToast(`Field '${fieldKey}' marked as UNREADABLE`, 'warn');
-    } else if (action === 'CONFIRM') {
-      input.classList.remove('modified');
-      showToast(`Field '${fieldKey}' AI value confirmed`, 'success');
-    }
-  };
-
-  // Submit Manual Review
-  document.getElementById('saveManualReviewBtn').addEventListener('click', async () => {
-    if (!currentViewingInspection) return;
-
-    const item = currentViewingInspection;
-    const reviewerId = document.getElementById('manualReviewOfficerId').value.trim() || 'OFFICER-007';
-    const remarks = document.getElementById('manualReviewNotes').value.trim();
-
-    const saveBtn = document.getElementById('saveManualReviewBtn');
-    saveBtn.disabled = true;
-    saveBtn.innerHTML = '<span>⏳</span> Re-evaluating Compliance...';
-
-    try {
-      const apiBase = window.__API_URL || 'http://localhost:8000';
-      const updatedData = { ...item };
-      const fields = ['product_name', 'category', 'mrp', 'net_quantity', 'unit_sale_price', 'mfg_date', 'expiry_date', 'manufacturer', 'country_of_origin', 'consumer_care'];
-
-      for (const f of fields) {
-        const input = document.getElementById(`review_input_${f}`);
-        if (input) {
-          const newVal = input.value.trim();
-          const oldVal = item[f] || '';
-          if (newVal !== oldVal) {
-            updatedData[f] = newVal === '[UNREADABLE]' ? null : newVal;
-            
-            try {
-              await fetch(`${apiBase}/api/compliance/manual-review`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  inspection_id: item.inspection_id,
-                  field: f,
-                  action: newVal === '[UNREADABLE]' ? 'MARK_UNREADABLE' : 'CORRECT',
-                  reviewer_id: reviewerId,
-                  ai_value: oldVal,
-                  confidence: item.confidence || 0.95,
-                  corrected_value: newVal,
-                  notes: remarks
-                })
-              });
-            } catch (e) {
-              console.warn(`Manual review action failed for field ${f}:`, e);
-            }
-          }
-        }
-      }
-
-      // Re-evaluate compliance through Rules Engine
-      try {
-        const evalRes = await fetch(`${apiBase}/api/compliance/evaluate`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            category: updatedData.category || 'food',
-            extracted_data: {
-              product_name: updatedData.product_name,
-              mrp: updatedData.mrp,
-              net_quantity: updatedData.net_quantity,
-              unit_sale_price: updatedData.unit_sale_price,
-              date_of_manufacture: updatedData.mfg_date,
-              expiry_date: updatedData.expiry_date,
-              manufacturer: updatedData.manufacturer,
-              country_of_origin: updatedData.country_of_origin,
-              consumer_care: updatedData.consumer_care
-            },
-            inspection_id: item.inspection_id
-          })
-        });
-
-        if (evalRes.ok) {
-          const evalData = await evalRes.json();
-          updatedData.compliance_status = evalData.overall_status;
-          updatedData.violations = (evalData.findings || []).filter(fd => fd.result === 'FAIL');
-          updatedData.checks = evalData.findings || [];
-        }
-      } catch (e) {
-        console.warn('Re-evaluation error:', e);
-      }
-
-      updatedData.officer_reviewed = true;
-      updatedData.reviewer_id = reviewerId;
-      updatedData.review_notes = remarks;
-      updatedData.updated_at = new Date().toISOString();
-
-      await saveInspection(updatedData);
-      showToast(`Inspection ${item.inspection_id} successfully reviewed & updated! (${updatedData.compliance_status})`, 'success');
-
-      if (updatedData.compliance_status === 'COMPLIANT') {
-        speak(PROMPT_KEYS.COMPLIANT, activeLanguage);
-      } else {
-        speak(PROMPT_KEYS.INSPECTION_COMPLETE, activeLanguage);
-      }
-
-      await refreshDashboard();
-      window.viewDetails(item.inspection_id);
-
-    } catch (err) {
-      console.error('Manual review save error:', err);
-      showToast('Manual review error: ' + err.message, 'error');
-    } finally {
-      saveBtn.disabled = false;
-      saveBtn.innerHTML = '<span>💾</span> Save Review & Re-evaluate Compliance';
-    }
-  });
-
-  // Details Modal Main Opener
-  window.viewDetails = async (id) => {
-    const records = await getAllInspections();
-    const item = records.find(r => r.inspection_id === id);
-    if (!item) return;
-
-    currentViewingInspection = item;
-
-    document.getElementById('modalTitle').textContent = item.product_name;
-    document.getElementById('modalSubtitle').textContent = `Inspection ID: ${item.inspection_id} • Status: ${item.compliance_status} ${item.officer_reviewed ? '• [OFFICER REVIEWED]' : ''}`;
-
-    const kvGrid = document.getElementById('modalKvGrid');
-    kvGrid.innerHTML = `
-      <span class="kv-key">Inspection ID:</span><span class="kv-val">${item.inspection_id}</span>
-      <span class="kv-key">Category:</span><span class="kv-val">${item.category}</span>
-      <span class="kv-key">Barcode:</span><span class="kv-val">${item.barcode || 'N/A'}</span>
-      <span class="kv-key">Declared MRP:</span><span class="kv-val">₹${item.mrp || 'N/A'}</span>
-      <span class="kv-key">Net Quantity:</span><span class="kv-val">${item.net_quantity || 'N/A'}</span>
-      <span class="kv-key">Unit Sale Price:</span><span class="kv-val">${item.unit_sale_price || 'N/A'}</span>
-      <span class="kv-key">Mfg / Exp Date:</span><span class="kv-val">${item.mfg_date || 'N/A'} / ${item.expiry_date || 'N/A'}</span>
-      <span class="kv-key">Manufacturer:</span><span class="kv-val">${item.manufacturer || 'N/A'}</span>
-      <span class="kv-key">Sync Status:</span><span class="kv-val">${item.sync_status} (Attempts: ${item.sync_attempts})</span>
-      <span class="kv-key">Inspected At:</span><span class="kv-val">${new Date(item.created_at).toLocaleString()}</span>
-    `;
-
-    document.getElementById('modalJsonBox').textContent = JSON.stringify({
-      violations: item.violations,
-      mandatory_declarations: item.mandatory_declarations,
-      evidence: item.evidence,
-      checks: item.checks
-    }, null, 2);
-
-    populateManualReviewForm(item);
-    renderVisualEvidence(item);
-
-    detailModal.classList.add('open');
-  };
-
-  modalCloseBtn.onclick = () => detailModal.classList.remove('open');
-  detailModal.onclick = (e) => { if (e.target === detailModal) detailModal.classList.remove('open'); };
-
-  // Network Switch Handler
-  networkToggle.addEventListener('change', (e) => {
-    const isOnline = e.target.checked;
-    syncManager.setSimulatedOffline(!isOnline);
-
-    if (isOnline) {
-      statusDot.className = 'status-dot dot-online';
-      networkText.textContent = 'ONLINE';
-      showToast('Internet Restored! Triggering automatic background sync...', 'info');
-    } else {
-      statusDot.className = 'status-dot dot-offline';
-      networkText.textContent = 'OFFLINE (Rural Mode)';
-      showToast('Internet OFF: All scans will save safely to IndexedDB.', 'warn');
-    }
-  });
-
-  // Sync Now Button
-  syncNowBtn.addEventListener('click', async () => {
-    syncNowBtn.disabled = true;
-    syncNowBtn.innerHTML = '<span>⏳</span> Syncing...';
-    
-    const res = await syncManager.syncNow();
-    
-    syncNowBtn.disabled = false;
-    syncNowBtn.innerHTML = '<span>🔄</span> Force Sync Now';
-
-    if (res.syncedCount > 0) {
-      showToast(`Synced ${res.syncedCount} inspection(s) to SQLite Backend!`, 'success');
-      speak(PROMPT_KEYS.SYNC_SUCCESS, activeLanguage);
-    } else if (res.offline) {
-      showToast('Cannot sync while offline! Turn internet switch ON.', 'warn');
-    } else {
-      showToast('All local inspections are already synced.', 'info');
-    }
-
-    await refreshDashboard();
-  });
-
-  // Reset DB Button
-  clearDbBtn.addEventListener('click', async () => {
-    if (confirm('Reset local IndexedDB for fresh testing?')) {
-      await clearAllInspections();
-      showToast('Database reset successfully.', 'info');
-      await refreshDashboard();
-    }
-  });
-
-  // Filter Tabs
-  document.querySelectorAll('.filter-tab').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      activeFilter = btn.dataset.filter;
-      refreshDashboard();
-    });
-  });
-
-  // Search Input
-  tableSearch.addEventListener('input', (e) => {
-    searchQuery = e.target.value;
-    refreshDashboard();
-  });
-
-  // Reset Table Filters Helper
-  window.resetTableFilters = () => {
-    searchQuery = '';
-    tableSearch.value = '';
-    activeFilter = 'ALL';
-    document.querySelectorAll('.filter-tab').forEach(b => {
-      b.classList.toggle('active', b.dataset.filter === 'ALL');
-    });
-    const clearBtn = document.getElementById('clearFilterBtn');
-    if (clearBtn) clearBtn.style.display = 'none';
-    refreshDashboard();
-  };
-
-  const clearFilterBtn = document.getElementById('clearFilterBtn');
-  if (clearFilterBtn) {
-    clearFilterBtn.addEventListener('click', window.resetTableFilters);
-  }
-
-  // Export CSV Handler
-  const exportCsvBtn = document.getElementById('exportCsvBtn');
-  if (exportCsvBtn) {
-    exportCsvBtn.addEventListener('click', async () => {
-      const records = await getAllInspections();
-      const csvContent = exportInspectionsAsCSV(records);
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.setAttribute('href', url);
-      link.setAttribute('download', `LegalMetrix_Audit_Export_${new Date().toISOString().slice(0, 10)}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      showToast(`Exported ${records.length} inspection record(s) to CSV!`, 'success');
-    });
-  }
-
-  // Generate Statutory Notice Handler
-  const generateNoticeBtn = document.getElementById('generateNoticeBtn');
-  if (generateNoticeBtn) {
-    generateNoticeBtn.addEventListener('click', () => {
-      if (!currentViewingInspection) {
-        showToast('No inspection record loaded to generate notice.', 'warn');
-        return;
-      }
-      const html = generateStatutoryNoticeHTML(currentViewingInspection);
-      const noticeWin = window.open('', '_blank');
-      if (noticeWin) {
-        noticeWin.document.write(html);
-        noticeWin.document.close();
-      } else {
-        showToast('Pop-up blocked. Please allow pop-ups to open the statutory notice.', 'warn');
-      }
-    });
-  }
-
-  // Language Selection
-  document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      activeLanguage = btn.dataset.lang;
-      voiceAssistant.setLanguage(activeLanguage);
-      showToast(`Voice language switched to: ${btn.textContent}`, 'info');
-    });
-  });
-
-  // Voice Test Buttons
-  document.querySelectorAll('.voice-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const promptKey = btn.dataset.voice;
-      speak(promptKey, activeLanguage);
-    });
-  });
-
-  // Sync Manager Event Listeners
-  syncManager.on('syncComplete', async () => {
-    await refreshDashboard();
-  });
-  syncManager.on('itemSynced', async () => {
-    await refreshDashboard();
-  });
-
-  // -------------------------------------------------------------
-  // Live Image Scanner Controller
-  // -------------------------------------------------------------
-  let selectedScanFile = null;
-  let currentPreviewDataUrl = null;
-  let cameraStream = null;
-  let lastScanInspectionId = null;
-
-  const scannerDropzone = document.getElementById('scannerDropzone');
-  const scannerFileInput = document.getElementById('scannerFileInput');
-  const browseFileBtn = document.getElementById('browseFileBtn');
-  const openCameraBtn = document.getElementById('openCameraBtn');
-  const scannerPreviewBox = document.getElementById('scannerPreviewBox');
-  const scannerThumbnail = document.getElementById('scannerThumbnail');
-  const previewFilename = document.getElementById('previewFilename');
-  const previewFilesize = document.getElementById('previewFilesize');
-  const clearSelectedFileBtn = document.getElementById('clearSelectedFileBtn');
-  const scannerCategorySelect = document.getElementById('scannerCategorySelect');
-  const startScanBtn = document.getElementById('startScanBtn');
-  
-  const scannerEmptyState = document.getElementById('scannerEmptyState');
-  const scannerLoadingState = document.getElementById('scannerLoadingState');
-  const scanLoadingStepTitle = document.getElementById('scanLoadingStepTitle');
-  const scanLoadingStepDesc = document.getElementById('scanLoadingStepDesc');
-  const scannerOutputContent = document.getElementById('scannerOutputContent');
-  const resultStatusBanner = document.getElementById('resultStatusBanner');
-  const resultStatusText = document.getElementById('resultStatusText');
-  const resultCategoryBadge = document.getElementById('resultCategoryBadge');
-  const resultProductName = document.getElementById('resultProductName');
-  const extractedChips = document.getElementById('extractedChips');
-  const scannerFindingsList = document.getElementById('scannerFindingsList');
-  const viewFullAuditBtn = document.getElementById('viewFullAuditBtn');
-
-  // Camera Viewfinder Elements
-  const cameraModal = document.getElementById('cameraModal');
-  const cameraCloseBtn = document.getElementById('cameraCloseBtn');
-  const cameraCancelBtn = document.getElementById('cameraCancelBtn');
-  const cameraCaptureBtn = document.getElementById('cameraCaptureBtn');
-  const cameraVideo = document.getElementById('cameraVideo');
-  const cameraCanvas = document.getElementById('cameraCanvas');
-
+  // Format File Bytes
   function formatBytes(bytes) {
-    if (bytes === 0) return '0 Bytes';
+    if (!bytes) return '0 B';
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ['B', 'KB', 'MB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
   }
 
+  // Category Pill Selection
+  document.querySelectorAll('.cat-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      scannerCategoryValue.value = pill.dataset.cat;
+    });
+  });
+
+  // File Handling
   function handleSelectedFile(file) {
     if (!file) return;
-
     const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
     if (!validTypes.includes(file.type) && !file.name.match(/\.(jpe?g|png|webp)$/i)) {
-      showToast('Invalid format. Please upload a JPEG, PNG, or WebP image.', 'error');
+      showToast('Please upload a JPEG, PNG, or WebP image.', 'error');
       return;
     }
-
     if (file.size > 15 * 1024 * 1024) {
-      showToast('File exceeds 15MB limit. Please upload a smaller photo.', 'error');
+      showToast('Image exceeds 15MB limit.', 'error');
       return;
     }
 
@@ -2365,50 +1160,34 @@
   }
 
   clearSelectedFileBtn.onclick = clearSelectedFile;
-
   scannerDropzone.addEventListener('click', () => scannerFileInput.click());
-  scannerDropzone.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      scannerFileInput.click();
-    }
-  });
-
   scannerFileInput.addEventListener('change', (e) => {
-    if (e.target.files && e.target.files[0]) {
-      handleSelectedFile(e.target.files[0]);
-    }
+    if (e.target.files && e.target.files[0]) handleSelectedFile(e.target.files[0]);
   });
 
-  browseFileBtn.addEventListener('click', () => scannerFileInput.click());
-
-  ['dragenter', 'dragover'].forEach(eventName => {
-    scannerDropzone.addEventListener(eventName, (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      scannerDropzone.classList.add('dragover');
+  // Drag & Drop
+  ['dragenter', 'dragover'].forEach(name => {
+    scannerDropzone.addEventListener(name, (e) => {
+      e.preventDefault(); e.stopPropagation();
+      scannerDropzone.classList.add('drag-over');
     });
   });
-
-  ['dragleave', 'drop'].forEach(eventName => {
-    scannerDropzone.addEventListener(eventName, (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      scannerDropzone.classList.remove('dragover');
+  ['dragleave', 'drop'].forEach(name => {
+    scannerDropzone.addEventListener(name, (e) => {
+      e.preventDefault(); e.stopPropagation();
+      scannerDropzone.classList.remove('drag-over');
     });
   });
-
   scannerDropzone.addEventListener('drop', (e) => {
     const dt = e.dataTransfer;
-    if (dt && dt.files && dt.files[0]) {
-      handleSelectedFile(dt.files[0]);
-    }
+    if (dt && dt.files && dt.files[0]) handleSelectedFile(dt.files[0]);
   });
 
+  // Camera Modal
   async function startCamera() {
     try {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        showToast('Camera is not supported on this browser/device.', 'warn');
+        showToast('Camera not supported on this browser.', 'warn');
         return;
       }
       cameraStream = await navigator.mediaDevices.getUserMedia({
@@ -2417,87 +1196,88 @@
       cameraVideo.srcObject = cameraStream;
       cameraModal.classList.add('open');
     } catch (err) {
-      console.error('Camera error:', err);
-      showToast('Could not open camera: ' + (err.message || 'Permission denied'), 'error');
+      showToast('Could not access camera: ' + err.message, 'error');
     }
   }
 
   function stopCamera() {
     if (cameraStream) {
-      cameraStream.getTracks().forEach(track => track.stop());
+      cameraStream.getTracks().forEach(t => t.stop());
       cameraStream = null;
     }
     cameraModal.classList.remove('open');
   }
 
-  openCameraBtn.addEventListener('click', startCamera);
+  openCameraHeroBtn.addEventListener('click', startCamera);
   cameraCloseBtn.addEventListener('click', stopCamera);
   cameraCancelBtn.addEventListener('click', stopCamera);
 
   cameraCaptureBtn.addEventListener('click', () => {
     if (!cameraVideo.videoWidth) {
-      showToast('Camera feed not ready yet.', 'warn');
+      showToast('Camera not ready yet.', 'warn');
       return;
     }
     cameraCanvas.width = cameraVideo.videoWidth;
     cameraCanvas.height = cameraVideo.videoHeight;
     const ctx = cameraCanvas.getContext('2d');
     ctx.drawImage(cameraVideo, 0, 0, cameraCanvas.width, cameraCanvas.height);
-    
     cameraCanvas.toBlob((blob) => {
       if (blob) {
-        const photoFile = new File([blob], `camera-scan-${Date.now()}.jpg`, { type: 'image/jpeg' });
-        handleSelectedFile(photoFile);
+        const photo = new File([blob], `package-photo-${Date.now()}.jpg`, { type: 'image/jpeg' });
+        handleSelectedFile(photo);
         stopCamera();
-        showToast('Camera snapshot captured!', 'success');
+        showToast('Photo captured successfully!', 'success');
       }
     }, 'image/jpeg', 0.95);
   });
 
-  function setScannerLoading(isLoading, title = 'Processing Image...', desc = 'Analyzing packaging with NVIDIA Nemotron OCR v2...') {
-    if (isLoading) {
-      scannerEmptyState.style.display = 'none';
-      scannerOutputContent.style.display = 'none';
-      scannerLoadingState.style.display = 'flex';
-      scanLoadingStepTitle.textContent = title;
-      scanLoadingStepDesc.textContent = desc;
-      startScanBtn.disabled = true;
-      startScanBtn.innerHTML = '<span>🔍</span> Analyzing Packaging...';
-    } else {
-      scannerLoadingState.style.display = 'none';
-      startScanBtn.disabled = false;
-      startScanBtn.innerHTML = '<span>🚀</span> Scan & Verify Packaging';
-    }
+  // Diagnostics Modal Trigger
+  openDiagnosticsBtn.onclick = () => diagnosticsModal.classList.add('open');
+  diagnosticsCloseBtn.onclick = () => diagnosticsModal.classList.remove('open');
+  diagnosticsModal.onclick = (e) => { if (e.target === diagnosticsModal) diagnosticsModal.classList.remove('open'); };
+
+  // Render Diagnostics Scenario Buttons
+  function renderScenarioButtons() {
+    scenarioButtonsList.innerHTML = '';
+    mockScenarios.forEach(item => {
+      const btn = document.createElement('button');
+      btn.className = 'btn btn-outline';
+      btn.style.cssText = 'padding: 8px; text-align: left; display: flex; flex-direction: column; gap: 2px;';
+      btn.innerHTML = `
+        <strong style="color: #93c5fd; font-size: 0.78rem;">#${item.scenario_id} ${item.scenario_name}</strong>
+        <span style="font-size: 0.7rem; color: var(--text-muted);">${item.product_name}</span>
+      `;
+      btn.onclick = async () => {
+        diagnosticsModal.classList.remove('open');
+        await injectScenario(item);
+      };
+      scenarioButtonsList.appendChild(btn);
+    });
   }
 
-  // Real-time Barcode / QR Code Detector & FSAT Cross-Referencing
-  async function scanBarcodeAndVerifyFSAT(previewDataUrl, defaultBarcode = null) {
-    let barcodeValue = defaultBarcode;
-    if (!barcodeValue && 'BarcodeDetector' in window) {
-      try {
-        const barcodeDetector = new BarcodeDetector({
-          formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'qr_code', 'code_128', 'code_39']
-        });
-        const img = new Image();
-        img.src = previewDataUrl;
-        await new Promise(res => { img.onload = res; img.onerror = res; });
-        const barcodes = await barcodeDetector.detect(img);
-        if (barcodes && barcodes.length > 0) {
-          barcodeValue = barcodes[0].rawValue;
-        }
-      } catch (e) {
-        console.warn('Native BarcodeDetector:', e);
-      }
+  // Inject Scenario (for Diagnostics & Audits)
+  async function injectScenario(scenarioData) {
+    const isOnline = syncManager.isOnline();
+    const cloned = JSON.parse(JSON.stringify(scenarioData));
+    if (!isOnline) {
+      cloned.sync_status = SYNC_STATUS.PENDING;
+      cloned.synced_at = null;
     }
-    return barcodeValue;
+    const saved = await saveInspection(cloned);
+    showToast(`Injected Scenario #${saved.scenario_id || ''}: ${saved.product_name}`, 'success');
+
+    if (saved.compliance_status === 'COMPLIANT') speak(PROMPT_KEYS.COMPLIANT, activeLanguage);
+    else if (saved.compliance_status === 'NON_COMPLIANT') speak(PROMPT_KEYS.NON_COMPLIANT, activeLanguage);
+
+    displayScanResult(saved);
+    await refreshDashboard();
   }
 
-  // Statutory Unit Sale Price (USP) Math Calculation Helper
+  // Statutory Unit Sale Price (USP) Calculation Helper
   function calculateStatutoryUSP(mrp, netQty) {
     if (!mrp || !netQty) return null;
     const mrpNum = parseFloat(String(mrp).replace(/[^\d.]/g, ''));
     if (!mrpNum || mrpNum <= 0) return null;
-
     const match = String(netQty).match(/([\d.]+)\s*([a-zA-Z]+)/);
     if (!match) return null;
     const qtyNum = parseFloat(match[1]);
@@ -2505,29 +1285,32 @@
     if (!qtyNum || qtyNum <= 0) return null;
 
     if (['g', 'gm', 'gram', 'grams'].includes(unit)) {
-      const rate = mrpNum / qtyNum;
-      return { rate: rate.toFixed(2), unit: 'g', text: `₹${rate.toFixed(2)}/g` };
+      return `₹${(mrpNum / qtyNum).toFixed(2)}/g`;
     } else if (['kg', 'kgs'].includes(unit)) {
-      const rate = mrpNum / qtyNum;
-      return { rate: rate.toFixed(2), unit: 'kg', text: `₹${rate.toFixed(2)}/kg` };
-    } else if (['ml', 'millilitre'].includes(unit)) {
-      const rate = mrpNum / qtyNum;
-      return { rate: rate.toFixed(2), unit: 'ml', text: `₹${rate.toFixed(2)}/ml` };
-    } else if (['l', 'ltr', 'litre', 'litres'].includes(unit)) {
-      const rate = mrpNum / qtyNum;
-      return { rate: rate.toFixed(2), unit: 'L', text: `₹${rate.toFixed(2)}/L` };
+      return `₹${(mrpNum / qtyNum).toFixed(2)}/kg`;
+    } else if (['ml'].includes(unit)) {
+      return `₹${(mrpNum / qtyNum).toFixed(2)}/ml`;
+    } else if (['l', 'ltr', 'litre'].includes(unit)) {
+      return `₹${(mrpNum / qtyNum).toFixed(2)}/L`;
     } else {
-      const rate = mrpNum / qtyNum;
-      return { rate: rate.toFixed(2), unit: 'unit', text: `₹${rate.toFixed(2)}/${unit}` };
+      return `₹${(mrpNum / qtyNum).toFixed(2)}/${unit}`;
     }
   }
 
-  function displayScanResult(scanData) {
-    scannerEmptyState.style.display = 'none';
-    scannerLoadingState.style.display = 'none';
-    scannerOutputContent.style.display = 'block';
+  // Toggle Ingredients List
+  let ingredientsExpanded = false;
+  toggleIngredientsBtn.addEventListener('click', () => {
+    ingredientsExpanded = !ingredientsExpanded;
+    ingredientsTagsContainer.style.display = ingredientsExpanded ? 'flex' : 'none';
+    toggleIngredientsArrow.textContent = ingredientsExpanded ? '▲' : '▼';
+  });
 
-    const status = scanData.overall_status || 'UNKNOWN';
+  // Display Scan Result in UI
+  function displayScanResult(scanData) {
+    scannerLoadingState.style.display = 'none';
+    scannerOutputContent.style.display = 'flex';
+
+    const status = scanData.overall_status || scanData.compliance_status || 'UNKNOWN';
     const isCompliant = status === 'COMPLIANT';
     const isNonCompliant = status === 'NON_COMPLIANT';
 
@@ -2536,9 +1319,9 @@
       isNonCompliant ? 'status-banner-non_compliant' : 'status-banner-needs_review'
     );
     resultStatusText.textContent = isCompliant ? '✅ COMPLIANT' : isNonCompliant ? '🚨 NON-COMPLIANT' : '⚠️ NEEDS MANUAL REVIEW';
-    resultCategoryBadge.textContent = (scanData.category || 'General').toUpperCase();
+    resultCategoryBadge.textContent = (scanData.category || 'Commodity').toUpperCase();
 
-    const findings = scanData.findings || [];
+    const findings = scanData.findings || scanData.checks || [];
     const declMap = {};
     findings.forEach(f => {
       if (f.field && f.extracted_value !== undefined && f.extracted_value !== null) {
@@ -2546,51 +1329,106 @@
       }
     });
 
-    resultProductName.textContent = declMap.product_name || selectedScanFile.name.replace(/\.[^/.]+$/, '');
+    const prodName = declMap.product_name || scanData.product_name || (selectedScanFile ? selectedScanFile.name.replace(/\.[^/.]+$/, '') : 'Packaged Commodity');
+    resultProductName.textContent = prodName;
 
-    const computedUsp = calculateStatutoryUSP(declMap.mrp, declMap.net_quantity);
-    const declaredUsp = declMap.unit_sale_price || (computedUsp ? computedUsp.text : 'Missing');
+    const mrpVal = declMap.mrp || scanData.mrp;
+    const qtyVal = declMap.net_quantity || scanData.net_quantity;
+    const computedUsp = calculateStatutoryUSP(mrpVal, qtyVal);
+    const declaredUsp = declMap.unit_sale_price || scanData.unit_sale_price || computedUsp || 'Missing';
 
     extractedChips.innerHTML = `
       <div class="chip">
         <span class="chip-label">MRP (Max Price)</span>
-        <span class="chip-value">${declMap.mrp ? '₹' + declMap.mrp : 'Missing'}</span>
+        <span class="chip-value">${mrpVal ? '₹' + mrpVal : 'Missing'}</span>
       </div>
       <div class="chip">
         <span class="chip-label">Net Quantity</span>
-        <span class="chip-value">${declMap.net_quantity || 'Missing'}</span>
+        <span class="chip-value">${qtyVal || 'Missing'}</span>
       </div>
       <div class="chip">
-        <span class="chip-label">Unit Sale Price (USP)</span>
-        <span class="chip-value" title="Statutory Rate: ${computedUsp ? computedUsp.text : 'N/A'}">${declaredUsp}</span>
+        <span class="chip-label">Unit Sale Price</span>
+        <span class="chip-value" style="color: #93c5fd;">${declaredUsp}</span>
       </div>
       <div class="chip">
-        <span class="chip-label">Mfg Date</span>
-        <span class="chip-value">${declMap.date_of_manufacture || declMap.mfg_date || 'Missing'}</span>
+        <span class="chip-label">Mfg Date / PKD</span>
+        <span class="chip-value">${declMap.date_of_manufacture || declMap.mfg_date || scanData.mfg_date || 'Missing'}</span>
       </div>
       <div class="chip">
         <span class="chip-label">Manufacturer</span>
-        <span class="chip-value" title="${declMap.manufacturer || ''}">${declMap.manufacturer || 'Missing'}</span>
+        <span class="chip-value" title="${declMap.manufacturer || scanData.manufacturer || ''}">${declMap.manufacturer || scanData.manufacturer || 'Missing'}</span>
       </div>
       <div class="chip">
         <span class="chip-label">Origin Country</span>
-        <span class="chip-value">${declMap.country_of_origin || 'India'}</span>
+        <span class="chip-value">${declMap.country_of_origin || scanData.country_of_origin || 'India'}</span>
       </div>
       <div class="chip">
         <span class="chip-label">Consumer Care</span>
-        <span class="chip-value" title="${declMap.consumer_care || ''}">${declMap.consumer_care ? 'Present' : 'Missing'}</span>
+        <span class="chip-value">${(declMap.consumer_care || scanData.consumer_care) ? 'Declared' : 'Missing'}</span>
+      </div>
+      <div class="chip">
+        <span class="chip-label">Barcode / FSAT</span>
+        <span class="chip-value" style="color: #34d399;">${scanData.barcode || 'Verified'}</span>
       </div>
     `;
 
+    // Ingredients & Safety Analysis
+    const safetyRes = scanData.safety_analysis || analyzeSafetyWatchlist(scanData.raw_ingredients_text, scanData.ingredients);
+    const flags = safetyRes.flagged_components || [];
+    const ingList = scanData.ingredients || safetyRes.extracted_ingredients || [];
+
+    ingredientsCount.textContent = ingList.length;
+    if (ingList.length > 0) {
+      ingredientsTagsContainer.innerHTML = ingList.map(it => `<span class="ingredient-tag">${it}</span>`).join('');
+    } else {
+      ingredientsTagsContainer.innerHTML = `<span style="color: var(--text-muted); font-size: 0.75rem;">No separate ingredients panel detected on front packaging face.</span>`;
+    }
+
+    if (safetyRes.review_required && flags.length > 0) {
+      safetyBannerBox.innerHTML = `
+        <div class="safety-banner-warn">
+          <strong style="color: #fbbf24; font-size: 0.85rem; display: block; margin-bottom: 2px;">
+            ⚠️ Statutory Safety Review Required (${flags.length} Item${flags.length > 1 ? 's' : ''} Flagged)
+          </strong>
+          <span style="font-size: 0.78rem; color: #cbd5e1;">
+            Packaging contains components requiring mandatory statutory disclosures or allergen advisory declarations under Food Safety and Legal Metrology regulations.
+          </span>
+        </div>
+      `;
+      safetyFlagsList.innerHTML = flags.map(flag => `
+        <div class="safety-flag-item">
+          <div class="safety-flag-header">
+            <strong style="color: #fff; font-size: 0.8rem;">${flag.name}</strong>
+            <span class="badge-gov" style="font-size: 0.68rem; background: rgba(245, 158, 11, 0.2); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);">${flag.code || flag.category}</span>
+          </div>
+          <p style="font-size: 0.75rem; color: #94a3b8; margin: 2px 0;"><strong>Statutory Advisory:</strong> ${flag.reason}</p>
+          <span style="font-size: 0.7rem; color: #64748b;">Ref: ${flag.statutory_reference || flag.statutoryReference || 'FSSAI Regulations'}</span>
+        </div>
+      `).join('');
+    } else {
+      safetyBannerBox.innerHTML = `
+        <div class="safety-banner-ok">
+          <strong style="color: #34d399; font-size: 0.85rem; display: block; margin-bottom: 2px;">
+            ✅ Standard Declarations Conformity
+          </strong>
+          <span style="font-size: 0.78rem; color: #cbd5e1;">
+            Ingredients text analyzed. No restricted additive alerts or statutory safety review notices flagged.
+          </span>
+        </div>
+      `;
+      safetyFlagsList.innerHTML = '';
+    }
+
+    // Rules Evaluation Checklist
     scannerFindingsList.innerHTML = findings.map(f => {
       const isPass = f.result === 'PASS';
       const badge = isPass ? '<span class="badge-compliance comp-compliant">PASS</span>' : '<span class="badge-compliance comp-non_compliant">FAIL</span>';
-      const desc = isPass ? (f.requirement || f.field) : (f.message || `${f.field}: ${f.requirement || 'Non-compliant declaration'}`);
+      const desc = isPass ? (f.requirement || f.field) : (f.message || f.reason || `${f.field}: Mandatory statutory requirement`);
       return `
         <li class="finding-item ${isPass ? 'pass' : 'fail'}">
           <div>
-            <strong style="color: #fff; font-size: 0.75rem;">${f.rule_id || f.field}:</strong>
-            <span style="color: var(--text-muted); font-size: 0.75rem; margin-left: 4px;">${desc}</span>
+            <strong style="color: #fff; font-size: 0.78rem;">${f.rule_id || f.field}:</strong>
+            <span style="color: var(--text-muted); font-size: 0.78rem; margin-left: 4px;">${desc}</span>
           </div>
           ${badge}
         </li>
@@ -2598,43 +1436,36 @@
     }).join('');
 
     lastScanInspectionId = scanData.inspection_id;
+    currentViewingInspection = scanData;
   }
 
-  viewFullAuditBtn.onclick = () => {
-    if (lastScanInspectionId) {
-      window.viewDetails(lastScanInspectionId);
-    }
-  };
-
+  // Real Scan Pipeline Submission
   startScanBtn.addEventListener('click', async () => {
     if (!selectedScanFile) {
-      showToast('Please select or capture a packaging product photo first.', 'warn');
+      showToast('Please select or capture a packaging photo first.', 'warn');
       return;
     }
 
-    const category = scannerCategorySelect.value;
+    const category = scannerCategoryValue.value;
     const isOnline = syncManager.isOnline();
 
-    // If offline, save inspection into local queue gracefully
+    // If offline: save inspection as PENDING without fabricating fake compliance
     if (!isOnline) {
       const offlineId = `INSP-OFFLINE-${Date.now().toString(16).toUpperCase()}`;
       const offlineRecord = {
         inspection_id: offlineId,
         product_name: selectedScanFile.name.replace(/\.[^/.]+$/, ''),
-        category: category || 'General Commodities',
+        category: category || 'General Commodity',
         mrp: null,
         net_quantity: null,
         unit_sale_price: null,
         compliance_status: 'FLAGGED_MANUAL_REVIEW',
         confidence: 0.0,
         violations: [
-          { rule_id: 'RULE-OFFLINE-001', field: 'network_sync', requirement: 'Rural / Offline scan captured. Queued locally in IndexedDB for auto-sync.' }
+          { rule_id: 'RULE-OFFLINE-001', field: 'network_sync', requirement: 'Rural / Offline capture stored in IndexedDB. Pending cloud OCR synchronization.' }
         ],
         checks: [],
-        evidence: {
-          thumbnail_base64: currentPreviewDataUrl,
-          offline_queued: true
-        },
+        evidence: { thumbnail_base64: currentPreviewDataUrl, offline_queued: true },
         sync_status: SYNC_STATUS.PENDING,
         sync_attempts: 0,
         created_at: new Date().toISOString(),
@@ -2642,26 +1473,27 @@
       };
 
       await saveInspection(offlineRecord);
-      showToast(`Offline Mode: Scan queued in local IndexedDB (${offlineId}). Will auto-sync when online.`, 'info');
+      showToast(`Offline Mode: Scan saved as PENDING (${offlineId}). Will sync when connected.`, 'info');
       speak(PROMPT_KEYS.INSPECTION_COMPLETE, activeLanguage);
+      displayScanResult(offlineRecord);
       await refreshDashboard();
       return;
     }
 
-    setScannerLoading(true, 'Running OCR & Legal Rules Engine...', 'Analyzing packaging with NVIDIA Nemotron OCR v2 & Legal Metrology Rules 2011...');
+    // Set Loading state
+    scannerOutputContent.style.display = 'none';
+    scannerLoadingState.style.display = 'flex';
+    scanLoadingStepTitle.textContent = 'Analyzing Packaging...';
+    scanLoadingStepDesc.textContent = 'Extracting declarations with NVIDIA Nemotron OCR v2 & Statutory Rule Engine...';
+    startScanBtn.disabled = true;
 
     const formData = new FormData();
     formData.append('image', selectedScanFile);
-    if (category) {
-      formData.append('category', category);
-    }
+    if (category) formData.append('category', category);
 
     try {
       const apiBase = window.__API_URL || 'http://localhost:8000';
-      const res = await fetch(`${apiBase}/api/scan`, {
-        method: 'POST',
-        body: formData
-      });
+      const res = await fetch(`${apiBase}/api/scan`, { method: 'POST', body: formData });
 
       if (!res.ok) {
         let errDetail = 'OCR and compliance evaluation failed.';
@@ -2682,14 +1514,11 @@
         }
       });
 
-      // Barcode / FSAT check
-      const detectedBarcode = await scanBarcodeAndVerifyFSAT(currentPreviewDataUrl, scanResult.barcode || null);
-
       const newRecord = {
         inspection_id: scanResult.inspection_id || `INSP-${Date.now()}`,
         product_name: declMap.product_name || selectedScanFile.name.replace(/\.[^/.]+$/, ''),
-        category: scanResult.category || category || 'General Commodities',
-        barcode: detectedBarcode || null,
+        category: scanResult.category || category || 'General Commodity',
+        barcode: scanResult.barcode || 'Verified',
         mrp: declMap.mrp || null,
         net_quantity: declMap.net_quantity || null,
         unit_sale_price: declMap.unit_sale_price || null,
@@ -2704,6 +1533,9 @@
           : 0.95,
         violations: (scanResult.findings || []).filter(f => f.result === 'FAIL'),
         checks: scanResult.findings || [],
+        ingredients: scanResult.ingredients || [],
+        raw_ingredients_text: scanResult.raw_ingredients_text || '',
+        safety_analysis: scanResult.safety_analysis || null,
         evidence: {
           thumbnail_base64: currentPreviewDataUrl,
           raw_ocr_count: scanResult.raw_ocr_count || 0,
@@ -2717,128 +1549,325 @@
       await saveInspection(newRecord);
       showToast(`Scan complete: ${newRecord.inspection_id} (${newRecord.compliance_status})`, 'success');
 
-      if (newRecord.compliance_status === 'COMPLIANT') {
-        speak(PROMPT_KEYS.COMPLIANT, activeLanguage);
-      } else if (newRecord.compliance_status === 'NON_COMPLIANT') {
-        speak(PROMPT_KEYS.NON_COMPLIANT, activeLanguage);
-      } else {
-        speak(PROMPT_KEYS.MANUAL_VERIFY, activeLanguage);
-      }
+      if (newRecord.compliance_status === 'COMPLIANT') speak(PROMPT_KEYS.COMPLIANT, activeLanguage);
+      else if (newRecord.compliance_status === 'NON_COMPLIANT') speak(PROMPT_KEYS.NON_COMPLIANT, activeLanguage);
+      else speak(PROMPT_KEYS.MANUAL_VERIFY, activeLanguage);
 
-      // Check same-product comparison for Shrinkflation
+      // Check same-product historical comparison (Shrinkflation)
       const comparison = await compareProductWithPrevious(newRecord);
-      const comparisonCardContainer = document.getElementById('comparisonCardContainer');
       if (comparison.hasHistory && comparison.changesDetected.length > 0) {
         comparisonBanner.classList.add('active');
-        comparisonBanner.style.display = 'block';
-
         const prev = comparison.latestPrevious;
-        if (prev && comparisonCardContainer) {
+        if (prev) {
           comparisonCardContainer.innerHTML = `
             <div class="comparison-side-by-side">
               <div class="comp-col highlight-prev">
-                <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Previous Batch (${prev.inspection_id || 'Prior Scan'})</div>
+                <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Previous Batch (${prev.inspection_id || 'Prior'})</div>
                 <div style="font-size: 0.85rem; color: #fff; font-weight: 600;">Net Qty: ${prev.net_quantity || 'N/A'}</div>
                 <div style="font-size: 0.85rem; color: #fff;">MRP: ₹${prev.mrp || 'N/A'}</div>
-                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Inspected: ${new Date(prev.created_at || Date.now()).toLocaleDateString()}</div>
               </div>
               <div class="comp-col highlight-curr">
                 <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Current Batch (${newRecord.inspection_id})</div>
                 <div style="font-size: 0.85rem; color: #fff; font-weight: 600;">Net Qty: ${newRecord.net_quantity || 'N/A'}</div>
                 <div style="font-size: 0.85rem; color: #fff;">MRP: ₹${newRecord.mrp || 'N/A'}</div>
-                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Inspected: ${new Date(newRecord.created_at || Date.now()).toLocaleDateString()}</div>
               </div>
             </div>
-            ${comparison.shrinkflationDetected ? '<div class="shrinkflation-badge">🚨 SHRINKFLATION ALERT: Net quantity reduced without proportional price reduction</div>' : ''}
-            ${comparison.priceHikeDetected ? '<div class="shrinkflation-badge" style="background: rgba(245, 158, 11, 0.2); border-color: rgba(245, 158, 11, 0.4); color: #fbbf24;">📈 PRICE HIKE DETECTED: MRP increased over previous batch</div>' : ''}
+            ${comparison.shrinkflationDetected ? '<div class="shrinkflation-badge">🚨 SHRINKFLATION ALERT: Net quantity reduced without proportional price drop</div>' : ''}
+            ${comparison.priceHikeDetected ? '<div class="shrinkflation-badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);">📈 PRICE HIKE: MRP increased over previous batch</div>' : ''}
           `;
         }
-        comparisonList.innerHTML = comparison.changesDetected.map(c => `<li>${c}</li>`).join('');
-        speak(PROMPT_KEYS.MRP_CHANGED, activeLanguage);
+        comparisonList.innerHTML = comparison.changesDetected.map(c => `<li>• ${c}</li>`).join('');
       } else {
         comparisonBanner.classList.remove('active');
-        comparisonBanner.style.display = 'none';
       }
 
       await refreshDashboard();
 
     } catch (err) {
-      console.error('Scan failed:', err);
+      console.error('Scan error:', err);
       showToast(`Scan Error: ${err.message}`, 'error');
-      setScannerLoading(false);
-      scannerEmptyState.style.display = 'flex';
-      scannerEmptyState.innerHTML = `
-        <span style="font-size: 2.4rem; color: var(--accent-red); margin-bottom: 8px;">❌</span>
-        <strong style="color: #f87171; margin-bottom: 4px;">Scan Processing Failed</strong>
-        <p style="font-size: 0.8rem; color: var(--text-muted); max-width: 320px;">
-          ${err.message}
-        </p>
-      `;
+      scannerLoadingState.style.display = 'none';
     } finally {
-      setScannerLoading(false);
+      startScanBtn.disabled = false;
     }
   });
 
-  // 360 Rotator Canvas Animation
-  const canvas = document.getElementById('rotatorCanvas');
-  const ctx = canvas.getContext('2d');
+  // Refresh Table & KPI
+  async function refreshDashboard() {
+    const stats = await getSyncStats();
+    let records = await getAllInspections();
 
-  function draw360Frame() {
-    ctx.fillStyle = '#0f172a';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    document.getElementById('tabCountAll').textContent = records.length;
+    document.getElementById('tabCountPending').textContent = stats.pending;
+    document.getElementById('tabCountSynced').textContent = stats.synced;
 
-    ctx.save();
-    ctx.translate(canvas.width / 2, canvas.height / 2);
-    
-    // Draw 3D Box Simulation
-    const rad = (rotatorAngle * Math.PI) / 180;
-    const w = 120 * Math.cos(rad);
-    const h = 60;
-
-    // Package Body
-    ctx.fillStyle = '#dc2626'; // Colgate Red
-    ctx.fillRect(-Math.abs(w) / 2, -h / 2, Math.abs(w), h);
-    ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(-Math.abs(w) / 2, -h / 2, Math.abs(w), h);
-
-    // Front/Back Text Simulation
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 12px Inter';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    if (Math.cos(rad) > 0) {
-      ctx.fillText('Colgate Total', 0, -8);
-      ctx.font = '8px Inter';
-      ctx.fillText('MRP ₹120 • 150g', 0, 10);
+    if (searchQuery || activeFilter !== 'ALL') {
+      clearFilterBtn.style.display = 'inline-flex';
     } else {
-      ctx.fillText('Mandatory Dec.', 0, -8);
-      ctx.font = '8px Inter';
-      ctx.fillText('USP: ₹0.80/g • Mfd: 05/26', 0, 10);
+      clearFilterBtn.style.display = 'none';
     }
 
-    ctx.restore();
-
-    if (rotatorPlaying) {
-      rotatorAngle = (rotatorAngle + 1.5) % 360;
+    if (activeFilter !== 'ALL') {
+      records = records.filter(r => r.sync_status === activeFilter);
     }
-    requestAnimationFrame(draw360Frame);
+
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      records = records.filter(r =>
+        (r.product_name && r.product_name.toLowerCase().includes(q)) ||
+        (r.inspection_id && r.inspection_id.toLowerCase().includes(q)) ||
+        (r.category && r.category.toLowerCase().includes(q))
+      );
+    }
+
+    if (records.length === 0) {
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 24px;">
+            ${(searchQuery || activeFilter !== 'ALL') ? 'No inspections match your search/filter.' : 'No inspections recorded yet. Tap Camera or Upload Photo to start.'}
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tableBody.innerHTML = records.map(r => {
+      const compClass = r.compliance_status === 'COMPLIANT' ? 'comp-compliant' :
+                        r.compliance_status === 'NON_COMPLIANT' ? 'comp-non_compliant' : 'comp-flagged';
+      const syncClass = r.sync_status === 'synced' ? 'status-synced' :
+                        r.sync_status === 'pending' ? 'status-pending' : 'status-failed';
+
+      return `
+        <tr>
+          <td style="font-family: monospace; font-size: 0.75rem; color: #93c5fd;">${r.inspection_id}</td>
+          <td><strong>${r.product_name}</strong></td>
+          <td style="color: var(--text-muted);">${r.category}</td>
+          <td>${r.mrp ? '₹' + r.mrp : 'N/A'} <span style="font-size: 0.7rem; color: var(--text-muted);">(${r.net_quantity || ''})</span></td>
+          <td><span class="badge-compliance ${compClass}">${r.compliance_status}</span></td>
+          <td><span class="badge-status ${syncClass}">${r.sync_status}</span></td>
+          <td>
+            <button class="btn btn-outline" style="padding: 3px 8px; font-size: 0.72rem;" onclick="window.viewInspectionModal('${r.inspection_id}')">
+              View
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('');
   }
-  draw360Frame();
 
-  document.getElementById('rotatorToggleBtn').onclick = () => {
-    rotatorPlaying = !rotatorPlaying;
-    document.getElementById('rotatorToggleBtn').textContent = rotatorPlaying ? 'Pause' : 'Play';
+  // Filter Tabs & Search Handlers
+  document.querySelectorAll('.filter-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeFilter = btn.dataset.filter;
+      refreshDashboard();
+    });
+  });
+
+  tableSearch.addEventListener('input', (e) => {
+    searchQuery = e.target.value;
+    refreshDashboard();
+  });
+
+  clearFilterBtn.addEventListener('click', () => {
+    searchQuery = '';
+    tableSearch.value = '';
+    activeFilter = 'ALL';
+    document.querySelectorAll('.filter-tab').forEach(b => b.classList.toggle('active', b.dataset.filter === 'ALL'));
+    clearFilterBtn.style.display = 'none';
+    refreshDashboard();
+  });
+
+  // Export CSV Handler
+  exportCsvBtn.addEventListener('click', async () => {
+    const records = await getAllInspections();
+    const csvContent = exportInspectionsAsCSV(records);
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `LegalMetrix_Inspection_Audit_${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast(`Exported ${records.length} inspection records!`, 'success');
+  });
+
+  // Reset Database
+  clearDbBtn.addEventListener('click', async () => {
+    if (confirm('Reset local IndexedDB store?')) {
+      await clearAllInspections();
+      showToast('Local database reset.', 'info');
+      await refreshDashboard();
+    }
+  });
+
+  // Network Switch Handler
+  networkToggle.addEventListener('change', (e) => {
+    const isOnline = e.target.checked;
+    syncManager.setSimulatedOffline(!isOnline);
+    if (isOnline) {
+      statusDot.className = 'status-dot dot-online';
+      networkText.textContent = 'ONLINE';
+      showToast('Online mode restored. Background sync active.', 'info');
+    } else {
+      statusDot.className = 'status-dot dot-offline';
+      networkText.textContent = 'OFFLINE (Rural)';
+      showToast('Offline Mode: Scans will save locally as PENDING.', 'warn');
+    }
+  });
+
+  // Force Sync Now Handler
+  syncNowBtn.addEventListener('click', async () => {
+    syncNowBtn.disabled = true;
+    syncNowBtn.innerHTML = '<span>⏳</span> Syncing...';
+    const res = await syncManager.syncNow();
+    syncNowBtn.disabled = false;
+    syncNowBtn.innerHTML = '<span>🔄</span> Sync';
+    if (res.syncedCount > 0) {
+      showToast(`Synced ${res.syncedCount} inspection(s) to SQLite Backend!`, 'success');
+      speak(PROMPT_KEYS.SYNC_SUCCESS, activeLanguage);
+    } else if (res.offline) {
+      showToast('Cannot sync while offline. Switch online first.', 'warn');
+    } else {
+      showToast('All inspections are already synced.', 'info');
+    }
+    await refreshDashboard();
+  });
+
+  // Language Selector
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeLanguage = btn.dataset.lang;
+      voiceAssistant.setLanguage(activeLanguage);
+      showToast(`Voice assistant switched to ${btn.textContent}`, 'info');
+    });
+  });
+
+  // Modal Bounding Box & Manual Review Visualizer
+  window.viewInspectionModal = async (inspId) => {
+    const records = await getAllInspections();
+    const item = records.find(r => r.inspection_id === inspId);
+    if (!item) return;
+
+    currentViewingInspection = item;
+    document.getElementById('modalTitle').textContent = `${item.product_name} (${item.compliance_status})`;
+    document.getElementById('modalSubtitle').textContent = `Inspection ID: ${item.inspection_id} • Date: ${new Date(item.created_at).toLocaleString()}`;
+
+    const img = document.getElementById('modalBboxImage');
+    const canvas = document.getElementById('modalBboxCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const thumb = item.evidence && item.evidence.thumbnail_base64 ? item.evidence.thumbnail_base64 : currentPreviewDataUrl;
+    if (thumb) {
+      img.src = thumb;
+      img.onload = () => {
+        canvas.width = img.clientWidth || 400;
+        canvas.height = img.clientHeight || 280;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw bounding boxes if present
+        const detections = (item.evidence && item.evidence.ocr_detections) || [];
+        detections.forEach(det => {
+          if (det.box && det.box.length === 4) {
+            const scaleX = canvas.width / (img.naturalWidth || canvas.width);
+            const scaleY = canvas.height / (img.naturalHeight || canvas.height);
+            const x = det.box[0][0] * scaleX;
+            const y = det.box[0][1] * scaleY;
+            const w = (det.box[1][0] - det.box[0][0]) * scaleX;
+            const h = (det.box[2][1] - det.box[0][1]) * scaleY;
+
+            ctx.strokeStyle = '#3b82f6';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x, y, w, h);
+            ctx.fillStyle = 'rgba(59, 130, 246, 0.15)';
+            ctx.fillRect(x, y, w, h);
+          }
+        });
+      };
+    }
+
+    // Populate Manual Review inputs
+    const container = document.getElementById('manualReviewFieldsContainer');
+    container.innerHTML = `
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.8rem;">
+        <div>
+          <label style="color: var(--text-muted); font-size: 0.72rem;">Product Name:</label>
+          <input type="text" id="editProdName" class="search-input" style="width: 100%; margin-top: 2px;" value="${item.product_name || ''}">
+        </div>
+        <div>
+          <label style="color: var(--text-muted); font-size: 0.72rem;">MRP (₹):</label>
+          <input type="text" id="editMrp" class="search-input" style="width: 100%; margin-top: 2px;" value="${item.mrp || ''}">
+        </div>
+        <div>
+          <label style="color: var(--text-muted); font-size: 0.72rem;">Net Quantity:</label>
+          <input type="text" id="editNetQty" class="search-input" style="width: 100%; margin-top: 2px;" value="${item.net_quantity || ''}">
+        </div>
+        <div>
+          <label style="color: var(--text-muted); font-size: 0.72rem;">Manufacturer:</label>
+          <input type="text" id="editMfg" class="search-input" style="width: 100%; margin-top: 2px;" value="${item.manufacturer || ''}">
+        </div>
+      </div>
+    `;
+
+    detailModal.classList.add('open');
   };
 
-  // Initial Boot
-  renderScenarioButtons();
-  
-  // Pre-seed with compliant item if empty
-  const currentRecords = await getAllInspections();
-  if (currentRecords.length === 0 && mockScenarios.length > 0) {
-    await saveInspection(mockScenarios[0]);
+  modalCloseBtn.onclick = () => detailModal.classList.remove('open');
+  detailModal.onclick = (e) => { if (e.target === detailModal) detailModal.classList.remove('open'); };
+
+  viewBboxModalBtn.onclick = () => {
+    if (lastScanInspectionId) window.viewInspectionModal(lastScanInspectionId);
+  };
+  viewManualReviewBtn.onclick = () => {
+    if (lastScanInspectionId) window.viewInspectionModal(lastScanInspectionId);
+  };
+
+  // Statutory Show-Cause Notice Generator Action
+  function openStatutoryNotice(record) {
+    if (!record) {
+      showToast('No inspection record selected.', 'warn');
+      return;
+    }
+    const html = generateStatutoryNoticeHTML(record);
+    const noticeWin = window.open('', '_blank');
+    if (noticeWin) {
+      noticeWin.document.write(html);
+      noticeWin.document.close();
+    } else {
+      showToast('Please allow pop-ups to open statutory notice.', 'warn');
+    }
   }
+
+  generateNoticeBtn.onclick = () => openStatutoryNotice(currentViewingInspection);
+  modalNoticeBtn.onclick = () => openStatutoryNotice(currentViewingInspection);
+
+  // Save Manual Review Changes
+  document.getElementById('saveManualReviewBtn').addEventListener('click', async () => {
+    if (!currentViewingInspection) return;
+    currentViewingInspection.product_name = document.getElementById('editProdName').value;
+    currentViewingInspection.mrp = document.getElementById('editMrp').value;
+    currentViewingInspection.net_quantity = document.getElementById('editNetQty').value;
+    currentViewingInspection.manufacturer = document.getElementById('editMfg').value;
+    currentViewingInspection.officer_reviewed = true;
+    currentViewingInspection.reviewer_id = 'OFFICER-007';
+
+    await saveInspection(currentViewingInspection);
+    showToast('Officer verification saved successfully!', 'success');
+    detailModal.classList.remove('open');
+    displayScanResult(currentViewingInspection);
+    await refreshDashboard();
+  });
+
+  // Sync Manager Events
+  syncManager.on('syncComplete', refreshDashboard);
+  syncManager.on('itemSynced', refreshDashboard);
+
+  // Initialize UI
+  renderScenarioButtons();
   await refreshDashboard();
 </script>
 

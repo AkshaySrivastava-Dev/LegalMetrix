@@ -10,6 +10,8 @@ import re
 from typing import Dict, Any, List, Optional
 from dataclasses import dataclass, field
 
+from ai.safety import extract_ingredients_from_ocr, analyze_safety_watchlist
+
 
 @dataclass
 class ExtractedField:
@@ -575,6 +577,24 @@ class FieldExtractor:
         
         batch = self.extract_batch_number(ocr_results)
         fields['batch_number'] = batch.to_dict() if batch else None
+
+        # 7. Ingredients & Safety Watchlist
+        raw_ing, items_ing = extract_ingredients_from_ocr(ocr_results)
+        if raw_ing:
+            fields['ingredients'] = {
+                'value': raw_ing,
+                'list': items_ing,
+                'confidence': 90.0,
+                'box': []
+            }
+        
+        safety_res = analyze_safety_watchlist(raw_ing, items_ing)
+        fields['safety_analysis'] = {
+            'value': safety_res['status'],
+            'data': safety_res,
+            'confidence': 95.0,
+            'box': []
+        }
         
         for k, v in fields.items():
             if v and source:
