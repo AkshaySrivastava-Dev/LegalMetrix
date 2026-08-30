@@ -689,6 +689,247 @@
       from { transform: translateX(100%); opacity: 0; }
       to { transform: translateX(0); opacity: 1; }
     }
+
+    /* Live Scanner Card Styles */
+    .scanner-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 20px;
+    }
+    @media (max-width: 992px) {
+      .scanner-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .dropzone {
+      border: 2px dashed var(--border-color);
+      border-radius: var(--radius-md);
+      background-color: var(--bg-card);
+      padding: 24px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 160px;
+    }
+    .dropzone:hover, .dropzone.dragover {
+      border-color: var(--accent-blue);
+      background-color: rgba(59, 130, 246, 0.08);
+    }
+    .dropzone-icon {
+      font-size: 2.2rem;
+      color: var(--accent-blue);
+    }
+    .scanner-preview-box {
+      margin-top: 12px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      background-color: #0f172a;
+      padding: 8px 12px;
+      display: none;
+      align-items: center;
+      gap: 12px;
+    }
+    .scanner-preview-box.active {
+      display: flex;
+    }
+    .scanner-thumbnail {
+      width: 56px;
+      height: 56px;
+      object-fit: cover;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-color);
+    }
+    .preview-meta {
+      flex: 1;
+      overflow: hidden;
+      font-size: 0.8rem;
+    }
+    .preview-filename {
+      font-weight: 600;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .preview-filesize {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+    .scanner-controls-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .category-select {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      padding: 8px 12px;
+      font-size: 0.85rem;
+      font-family: inherit;
+      width: 100%;
+      margin-top: 6px;
+    }
+    .category-select:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+    }
+    .btn-scan-action {
+      width: 100%;
+      padding: 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-top: 14px;
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+      cursor: pointer;
+      border: none;
+      border-radius: var(--radius-sm);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .btn-scan-action:hover:not(:disabled) {
+      background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+      transform: translateY(-1px);
+    }
+    .btn-scan-action:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .scanner-result-panel {
+      background-color: #0f172a;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      min-height: 280px;
+      display: flex;
+      flex-direction: column;
+    }
+    .result-status-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 12px;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+    .status-banner-compliant {
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34d399;
+    }
+    .status-banner-non_compliant {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #f87171;
+    }
+    .status-banner-needs_review {
+      background: rgba(245, 158, 11, 0.2);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: #fbbf24;
+    }
+    .extracted-chips {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .chip {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 6px 10px;
+      font-size: 0.75rem;
+    }
+    .chip-label {
+      color: var(--text-muted);
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 2px;
+    }
+    .chip-value {
+      font-weight: 600;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .findings-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 180px;
+      overflow-y: auto;
+      font-size: 0.8rem;
+    }
+    .finding-item {
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      background-color: var(--bg-card);
+      border: 1px solid rgba(51, 65, 85, 0.5);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+    .finding-item.fail {
+      border-left: 3px solid var(--accent-red);
+    }
+    .finding-item.pass {
+      border-left: 3px solid var(--accent-green);
+    }
+    .scan-loading-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 10px;
+      gap: 14px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid rgba(59, 130, 246, 0.2);
+      border-top-color: var(--accent-blue);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .camera-box {
+      position: relative;
+      background: #000;
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      max-width: 480px;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      margin: 0 auto 16px auto;
+      border: 1px solid var(--border-color);
+    }
+    .camera-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
   </style>
 </head>
 <body>
@@ -834,6 +1075,96 @@
     <!-- Right Main Dashboard Content -->
     <div class="right-content">
 
+      <!-- Live Packaging Image Scanner Card -->
+      <div class="card" id="liveScannerCard">
+        <div class="card-header">
+          <h2><span>📸</span> Live Packaging Image Scanner</h2>
+          <span class="badge-status status-synced">NVIDIA OCR • Rules Engine</span>
+        </div>
+
+        <div class="scanner-grid">
+          <!-- Left: Upload & Camera Controls -->
+          <div>
+            <div class="dropzone" id="scannerDropzone" tabindex="0" role="button" aria-label="Upload packaging image">
+              <span class="dropzone-icon">📥</span>
+              <p style="font-weight: 600; font-size: 0.9rem;">Drag & drop packaged commodity photo here</p>
+              <p style="font-size: 0.75rem; color: var(--text-muted);">Supports JPEG, PNG, WebP (up to 15MB)</p>
+            </div>
+            <input type="file" id="scannerFileInput" accept="image/jpeg,image/png,image/webp" style="display: none;">
+
+            <div class="scanner-preview-box" id="scannerPreviewBox">
+              <img id="scannerThumbnail" class="scanner-thumbnail" alt="Selected packaging label preview">
+              <div class="preview-meta">
+                <div class="preview-filename" id="previewFilename">package.jpg</div>
+                <div class="preview-filesize" id="previewFilesize">0 KB</div>
+              </div>
+              <button class="btn btn-outline" id="clearSelectedFileBtn" style="padding: 4px 8px; font-size: 0.75rem;" title="Remove selected image">✕</button>
+            </div>
+
+            <div class="scanner-controls-row">
+              <button class="btn btn-outline" id="browseFileBtn" style="flex: 1;">
+                <span>📂</span> Browse Photo
+              </button>
+              <button class="btn btn-outline" id="openCameraBtn" style="flex: 1;">
+                <span>📷</span> Open Camera
+              </button>
+            </div>
+
+            <label for="scannerCategorySelect" style="display: block; font-size: 0.75rem; color: var(--text-muted); margin-top: 10px;">
+              Commodity Category (Legal Metrology Rules):
+            </label>
+            <select class="category-select" id="scannerCategorySelect">
+              <option value="">Auto-Detect Category (AI Classifier)</option>
+              <option value="food">Food (Packaged Food & Snacks)</option>
+              <option value="beverage">Beverage (Drinks, Juices, Water)</option>
+              <option value="personal_care">Personal Care (Soaps, Cosmetics)</option>
+              <option value="household">Household (Detergents, Cleaners)</option>
+            </select>
+
+            <button class="btn-scan-action" id="startScanBtn">
+              <span>🚀</span> Scan & Verify Packaging
+            </button>
+          </div>
+
+          <!-- Right: Live Inspection Result -->
+          <div class="scanner-result-panel" id="scannerResultPanel">
+            <div id="scannerEmptyState" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-muted); text-align: center; padding: 20px;">
+              <span style="font-size: 2.4rem; margin-bottom: 8px;">⚖️</span>
+              <strong style="color: #fff; margin-bottom: 4px;">Real-Time Compliance Evaluation</strong>
+              <p style="font-size: 0.8rem; max-width: 320px;">
+                Select a product photo or snap one with your camera. NVIDIA Nemotron OCR extracts declarations, and the Legal Metrology Rules Engine validates mandatory statutory compliance.
+              </p>
+            </div>
+
+            <div id="scannerLoadingState" class="scan-loading-state" style="display: none;">
+              <div class="spinner"></div>
+              <strong style="color: #fff;" id="scanLoadingStepTitle">Processing Packaging Image...</strong>
+              <p style="font-size: 0.75rem;" id="scanLoadingStepDesc">Extracting declarations with NVIDIA Nemotron OCR v2...</p>
+            </div>
+
+            <div id="scannerOutputContent" style="display: none;">
+              <div class="result-status-banner" id="resultStatusBanner">
+                <span id="resultStatusText">COMPLIANT</span>
+                <span id="resultCategoryBadge" style="font-size: 0.75rem; text-transform: uppercase;">FOOD</span>
+              </div>
+
+              <h4 id="resultProductName" style="font-size: 1rem; color: #fff; margin-bottom: 10px;">Product Name</h4>
+
+              <div class="extracted-chips" id="extractedChips"></div>
+
+              <h5 style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase;">Statutory Rules Evaluation</h5>
+              <ul class="findings-list" id="scannerFindingsList"></ul>
+
+              <div style="display: flex; gap: 8px; margin-top: 12px;">
+                <button class="btn btn-outline" id="viewFullAuditBtn" style="flex: 1; padding: 6px 12px; font-size: 0.8rem;">
+                  <span>📋</span> View Full Audit Record
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Same-Product Comparison Notification (Shrinkflation / MRP Hike) -->
       <div class="comparison-banner" id="comparisonBanner">
         <div class="comparison-header">
@@ -899,6 +1230,28 @@
     <div class="kv-grid" id="modalKvGrid"></div>
     <h4 style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 6px;">Extracted OCR & Violation Payload (JSON)</h4>
     <div class="code-box" id="modalJsonBox"></div>
+  </div>
+</div>
+
+<!-- Live Camera Viewfinder Modal -->
+<div class="modal-overlay" id="cameraModal">
+  <div class="modal-content" style="max-width: 520px; text-align: center;">
+    <div class="modal-header">
+      <h3><span>📷</span> Live Camera Viewfinder</h3>
+      <button class="close-btn" id="cameraCloseBtn">&times;</button>
+    </div>
+    <div class="camera-box">
+      <video id="cameraVideo" class="camera-video" autoplay playsinline></video>
+      <canvas id="cameraCanvas" style="display: none;"></canvas>
+    </div>
+    <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
+      <button class="btn btn-green" id="cameraCaptureBtn" style="padding: 10px 20px;">
+        <span>📸</span> Capture & Use Photo
+      </button>
+      <button class="btn btn-outline" id="cameraCancelBtn">
+        Cancel
+      </button>
+    </div>
   </div>
 </div>
 
@@ -1165,7 +1518,7 @@
     syncNowBtn.innerHTML = '<span>🔄</span> Force Sync Now';
 
     if (res.syncedCount > 0) {
-      showToast(`Synced ${res.syncedCount} inspection(s) to Supabase!`, 'success');
+      showToast(`Synced ${res.syncedCount} inspection(s) to SQLite Backend!`, 'success');
       speak(PROMPT_KEYS.SYNC_SUCCESS, activeLanguage);
     } else if (res.offline) {
       showToast('Cannot sync while offline! Turn internet switch ON.', 'warn');
@@ -1226,6 +1579,372 @@
   });
   syncManager.on('itemSynced', async () => {
     await refreshDashboard();
+  });
+
+  // -------------------------------------------------------------
+  // Live Image Scanner Controller
+  // -------------------------------------------------------------
+  let selectedScanFile = null;
+  let currentPreviewDataUrl = null;
+  let cameraStream = null;
+  let lastScanInspectionId = null;
+
+  const scannerDropzone = document.getElementById('scannerDropzone');
+  const scannerFileInput = document.getElementById('scannerFileInput');
+  const browseFileBtn = document.getElementById('browseFileBtn');
+  const openCameraBtn = document.getElementById('openCameraBtn');
+  const scannerPreviewBox = document.getElementById('scannerPreviewBox');
+  const scannerThumbnail = document.getElementById('scannerThumbnail');
+  const previewFilename = document.getElementById('previewFilename');
+  const previewFilesize = document.getElementById('previewFilesize');
+  const clearSelectedFileBtn = document.getElementById('clearSelectedFileBtn');
+  const scannerCategorySelect = document.getElementById('scannerCategorySelect');
+  const startScanBtn = document.getElementById('startScanBtn');
+  
+  const scannerEmptyState = document.getElementById('scannerEmptyState');
+  const scannerLoadingState = document.getElementById('scannerLoadingState');
+  const scanLoadingStepTitle = document.getElementById('scanLoadingStepTitle');
+  const scanLoadingStepDesc = document.getElementById('scanLoadingStepDesc');
+  const scannerOutputContent = document.getElementById('scannerOutputContent');
+  const resultStatusBanner = document.getElementById('resultStatusBanner');
+  const resultStatusText = document.getElementById('resultStatusText');
+  const resultCategoryBadge = document.getElementById('resultCategoryBadge');
+  const resultProductName = document.getElementById('resultProductName');
+  const extractedChips = document.getElementById('extractedChips');
+  const scannerFindingsList = document.getElementById('scannerFindingsList');
+  const viewFullAuditBtn = document.getElementById('viewFullAuditBtn');
+
+  // Camera Viewfinder Elements
+  const cameraModal = document.getElementById('cameraModal');
+  const cameraCloseBtn = document.getElementById('cameraCloseBtn');
+  const cameraCancelBtn = document.getElementById('cameraCancelBtn');
+  const cameraCaptureBtn = document.getElementById('cameraCaptureBtn');
+  const cameraVideo = document.getElementById('cameraVideo');
+  const cameraCanvas = document.getElementById('cameraCanvas');
+
+  function formatBytes(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
+  function handleSelectedFile(file) {
+    if (!file) return;
+
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+    if (!validTypes.includes(file.type) && !file.name.match(/\.(jpe?g|png|webp)$/i)) {
+      showToast('Invalid format. Please upload a JPEG, PNG, or WebP image.', 'error');
+      return;
+    }
+
+    if (file.size > 15 * 1024 * 1024) {
+      showToast('File exceeds 15MB limit. Please upload a smaller photo.', 'error');
+      return;
+    }
+
+    selectedScanFile = file;
+    previewFilename.textContent = file.name;
+    previewFilesize.textContent = formatBytes(file.size);
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      currentPreviewDataUrl = e.target.result;
+      scannerThumbnail.src = currentPreviewDataUrl;
+      scannerPreviewBox.classList.add('active');
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function clearSelectedFile() {
+    selectedScanFile = null;
+    currentPreviewDataUrl = null;
+    scannerFileInput.value = '';
+    scannerPreviewBox.classList.remove('active');
+    scannerThumbnail.src = '';
+  }
+
+  clearSelectedFileBtn.onclick = clearSelectedFile;
+
+  scannerDropzone.addEventListener('click', () => scannerFileInput.click());
+  scannerDropzone.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      scannerFileInput.click();
+    }
+  });
+
+  scannerFileInput.addEventListener('change', (e) => {
+    if (e.target.files && e.target.files[0]) {
+      handleSelectedFile(e.target.files[0]);
+    }
+  });
+
+  browseFileBtn.addEventListener('click', () => scannerFileInput.click());
+
+  ['dragenter', 'dragover'].forEach(eventName => {
+    scannerDropzone.addEventListener(eventName, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      scannerDropzone.classList.add('dragover');
+    });
+  });
+
+  ['dragleave', 'drop'].forEach(eventName => {
+    scannerDropzone.addEventListener(eventName, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      scannerDropzone.classList.remove('dragover');
+    });
+  });
+
+  scannerDropzone.addEventListener('drop', (e) => {
+    const dt = e.dataTransfer;
+    if (dt && dt.files && dt.files[0]) {
+      handleSelectedFile(dt.files[0]);
+    }
+  });
+
+  async function startCamera() {
+    try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        showToast('Camera is not supported on this browser/device.', 'warn');
+        return;
+      }
+      cameraStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
+      });
+      cameraVideo.srcObject = cameraStream;
+      cameraModal.classList.add('open');
+    } catch (err) {
+      console.error('Camera error:', err);
+      showToast('Could not open camera: ' + (err.message || 'Permission denied'), 'error');
+    }
+  }
+
+  function stopCamera() {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+      cameraStream = null;
+    }
+    cameraModal.classList.remove('open');
+  }
+
+  openCameraBtn.addEventListener('click', startCamera);
+  cameraCloseBtn.addEventListener('click', stopCamera);
+  cameraCancelBtn.addEventListener('click', stopCamera);
+
+  cameraCaptureBtn.addEventListener('click', () => {
+    if (!cameraVideo.videoWidth) {
+      showToast('Camera feed not ready yet.', 'warn');
+      return;
+    }
+    cameraCanvas.width = cameraVideo.videoWidth;
+    cameraCanvas.height = cameraVideo.videoHeight;
+    const ctx = cameraCanvas.getContext('2d');
+    ctx.drawImage(cameraVideo, 0, 0, cameraCanvas.width, cameraCanvas.height);
+    
+    cameraCanvas.toBlob((blob) => {
+      if (blob) {
+        const photoFile = new File([blob], `camera-scan-${Date.now()}.jpg`, { type: 'image/jpeg' });
+        handleSelectedFile(photoFile);
+        stopCamera();
+        showToast('Camera snapshot captured!', 'success');
+      }
+    }, 'image/jpeg', 0.95);
+  });
+
+  function setScannerLoading(isLoading, title = 'Processing Image...', desc = 'Analyzing packaging with NVIDIA Nemotron OCR v2...') {
+    if (isLoading) {
+      scannerEmptyState.style.display = 'none';
+      scannerOutputContent.style.display = 'none';
+      scannerLoadingState.style.display = 'flex';
+      scanLoadingStepTitle.textContent = title;
+      scanLoadingStepDesc.textContent = desc;
+      startScanBtn.disabled = true;
+      startScanBtn.innerHTML = '<span>🔍</span> Analyzing Packaging...';
+    } else {
+      scannerLoadingState.style.display = 'none';
+      startScanBtn.disabled = false;
+      startScanBtn.innerHTML = '<span>🚀</span> Scan & Verify Packaging';
+    }
+  }
+
+  function displayScanResult(scanData) {
+    scannerEmptyState.style.display = 'none';
+    scannerLoadingState.style.display = 'none';
+    scannerOutputContent.style.display = 'block';
+
+    const status = scanData.overall_status || 'UNKNOWN';
+    const isCompliant = status === 'COMPLIANT';
+    const isNonCompliant = status === 'NON_COMPLIANT';
+
+    resultStatusBanner.className = 'result-status-banner ' + (
+      isCompliant ? 'status-banner-compliant' :
+      isNonCompliant ? 'status-banner-non_compliant' : 'status-banner-needs_review'
+    );
+    resultStatusText.textContent = isCompliant ? '✅ COMPLIANT' : isNonCompliant ? '🚨 NON-COMPLIANT' : '⚠️ NEEDS MANUAL REVIEW';
+    resultCategoryBadge.textContent = (scanData.category || 'General').toUpperCase();
+
+    const findings = scanData.findings || [];
+    const declMap = {};
+    findings.forEach(f => {
+      if (f.field && f.extracted_value !== undefined && f.extracted_value !== null) {
+        declMap[f.field] = f.extracted_value;
+      }
+    });
+
+    resultProductName.textContent = declMap.product_name || selectedScanFile.name.replace(/\.[^/.]+$/, '');
+
+    extractedChips.innerHTML = `
+      <div class="chip">
+        <span class="chip-label">MRP (Max Price)</span>
+        <span class="chip-value">${declMap.mrp ? '₹' + declMap.mrp : 'Missing'}</span>
+      </div>
+      <div class="chip">
+        <span class="chip-label">Net Quantity</span>
+        <span class="chip-value">${declMap.net_quantity || 'Missing'}</span>
+      </div>
+      <div class="chip">
+        <span class="chip-label">Mfg Date</span>
+        <span class="chip-value">${declMap.date_of_manufacture || declMap.mfg_date || 'Missing'}</span>
+      </div>
+      <div class="chip">
+        <span class="chip-label">Manufacturer</span>
+        <span class="chip-value" title="${declMap.manufacturer || ''}">${declMap.manufacturer || 'Missing'}</span>
+      </div>
+      <div class="chip">
+        <span class="chip-label">Origin Country</span>
+        <span class="chip-value">${declMap.country_of_origin || 'India'}</span>
+      </div>
+      <div class="chip">
+        <span class="chip-label">Consumer Care</span>
+        <span class="chip-value" title="${declMap.consumer_care || ''}">${declMap.consumer_care ? 'Present' : 'Missing'}</span>
+      </div>
+    `;
+
+    scannerFindingsList.innerHTML = findings.map(f => {
+      const isPass = f.result === 'PASS';
+      const badge = isPass ? '<span class="badge-compliance comp-compliant">PASS</span>' : '<span class="badge-compliance comp-non_compliant">FAIL</span>';
+      const desc = isPass ? (f.requirement || f.field) : (f.message || `${f.field}: ${f.requirement || 'Non-compliant declaration'}`);
+      return `
+        <li class="finding-item ${isPass ? 'pass' : 'fail'}">
+          <div>
+            <strong style="color: #fff; font-size: 0.75rem;">${f.rule_id || f.field}:</strong>
+            <span style="color: var(--text-muted); font-size: 0.75rem; margin-left: 4px;">${desc}</span>
+          </div>
+          ${badge}
+        </li>
+      `;
+    }).join('');
+
+    lastScanInspectionId = scanData.inspection_id;
+  }
+
+  viewFullAuditBtn.onclick = () => {
+    if (lastScanInspectionId) {
+      window.viewDetails(lastScanInspectionId);
+    }
+  };
+
+  startScanBtn.addEventListener('click', async () => {
+    if (!selectedScanFile) {
+      showToast('Please select or capture a packaging product photo first.', 'warn');
+      return;
+    }
+
+    const category = scannerCategorySelect.value;
+    setScannerLoading(true, 'Running OCR & Legal Rules Engine...', 'Analyzing packaging with NVIDIA Nemotron OCR v2 & Legal Metrology Rules 2011...');
+
+    const formData = new FormData();
+    formData.append('image', selectedScanFile);
+    if (category) {
+      formData.append('category', category);
+    }
+
+    try {
+      const apiBase = window.__API_URL || 'http://localhost:8000';
+      const res = await fetch(`${apiBase}/api/scan`, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!res.ok) {
+        let errDetail = 'OCR and compliance evaluation failed.';
+        try {
+          const errJson = await res.json();
+          errDetail = errJson.detail || JSON.stringify(errJson);
+        } catch (e) {}
+        throw new Error(errDetail);
+      }
+
+      const scanResult = await res.json();
+      displayScanResult(scanResult);
+
+      const declMap = {};
+      (scanResult.findings || []).forEach(f => {
+        if (f.field && f.extracted_value !== undefined && f.extracted_value !== null) {
+          declMap[f.field] = f.extracted_value;
+        }
+      });
+
+      const isOnline = syncManager.isOnline();
+      const newRecord = {
+        inspection_id: scanResult.inspection_id || `INSP-${Date.now()}`,
+        product_name: declMap.product_name || selectedScanFile.name.replace(/\.[^/.]+$/, ''),
+        category: scanResult.category || category || 'General Commodities',
+        mrp: declMap.mrp || null,
+        net_quantity: declMap.net_quantity || null,
+        unit_sale_price: declMap.unit_sale_price || null,
+        mfg_date: declMap.date_of_manufacture || declMap.mfg_date || null,
+        expiry_date: declMap.expiry_date || null,
+        manufacturer: declMap.manufacturer || null,
+        consumer_care: declMap.consumer_care || null,
+        country_of_origin: declMap.country_of_origin || 'India',
+        compliance_status: scanResult.overall_status || 'UNKNOWN',
+        confidence: scanResult.findings && scanResult.findings.length > 0
+          ? scanResult.findings.reduce((acc, f) => acc + (f.confidence || 0), 0) / (scanResult.findings.length * 100)
+          : 0.95,
+        violations: (scanResult.findings || []).filter(f => f.result === 'FAIL'),
+        checks: scanResult.findings || [],
+        evidence: {
+          thumbnail_base64: currentPreviewDataUrl,
+          raw_ocr_count: scanResult.raw_ocr_count || 0
+        },
+        sync_status: isOnline ? SYNC_STATUS.SYNCED : SYNC_STATUS.PENDING,
+        created_at: scanResult.evaluated_at || new Date().toISOString(),
+        synced_at: isOnline ? new Date().toISOString() : null
+      };
+
+      await saveInspection(newRecord);
+      showToast(`Scan complete: ${newRecord.inspection_id} (${newRecord.compliance_status})`, 'success');
+
+      if (newRecord.compliance_status === 'COMPLIANT') {
+        speak(PROMPT_KEYS.COMPLIANT, activeLanguage);
+      } else if (newRecord.compliance_status === 'NON_COMPLIANT') {
+        speak(PROMPT_KEYS.NON_COMPLIANT, activeLanguage);
+      } else {
+        speak(PROMPT_KEYS.MANUAL_VERIFY, activeLanguage);
+      }
+
+      await refreshDashboard();
+
+    } catch (err) {
+      console.error('Scan failed:', err);
+      showToast(`Scan Error: ${err.message}`, 'error');
+      setScannerLoading(false);
+      scannerEmptyState.style.display = 'flex';
+      scannerEmptyState.innerHTML = `
+        <span style="font-size: 2.4rem; color: var(--accent-red); margin-bottom: 8px;">❌</span>
+        <strong style="color: #f87171; margin-bottom: 4px;">Scan Processing Failed</strong>
+        <p style="font-size: 0.8rem; color: var(--text-muted); max-width: 320px;">
+          ${err.message}
+        </p>
+      `;
+    } finally {
+      setScannerLoading(false);
+    }
   });
 
   // 360 Rotator Canvas Animation
