@@ -3,26 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>LegalMetrix • AI Commodity Compliance & Safety Platform</title>
+  <title>LegalMetrix • Packaged Commodity Compliance Inspector</title>
   <style>
     :root {
-      --bg-primary: #0b0f19;
-      --bg-surface: #131b2e;
-      --bg-card: #1c2742;
-      --bg-card-hover: #223052;
-      --border-color: #2b395b;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --accent-blue: #3b82f6;
-      --accent-blue-hover: #2563eb;
-      --accent-green: #10b981;
-      --accent-red: #ef4444;
-      --accent-amber: #f59e0b;
-      --accent-indigo: #6366f1;
+      --bg-app: #090d16;
+      --bg-surface: #111827;
+      --bg-card: #1f2937;
+      --bg-subtle: #0f172a;
+      --border: #374151;
+      --border-subtle: #232d3f;
+      --text-main: #f9fafb;
+      --text-muted: #9ca3af;
+      --text-dim: #6b7280;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-subtle: rgba(37, 99, 235, 0.15);
+      --success: #10b981;
+      --success-subtle: rgba(16, 185, 129, 0.15);
+      --danger: #ef4444;
+      --danger-subtle: rgba(239, 68, 68, 0.15);
+      --warning: #f59e0b;
+      --warning-subtle: rgba(245, 158, 11, 0.15);
       --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 14px;
-      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Segoe UI Mono", Menlo, Consolas, monospace;
     }
 
     * {
@@ -33,66 +39,177 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background-color: var(--bg-primary);
+      font-family: var(--font-sans);
+      background-color: var(--bg-app);
       color: var(--text-main);
       line-height: 1.5;
-      padding: 16px;
+      padding: 12px;
       min-height: 100vh;
+      display: flex;
+      justify-content: center;
     }
 
-    .container {
-      max-width: 960px;
-      margin: 0 auto;
+    .app-container {
+      width: 100%;
+      max-width: 860px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
-    }
-
-    /* Header */
-    header {
-      background-color: var(--bg-surface);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      padding: 14px 18px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: var(--shadow);
-      flex-wrap: wrap;
       gap: 12px;
     }
 
-    .brand-title {
+    /* Top Bar */
+    .top-bar {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 12px 16px;
       display: flex;
+      justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
       gap: 10px;
     }
 
-    .brand-title h1 {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: #fff;
-      letter-spacing: -0.3px;
+    .brand-group {
+      display: flex;
+      flex-direction: column;
     }
 
-    .badge-gov {
-      background-color: rgba(59, 130, 246, 0.18);
+    .brand-title-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-name {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: #ffffff;
+    }
+
+    .gov-tag {
+      background: var(--primary-subtle);
+      border: 1px solid rgba(37, 99, 235, 0.4);
       color: #93c5fd;
-      border: 1px solid rgba(59, 130, 246, 0.4);
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       font-weight: 600;
-      padding: 3px 8px;
+      padding: 2px 7px;
       border-radius: 9999px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
 
-    .header-actions {
+    .brand-subtitle {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .top-controls {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
+    }
+
+    /* Network Indicator */
+    .network-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background-color: var(--bg-subtle);
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+    .dot-online { background-color: var(--success); }
+    .dot-offline { background-color: var(--warning); }
+
+    /* Switch */
+    .switch-wrap {
+      display: inline-flex;
+      align-items: center;
+      cursor: pointer;
+    }
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 28px;
+      height: 16px;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #4b5563; transition: .2s; border-radius: 16px;
+    }
+    .slider:before {
+      position: absolute; content: ""; height: 10px; width: 10px; left: 3px; bottom: 3px;
+      background-color: white; transition: .2s; border-radius: 50%;
+    }
+    input:checked + .slider { background-color: var(--success); }
+    input:checked + .slider:before { transform: translateX(12px); }
+
+    /* Language Switcher */
+    .lang-switcher {
+      display: flex;
+      background-color: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 2px;
+      gap: 2px;
+    }
+    .lang-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .lang-btn.active {
+      background-color: var(--primary);
+      color: #ffffff;
+    }
+
+    /* Navigation Tabs */
+    .nav-tabs-bar {
+      display: flex;
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 4px;
+      gap: 4px;
+    }
+    .nav-tab-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s;
+    }
+    .nav-tab-btn:hover { color: var(--text-main); background: var(--bg-card); }
+    .nav-tab-btn.active {
+      background-color: var(--primary);
+      color: #ffffff;
     }
 
     /* Buttons */
@@ -103,331 +220,253 @@
       gap: 6px;
       padding: 8px 14px;
       border-radius: var(--radius-sm);
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 600;
       cursor: pointer;
-      border: none;
+      border: 1px solid transparent;
       transition: all 0.15s ease;
       font-family: inherit;
+      min-height: 40px;
     }
-
     .btn-primary {
-      background-color: var(--accent-blue);
-      color: #fff;
+      background-color: var(--primary);
+      color: #ffffff;
     }
-    .btn-primary:hover { background-color: var(--accent-blue-hover); }
-
-    .btn-green {
-      background-color: var(--accent-green);
-      color: #fff;
-    }
-    .btn-green:hover { background-color: #059669; }
-
+    .btn-primary:hover { background-color: var(--primary-hover); }
     .btn-outline {
       background-color: transparent;
-      border: 1px solid var(--border-color);
+      border-color: var(--border);
       color: var(--text-main);
     }
-    .btn-outline:hover {
-      background-color: var(--bg-card);
-      border-color: var(--text-muted);
+    .btn-outline:hover { background-color: var(--bg-card); border-color: var(--text-muted); }
+    .btn-success { background-color: var(--success); color: #ffffff; }
+    .btn-success:hover { background-color: #059669; }
+    .btn-sm { padding: 4px 10px; font-size: 0.75rem; min-height: 32px; }
+    .btn-block { width: 100%; }
+
+    /* Surface Card */
+    .surface-card {
+      background-color: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
     }
 
-    .btn-lg {
-      padding: 12px 20px;
-      font-size: 0.95rem;
-      border-radius: var(--radius-md);
-    }
-
-    /* Network Switch Pill */
-    .network-pill {
+    .card-title-row {
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 8px;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .card-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    /* Scanner Mode Selector */
+    .scanner-actions-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    @media (max-width: 580px) {
+      .scanner-actions-grid { grid-template-columns: 1fr; }
+    }
+
+    .scan-mode-card {
       background-color: var(--bg-card);
-      padding: 5px 12px;
-      border-radius: 9999px;
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .scan-mode-card:hover {
+      border-color: var(--primary);
+      background-color: #243248;
+    }
+    .scan-mode-card.drag-over {
+      border-color: var(--primary);
+      background-color: var(--primary-subtle);
+    }
+    .scan-mode-icon {
+      font-size: 1.6rem;
+    }
+    .scan-mode-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #ffffff;
+    }
+    .scan-mode-desc {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    /* Category Selector */
+    .category-row {
+      margin-bottom: 14px;
+    }
+    .field-label {
+      display: block;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      font-weight: 600;
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+    .cat-pill-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .cat-btn {
+      background-color: var(--bg-subtle);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 5px 11px;
+      border-radius: var(--radius-sm);
       font-size: 0.75rem;
       font-weight: 600;
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-    }
-    .dot-online { background-color: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
-    .dot-offline { background-color: var(--accent-amber); box-shadow: 0 0 8px var(--accent-amber); }
-
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 32px;
-      height: 18px;
-    }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .slider {
-      position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #475569; transition: .2s; border-radius: 18px;
-    }
-    .slider:before {
-      position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px;
-      background-color: white; transition: .2s; border-radius: 50%;
-    }
-    input:checked + .slider { background-color: var(--accent-green); }
-    input:checked + .slider:before { transform: translateX(14px); }
-
-    /* Language Buttons */
-    .lang-group {
-      display: flex;
-      gap: 4px;
-      background: var(--bg-card);
-      padding: 3px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border-color);
-    }
-    .lang-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      padding: 3px 7px;
-      font-size: 0.72rem;
-      font-weight: 600;
-      border-radius: 4px;
       cursor: pointer;
     }
-    .lang-btn.active {
-      background: var(--accent-blue);
-      color: #fff;
+    .cat-btn.active {
+      background-color: var(--primary);
+      border-color: var(--primary);
+      color: #ffffff;
     }
 
-    /* Cards */
-    .card {
-      background-color: var(--bg-surface);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      padding: 20px;
-      box-shadow: var(--shadow);
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid var(--border-color);
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .card-header h2 {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    /* Hero Action Grid */
-    .hero-scanner-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-    @media (max-width: 600px) {
-      .hero-scanner-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .action-card-btn {
-      background: var(--bg-card);
-      border: 2px dashed var(--border-color);
-      border-radius: var(--radius-md);
-      padding: 20px 16px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      text-align: center;
-      color: var(--text-main);
-    }
-    .action-card-btn:hover, .action-card-btn.dragover, .action-card-btn.drag-over {
-      border-color: var(--accent-blue);
-      background-color: rgba(59, 130, 246, 0.12);
-      box-shadow: 0 0 16px rgba(59, 130, 246, 0.25);
-    }
-    .action-card-btn .action-icon {
-      font-size: 2.2rem;
-    }
-
-    /* Category Pill Selector */
-    .category-pills-row {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-    }
-    .cat-pill {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      color: var(--text-muted);
-      padding: 6px 12px;
-      border-radius: 9999px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.15s;
-    }
-    .cat-pill.active {
-      background: var(--accent-blue);
-      border-color: var(--accent-blue);
-      color: #fff;
-    }
-
-    /* Preview Box */
-    .scanner-preview-box {
-      margin-bottom: 16px;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-md);
-      background-color: #0c1322;
-      padding: 10px 14px;
+    /* File Preview */
+    .preview-container {
       display: none;
+      background-color: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
       align-items: center;
       gap: 12px;
+      margin-bottom: 14px;
     }
-    .scanner-preview-box.active { display: flex; }
-    .scanner-thumbnail {
-      width: 60px;
-      height: 60px;
+    .preview-container.active { display: flex; }
+    .preview-img {
+      width: 56px;
+      height: 56px;
       object-fit: cover;
       border-radius: var(--radius-sm);
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--border);
     }
-    .preview-meta { flex: 1; overflow: hidden; font-size: 0.82rem; }
-    .preview-filename { font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .preview-filesize { color: var(--text-muted); font-size: 0.75rem; }
-
-    /* Results Output Container */
-    .result-container {
-      margin-top: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .result-status-banner {
-      padding: 14px 18px;
-      border-radius: var(--radius-md);
-      font-size: 1.05rem;
-      font-weight: 700;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      letter-spacing: 0.3px;
-    }
-    .status-banner-compliant {
-      background: rgba(16, 185, 129, 0.2);
-      border: 1px solid rgba(16, 185, 129, 0.5);
-      color: #34d399;
-    }
-    .status-banner-non_compliant {
-      background: rgba(239, 68, 68, 0.2);
-      border: 1px solid rgba(239, 68, 68, 0.5);
-      color: #f87171;
-    }
-    .status-banner-needs_review {
-      background: rgba(245, 158, 11, 0.2);
-      border: 1px solid rgba(245, 158, 11, 0.5);
-      color: #fbbf24;
-    }
-
-    /* Declarations Grid */
-    .extracted-chips {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 10px;
-    }
-    .chip {
-      background-color: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
-      padding: 8px 12px;
+    .preview-details {
+      flex: 1;
+      overflow: hidden;
       font-size: 0.8rem;
     }
-    .chip-label {
-      color: var(--text-muted);
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      display: block;
-      margin-bottom: 3px;
-      letter-spacing: 0.3px;
-    }
-    .chip-value {
+    .preview-name {
       font-weight: 600;
-      color: #fff;
+      color: var(--text-main);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
+    .preview-size {
+      color: var(--text-muted);
+      font-size: 0.72rem;
+    }
 
-    /* Safety & Ingredients Card */
-    .safety-advisory-card {
+    /* Loading State */
+    .loading-box {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 12px;
+      gap: 10px;
+      text-align: center;
+    }
+    .spinner {
+      width: 28px;
+      height: 28px;
+      border: 3px solid rgba(37, 99, 235, 0.2);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Results Section */
+    .results-wrap {
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .status-banner {
+      padding: 12px 16px;
       border-radius: var(--radius-md);
-      padding: 16px;
-      background: #0f172a;
-      border: 1px solid var(--border-color);
-    }
-    .safety-banner-warn {
-      background: rgba(245, 158, 11, 0.15);
-      border: 1px solid rgba(245, 158, 11, 0.4);
-      border-left: 4px solid var(--accent-amber);
-      padding: 12px 14px;
-      border-radius: var(--radius-sm);
-      margin-bottom: 12px;
-    }
-    .safety-banner-ok {
-      background: rgba(16, 185, 129, 0.15);
-      border: 1px solid rgba(16, 185, 129, 0.4);
-      border-left: 4px solid var(--accent-green);
-      padding: 12px 14px;
-      border-radius: var(--radius-sm);
-      margin-bottom: 12px;
-    }
-    .safety-flag-item {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
-      padding: 10px 12px;
-      margin-bottom: 8px;
-    }
-    .safety-flag-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 4px;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+    .status-compliant {
+      background: var(--success-subtle);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34d399;
+    }
+    .status-non-compliant {
+      background: var(--danger-subtle);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #f87171;
+    }
+    .status-needs-review {
+      background: var(--warning-subtle);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: #fbbf24;
     }
 
-    .ingredient-tags-container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 10px;
+    /* Declarations Grid */
+    .declarations-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 8px;
+      margin-top: 8px;
     }
-    .ingredient-tag {
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
-      border-radius: 4px;
-      padding: 3px 8px;
-      font-size: 0.75rem;
-      color: #e2e8f0;
+    .declaration-item {
+      background-color: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+    }
+    .decl-label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      font-weight: 600;
+      display: block;
+      margin-bottom: 2px;
+    }
+    .decl-value {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .decl-not-detected {
+      color: var(--text-dim);
+      font-style: italic;
+      font-weight: 400;
     }
 
     /* Rules Findings List */
@@ -435,558 +474,619 @@
       list-style: none;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-    }
-    .finding-item {
-      padding: 8px 12px;
-      border-radius: var(--radius-sm);
-      background-color: var(--bg-card);
-      border: 1px solid rgba(51, 65, 85, 0.5);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      font-size: 0.82rem;
-    }
-    .finding-item.fail { border-left: 3px solid var(--accent-red); }
-    .finding-item.pass { border-left: 3px solid var(--accent-green); }
-
-    /* Comparison Banner (Shrinkflation) */
-    .comparison-banner {
-      display: none;
-      background: rgba(245, 158, 11, 0.12);
-      border: 1px solid rgba(245, 158, 11, 0.35);
-      border-radius: var(--radius-md);
-      padding: 14px 16px;
-      margin-top: 14px;
-    }
-    .comparison-banner.active { display: block; }
-    .comparison-side-by-side {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 10px;
-    }
-    @media (max-width: 600px) {
-      .comparison-side-by-side { grid-template-columns: 1fr; }
-    }
-    .comp-col {
-      background-color: #0f172a;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
-      padding: 10px 14px;
-    }
-    .comp-col.highlight-prev { border-left: 3px solid var(--accent-blue); }
-    .comp-col.highlight-curr { border-left: 3px solid var(--accent-amber); }
-    .shrinkflation-badge {
-      display: inline-flex;
-      align-items: center;
       gap: 6px;
-      padding: 6px 12px;
-      border-radius: 4px;
-      font-size: 0.78rem;
-      font-weight: bold;
-      background: rgba(239, 68, 68, 0.2);
-      border: 1px solid rgba(239, 68, 68, 0.4);
-      color: #f87171;
       margin-top: 8px;
     }
-
-    /* Inspections History Table */
-    .table-toolbar {
+    .finding-row {
+      background-color: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
-    }
-    .filter-tabs {
-      display: flex;
-      gap: 4px;
-      background-color: #0f172a;
-      padding: 3px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border-color);
-    }
-    .filter-tab {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      padding: 5px 12px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    .filter-tab.active { background-color: var(--accent-blue); color: #fff; }
-    .search-input {
-      background-color: #0f172a;
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-sm);
-      color: var(--text-main);
-      padding: 6px 12px;
       font-size: 0.8rem;
-      outline: none;
-      min-width: 200px;
+      gap: 8px;
+    }
+    .finding-row.pass { border-left: 3px solid var(--success); }
+    .finding-row.fail { border-left: 3px solid var(--danger); }
+    .finding-row.review { border-left: 3px solid var(--warning); }
+
+    .tag-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 3px;
+      text-transform: uppercase;
+    }
+    .tag-pass { background: var(--success-subtle); color: #34d399; }
+    .tag-fail { background: var(--danger-subtle); color: #f87171; }
+    .tag-review { background: var(--warning-subtle); color: #fbbf24; }
+
+    /* Ingredients & Safety Section */
+    .safety-card {
+      background-color: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px;
+    }
+    .safety-notice-warn {
+      background: var(--warning-subtle);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      border-left: 3px solid var(--warning);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      margin-bottom: 10px;
+    }
+    .safety-notice-ok {
+      background: var(--success-subtle);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      border-left: 3px solid var(--success);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      margin-bottom: 10px;
     }
 
-    .table-container {
+    .flagged-item-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+      margin-bottom: 6px;
+      font-size: 0.78rem;
+    }
+
+    .ingredient-tags-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 8px;
+    }
+    .ing-tag {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      padding: 2px 7px;
+      font-size: 0.72rem;
+      color: #e5e7eb;
+    }
+
+    /* Comparison Banner (Shrinkflation) */
+    .comparison-box {
+      display: none;
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+    }
+    .comparison-box.active { display: block; }
+    .comp-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    @media (max-width: 500px) {
+      .comp-grid { grid-template-columns: 1fr; }
+    }
+    .comp-column {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+      font-size: 0.78rem;
+    }
+
+    /* History Table */
+    .history-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .search-field {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      outline: none;
+      min-width: 180px;
+    }
+
+    .table-scroll {
       overflow-x: auto;
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--border);
       border-radius: var(--radius-sm);
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       text-align: left;
     }
     th {
-      background-color: #0f172a;
-      padding: 10px 14px;
-      font-size: 0.72rem;
+      background-color: var(--bg-subtle);
+      padding: 8px 12px;
+      font-size: 0.7rem;
       text-transform: uppercase;
-      color: var(--text-muted);
-      border-bottom: 1px solid var(--border-color);
+      color: var(--text-dim);
+      border-bottom: 1px solid var(--border);
     }
     td {
-      padding: 10px 14px;
-      border-bottom: 1px solid rgba(51, 65, 85, 0.4);
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border-subtle);
       vertical-align: middle;
     }
-    tr:hover td { background-color: rgba(30, 41, 59, 0.5); }
-
-    .badge-compliance {
-      padding: 3px 8px;
-      border-radius: 4px;
-      font-size: 0.72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-    .comp-compliant { background: rgba(16, 185, 129, 0.2); color: #34d399; }
-    .comp-non_compliant { background: rgba(239, 68, 68, 0.2); color: #f87171; }
-    .comp-flagged { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
-
-    .badge-status {
-      padding: 2px 7px;
-      border-radius: 4px;
-      font-size: 0.7rem;
-      font-weight: 600;
-      text-transform: uppercase;
-    }
-    .status-synced { background: rgba(16, 185, 129, 0.15); color: #34d399; }
-    .status-pending { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
-    .status-failed { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+    tr:hover td { background-color: #1a2333; }
 
     /* Modals */
-    .modal-overlay {
+    .modal-backdrop {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(4px);
+      background: rgba(0, 0, 0, 0.75);
       display: none;
       align-items: center;
       justify-content: center;
       z-index: 1000;
-      padding: 16px;
+      padding: 12px;
     }
-    .modal-overlay.open { display: flex; }
-    .modal-content {
+    .modal-backdrop.open { display: flex; }
+    .modal-window {
       background-color: var(--bg-surface);
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 20px;
+      padding: 16px;
       width: 100%;
-      max-width: 760px;
+      max-width: 640px;
       max-height: 90vh;
       overflow-y: auto;
-      box-shadow: var(--shadow);
     }
-    .modal-header {
+    .modal-head {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       padding-bottom: 8px;
-      border-bottom: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-subtle);
     }
-    .close-btn {
+    .btn-close {
       background: transparent;
       border: none;
       color: var(--text-muted);
-      font-size: 1.4rem;
+      font-size: 1.3rem;
       cursor: pointer;
-      line-height: 1;
     }
-    .close-btn:hover { color: #fff; }
 
-    /* Bounding Box Visualizer */
-    .bbox-wrapper {
-      position: relative;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 220px;
-      max-height: 380px;
-      margin-bottom: 12px;
-      background: #000;
-      border-radius: var(--radius-sm);
-      overflow: hidden;
-    }
-    .bbox-image { max-width: 100%; max-height: 380px; display: block; object-fit: contain; }
-    .bbox-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: auto; }
-
-    /* Toast */
-    .toast-container {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      z-index: 2000;
-    }
-    .toast {
-      background: #1e293b;
-      border: 1px solid var(--border-color);
-      color: #fff;
-      padding: 10px 16px;
-      border-radius: var(--radius-sm);
-      font-size: 0.85rem;
-      box-shadow: var(--shadow);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      animation: slideIn 0.2s ease;
-    }
-    @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-    /* Spinner */
-    .spinner {
-      width: 32px; height: 32px;
-      border: 3px solid rgba(59, 130, 246, 0.2);
-      border-top-color: var(--accent-blue);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* Camera Viewfinder Modal */
-    .camera-box {
+    /* 360 Video Viewfinder */
+    .viewfinder-wrap {
       position: relative;
       background: #000;
       border-radius: var(--radius-md);
       overflow: hidden;
       width: 100%;
       aspect-ratio: 4 / 3;
-      margin-bottom: 14px;
-      border: 1px solid var(--border-color);
+      margin-bottom: 12px;
+      border: 1px solid var(--border);
     }
-    .camera-video { width: 100%; height: 100%; object-fit: cover; }
+    .viewfinder-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .progress-bar-wrap {
+      background-color: var(--bg-subtle);
+      border-radius: 9999px;
+      height: 8px;
+      overflow: hidden;
+      margin: 8px 0;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background-color: var(--primary);
+      transition: width 0.3s linear;
+    }
+
+    /* Bounding Box Visualizer */
+    .bbox-canvas-wrap {
+      position: relative;
+      background: #000;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      max-height: 360px;
+      margin-bottom: 10px;
+    }
+    .bbox-img { max-width: 100%; max-height: 360px; display: block; object-fit: contain; }
+    .bbox-canvas-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+    /* Toast */
+    .toast-tray {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 2000;
+    }
+    .toast-pill {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      animation: fadeIn 0.15s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Views visibility */
+    .tab-view { display: none; }
+    .tab-view.active { display: flex; flex-direction: column; gap: 12px; }
   </style>
 </head>
 <body>
 
-<div class="container">
+<div class="app-container">
 
-  <!-- Header -->
-  <header>
-    <div class="brand-title">
-      <span style="font-size: 1.6rem;">⚖️</span>
-      <div>
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <h1>LegalMetrix</h1>
-          <span class="badge-gov">Govt. of India • AI Inspection</span>
-        </div>
-        <p style="font-size: 0.75rem; color: var(--text-muted);">Legal Metrology & Safety Compliance Engine</p>
+  <!-- Top Bar -->
+  <header class="top-bar">
+    <div class="brand-group">
+      <div class="brand-title-row">
+        <span class="brand-name">LegalMetrix</span>
+        <span class="gov-tag" id="govTag">Govt. of India</span>
       </div>
+      <span class="brand-subtitle" id="brandSub">Packaged Commodity Compliance Inspector</span>
     </div>
 
-    <div class="header-actions">
-      <!-- Network Mode Toggle -->
-      <div class="network-pill" id="networkPill">
-        <span class="status-dot dot-online" id="statusDot"></span>
-        <span id="networkText">ONLINE</span>
-        <label class="switch">
-          <input type="checkbox" id="networkToggle" checked>
-          <span class="slider"></span>
+    <div class="top-controls">
+      <!-- Network Switch -->
+      <div class="network-badge">
+        <span class="dot dot-online" id="statusDot"></span>
+        <span id="networkLabel">Online</span>
+        <label class="switch-wrap">
+          <span class="switch">
+            <input type="checkbox" id="networkToggle" checked>
+            <span class="slider"></span>
+          </span>
         </label>
       </div>
 
-      <!-- Sync Button -->
-      <button class="btn btn-outline" id="syncNowBtn" style="padding: 6px 12px; font-size: 0.78rem;">
-        <span>🔄</span> Sync
-      </button>
-
-      <!-- Predefined Scenarios & Diagnostics Drawer Trigger -->
-      <button class="btn btn-outline" id="openDiagnosticsBtn" style="padding: 6px 12px; font-size: 0.78rem;">
-        <span>⚙️</span> Scenarios & 360
-      </button>
-
-      <!-- Multilingual Audio Selector -->
-      <div class="lang-group">
+      <!-- Language Selector -->
+      <div class="lang-switcher">
         <button class="lang-btn active" data-lang="en">EN</button>
-        <button class="lang-btn" data-lang="hi">HI</button>
-        <button class="lang-btn" data-lang="ta">TA</button>
-        <button class="lang-btn" data-lang="te">TE</button>
-        <button class="lang-btn" data-lang="mr">MR</button>
+        <button class="lang-btn" data-lang="hi">हिन्दी</button>
+        <button class="lang-btn" data-lang="te">తెలుగు</button>
       </div>
     </div>
   </header>
 
-  <!-- Primary Inspector Card (Hero Judge Flow) -->
-  <div class="card">
-    <div class="card-header">
-      <h2><span>📸</span> Packaged Commodity Scanner</h2>
-      <span style="font-size: 0.75rem; color: var(--text-muted);">NVIDIA Nemotron OCR v2 • Statutory Rule Engine 2011</span>
-    </div>
-
-    <!-- Category Selector Pills -->
-    <div style="margin-bottom: 8px; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">
-      Commodity Category:
-    </div>
-    <div class="category-pills-row">
-      <button class="cat-pill active" data-cat="">⚡ Auto-Detect</button>
-      <button class="cat-pill" data-cat="food">🥘 Food & Groceries</button>
-      <button class="cat-pill" data-cat="beverage">🥤 Beverage</button>
-      <button class="cat-pill" data-cat="personal_care">🧴 Cosmetics / Personal Care</button>
-      <button class="cat-pill" data-cat="household">🧼 Household Goods</button>
-    </div>
-    <input type="hidden" id="scannerCategoryValue" value="">
-
-    <!-- Primary Camera & File Upload Action Grid -->
-    <div class="hero-scanner-grid">
-      <div class="action-card-btn" id="openCameraHeroBtn">
-        <span class="action-icon">📷</span>
-        <strong style="color: #fff; font-size: 0.95rem;">Live Camera Scan</strong>
-        <span style="font-size: 0.75rem; color: var(--text-muted);">Capture physical package in real-time</span>
-      </div>
-
-      <div class="action-card-btn" id="scannerDropzone">
-        <span class="action-icon">📁</span>
-        <strong style="color: #fff; font-size: 0.95rem;">Upload Package Photo</strong>
-        <span style="font-size: 0.75rem; color: var(--text-muted);">Click to browse or drop JPEG / PNG</span>
-        <input type="file" id="scannerFileInput" accept="image/jpeg,image/png,image/webp" style="display: none;">
-      </div>
-    </div>
-
-    <!-- Selected Image Preview -->
-    <div class="scanner-preview-box" id="scannerPreviewBox">
-      <img id="scannerThumbnail" class="scanner-thumbnail" src="" alt="Selected product">
-      <div class="preview-meta">
-        <div class="preview-filename" id="previewFilename">filename.jpg</div>
-        <div class="preview-filesize" id="previewFilesize">0 KB</div>
-      </div>
-      <button class="btn btn-outline" id="clearSelectedFileBtn" style="padding: 4px 8px; font-size: 0.75rem;">✕ Remove</button>
-    </div>
-
-    <!-- Primary Scan Submit Button -->
-    <button class="btn btn-primary btn-lg" id="startScanBtn" style="width: 100%;">
-      <span>🚀</span> Scan & Verify Packaging Compliance
+  <!-- Navigation Bar -->
+  <nav class="nav-tabs-bar">
+    <button class="nav-tab-btn active" data-target="view-inspect">
+      <span>🔍</span> <span id="tabInspect">Inspect</span>
     </button>
+    <button class="nav-tab-btn" data-target="view-history">
+      <span>📋</span> <span id="tabHistory">History</span>
+    </button>
+    <button class="nav-tab-btn" data-target="view-diagnostics">
+      <span>⚙️</span> <span id="tabDiagnostics">Scenarios & 360</span>
+    </button>
+  </nav>
 
-    <!-- Loading State -->
-    <div id="scannerLoadingState" style="display: none; flex-direction: column; align-items: center; justify-content: center; padding: 30px 10px; gap: 12px; text-align: center;">
-      <div class="spinner"></div>
-      <strong style="color: #fff; font-size: 1rem;" id="scanLoadingStepTitle">Processing Packaging Image...</strong>
-      <p style="font-size: 0.8rem; color: var(--text-muted);" id="scanLoadingStepDesc">Extracting declarations with NVIDIA Nemotron OCR v2...</p>
-    </div>
-
-    <!-- Live Scan Result Output -->
-    <div class="result-container" id="scannerOutputContent" style="display: none;">
-
-      <!-- Overall Status Banner -->
-      <div class="result-status-banner" id="resultStatusBanner">
-        <span id="resultStatusText">✅ COMPLIANT</span>
-        <span id="resultCategoryBadge" style="font-size: 0.75rem; text-transform: uppercase;">FOOD</span>
+  <!-- 1. INSPECT VIEW (Primary Home Flow) -->
+  <main class="tab-view active" id="view-inspect">
+    
+    <div class="surface-card">
+      <div class="card-title-row">
+        <h2 class="card-title" id="secInspectTitle">Inspect Packaged Commodity</h2>
+        <span style="font-size: 0.72rem; color: var(--text-dim);" id="engineTag">Legal Metrology Rules 2011 • NVIDIA OCR v2</span>
       </div>
 
-      <!-- Product Name & Declarations -->
-      <div style="background: #0f172a; padding: 14px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
-        <h3 id="resultProductName" style="font-size: 1.1rem; color: #fff; margin-bottom: 10px;">Product Name</h3>
-        <div class="extracted-chips" id="extractedChips"></div>
+      <!-- Category Selector -->
+      <div class="category-row">
+        <span class="field-label" id="labelCategory">Commodity Category</span>
+        <div class="cat-pill-group">
+          <button class="cat-btn active" data-cat="">⚡ Auto-Detect</button>
+          <button class="cat-btn" data-cat="food">Food & Groceries</button>
+          <button class="cat-btn" data-cat="beverage">Beverage</button>
+          <button class="cat-btn" data-cat="personal_care">Personal Care</button>
+          <button class="cat-btn" data-cat="household">Household</button>
+        </div>
+        <input type="hidden" id="selectedCategory" value="">
       </div>
 
-      <!-- Ingredients & Safety Watchlist Section (NEW) -->
-      <div class="safety-advisory-card" id="safetyAdvisorySection">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-          <h4 style="font-size: 0.95rem; color: #fff; display: flex; align-items: center; gap: 6px;">
-            <span>🛡️</span> Ingredients & Statutory Safety Watchlist
+      <!-- Primary Action Cards -->
+      <div class="scanner-actions-grid">
+        <!-- Single Photo Camera -->
+        <div class="scan-mode-card" id="btnOpenSingleCamera">
+          <span class="scan-mode-icon">📷</span>
+          <span class="scan-mode-title" id="lblSingleCam">Camera Scan</span>
+          <span class="scan-mode-desc" id="descSingleCam">Capture single front label photo</span>
+        </div>
+
+        <!-- 360 Rotate Inspection -->
+        <div class="scan-mode-card" id="btnOpen360Inspection">
+          <span class="scan-mode-icon">🔄</span>
+          <span class="scan-mode-title" id="lbl360Cam">360° Rotate Scan</span>
+          <span class="scan-mode-desc" id="desc360Cam">Rotate package slowly for full multi-panel scan</span>
+        </div>
+
+        <!-- File Upload / Dropzone -->
+        <div class="scan-mode-card" id="dropzonePhoto">
+          <span class="scan-mode-icon">📁</span>
+          <span class="scan-mode-title" id="lblUpload">Upload Photo</span>
+          <span class="scan-mode-desc" id="descUpload">Browse or drop JPEG/PNG label</span>
+          <input type="file" id="fileInputPhoto" accept="image/jpeg,image/png,image/webp" style="display: none;">
+        </div>
+      </div>
+
+      <!-- Selected File Preview -->
+      <div class="preview-container" id="filePreviewContainer">
+        <img id="filePreviewImg" class="preview-img" src="" alt="Selected product">
+        <div class="preview-details">
+          <div class="preview-name" id="previewFileName">filename.jpg</div>
+          <div class="preview-size" id="previewFileSize">0 KB</div>
+        </div>
+        <button class="btn btn-outline btn-sm" id="btnRemoveSelected">✕ Remove</button>
+      </div>
+
+      <!-- Scan Submission Button -->
+      <button class="btn btn-primary btn-block" id="btnExecuteScan">
+        <span>🚀</span> <span id="lblBtnScan">Scan & Evaluate Compliance</span>
+      </button>
+
+      <!-- Loading Step State -->
+      <div class="loading-box" id="scanLoadingBox">
+        <div class="spinner"></div>
+        <strong style="color: #ffffff; font-size: 0.9rem;" id="loadingStepTitle">Processing Label...</strong>
+        <span style="font-size: 0.75rem; color: var(--text-muted);" id="loadingStepSub">Extracting declarations with NVIDIA Nemotron OCR v2...</span>
+      </div>
+
+      <!-- Results Container -->
+      <div class="results-wrap" id="resultsWrap">
+
+        <!-- Compliance Status Banner -->
+        <div class="status-banner" id="statusBanner">
+          <span id="statusBannerText">COMPLIANT</span>
+          <span id="statusCategoryBadge" style="font-size: 0.72rem; text-transform: uppercase;">FOOD</span>
+        </div>
+
+        <!-- Product & Extracted Declarations -->
+        <div style="background-color: var(--bg-subtle); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 12px;">
+          <h3 id="resProductName" style="font-size: 1rem; font-weight: 600; color: #fff; margin-bottom: 8px;">Product Name</h3>
+          <span class="field-label" id="lblDetectedDecl">Statutory Declarations (Rule 6)</span>
+          <div class="declarations-grid" id="declarationsGrid"></div>
+        </div>
+
+        <!-- Ingredients & Safety Section -->
+        <div class="safety-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <h4 style="font-size: 0.9rem; font-weight: 600; color: #fff;" id="lblIngSafety">
+              Ingredients & Safety Watchlist
+            </h4>
+            <span class="tag-badge" style="background: rgba(37, 99, 235, 0.15); color: #93c5fd;" id="tagSurveillance">STATUTORY SURVEILLANCE</span>
+          </div>
+
+          <div id="safetyNoticeBox"></div>
+          <div id="safetyFlagsContainer"></div>
+
+          <!-- Expandable Ingredients -->
+          <div style="margin-top: 8px;">
+            <button class="btn btn-outline btn-sm" id="btnToggleIngredients" style="width: 100%; justify-content: space-between;">
+              <span id="lblToggleIng">Extracted Ingredients (<span id="ingCount">0</span>)</span>
+              <span id="arrowIng">▼</span>
+            </button>
+            <div id="ingTagsContainer" class="ingredient-tags-wrap" style="display: none;"></div>
+          </div>
+        </div>
+
+        <!-- Legal Metrology Statutory Findings -->
+        <div style="background-color: var(--bg-subtle); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 12px;">
+          <h4 style="font-size: 0.82rem; color: var(--text-dim); text-transform: uppercase; font-weight: 600; margin-bottom: 6px;" id="lblRuleChecklist">
+            Legal Metrology (Packaged Commodities) Rules 2011 Checklist
           </h4>
-          <span id="safetyStatusBadge" class="badge-gov">STATUTORY SURVEILLANCE</span>
+          <ul class="findings-list" id="findingsListUl"></ul>
         </div>
 
-        <div id="safetyBannerBox"></div>
-        <div id="safetyFlagsList"></div>
-
-        <!-- Expandable Extracted Ingredients -->
-        <div style="margin-top: 10px;">
-          <button class="btn btn-outline" id="toggleIngredientsBtn" style="padding: 4px 10px; font-size: 0.75rem; width: 100%; justify-content: space-between;">
-            <span>📋 View Extracted Ingredients (<span id="ingredientsCount">0</span>)</span>
-            <span id="toggleIngredientsArrow">▼</span>
+        <!-- Officer Action Toolbar -->
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button class="btn btn-outline btn-sm" id="btnShowBbox" style="flex: 1;">
+            <span>📸</span> <span id="lblBbox">OCR Bounding Boxes</span>
           </button>
-          <div id="ingredientsTagsContainer" class="ingredient-tags-container" style="display: none;"></div>
+          <button class="btn btn-outline btn-sm" id="btnShowReview" style="flex: 1;">
+            <span>✍️</span> <span id="lblReview">Officer Review</span>
+          </button>
+          <button class="btn btn-success btn-sm" id="btnGenNotice" style="flex: 1;">
+            <span>📄</span> <span id="lblNotice">Statutory Notice</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Shrinkflation / Same Product Comparison Banner -->
+    <div class="comparison-box" id="shrinkflationBox">
+      <strong style="color: #fbbf24; font-size: 0.85rem; display: block;" id="lblCompAlert">
+        🔍 Same-Product Historical Comparison Alert
+      </strong>
+      <div id="compGridContainer"></div>
+      <ul id="compChangesList" style="margin-top: 6px; font-size: 0.78rem; color: var(--text-muted); list-style: none;"></ul>
+    </div>
+
+  </main>
+
+  <!-- 2. HISTORY VIEW -->
+  <section class="tab-view" id="view-history">
+    <div class="surface-card">
+      <div class="card-title-row">
+        <h2 class="card-title" id="lblHistTitle">Inspection History Log</h2>
+        <div style="display: flex; gap: 6px;">
+          <button class="btn btn-primary btn-sm" id="btnSyncHistory">
+            <span>🔄</span> <span id="lblSyncBtn">Sync Server</span>
+          </button>
+          <button class="btn btn-outline btn-sm" id="btnExportHistoryCsv">
+            <span>📥</span> CSV
+          </button>
+          <button class="btn btn-outline btn-sm" id="btnClearHistory">
+            <span>🗑️</span> Reset
+          </button>
         </div>
       </div>
 
-      <!-- Statutory Legal Metrology Rules Findings -->
-      <div style="background: #0f172a; padding: 14px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
-        <h4 style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px; text-transform: uppercase;">
-          Statutory Legal Metrology Rules (Packaged Commodities) 2011
-        </h4>
-        <ul class="findings-list" id="scannerFindingsList"></ul>
+      <div class="history-controls">
+        <div class="cat-pill-group">
+          <button class="cat-btn active" data-filter="ALL">All (<span id="histCountAll">0</span>)</button>
+          <button class="cat-btn" data-filter="pending">Pending (<span id="histCountPending">0</span>)</button>
+          <button class="cat-btn" data-filter="synced">Synced (<span id="histCountSynced">0</span>)</button>
+        </div>
+        <input type="text" class="search-field" id="historySearchInput" placeholder="Search product, ID...">
       </div>
 
-      <!-- Officer Interactive Action Bar -->
-      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-        <button class="btn btn-outline" id="viewBboxModalBtn" style="flex: 1; padding: 8px 12px; font-size: 0.8rem;">
-          <span>📸</span> OCR Bounding Boxes
-        </button>
-        <button class="btn btn-outline" id="viewManualReviewBtn" style="flex: 1; padding: 8px 12px; font-size: 0.8rem;">
-          <span>✍️</span> Officer Manual Review
-        </button>
-        <button class="btn btn-green" id="generateNoticeBtn" style="flex: 1; padding: 8px 12px; font-size: 0.8rem;">
-          <span>📄</span> Statutory Notice
-        </button>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- Historical Same-Product Comparison Banner (Shrinkflation Alert) -->
-  <div class="comparison-banner" id="comparisonBanner">
-    <div style="font-weight: 700; font-size: 0.95rem; color: #fbbf24; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-      <span>🔍</span> Same-Product Historical Comparison Alert
-    </div>
-    <div id="comparisonCardContainer"></div>
-    <ul id="comparisonList" style="margin-top: 8px; font-size: 0.8rem; color: var(--text-muted); list-style: none;"></ul>
-  </div>
-
-  <!-- Local Inspections Store (IndexedDB) -->
-  <div class="card">
-    <div class="card-header">
-      <h2><span>📋</span> Local Inspections Log (IndexedDB)</h2>
-      <div style="display: flex; gap: 8px;">
-        <button class="btn btn-primary" id="exportCsvBtn" style="padding: 5px 10px; font-size: 0.75rem;">
-          <span>📥</span> Export CSV
-        </button>
-        <button class="btn btn-outline" id="clearDbBtn" style="padding: 5px 10px; font-size: 0.75rem;">
-          <span>🗑️</span> Reset
-        </button>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Product</th>
+              <th>Category</th>
+              <th>MRP / Qty</th>
+              <th>Status</th>
+              <th>Sync</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody">
+            <tr>
+              <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 24px;">
+                No inspections recorded yet.
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
+  </section>
 
-    <div class="table-toolbar">
-      <div class="filter-tabs">
-        <button class="filter-tab active" data-filter="ALL">All (<span id="tabCountAll">0</span>)</button>
-        <button class="filter-tab" data-filter="pending">Pending (<span id="tabCountPending">0</span>)</button>
-        <button class="filter-tab" data-filter="synced">Synced (<span id="tabCountSynced">0</span>)</button>
+  <!-- 3. DIAGNOSTICS & SCENARIOS VIEW -->
+  <section class="tab-view" id="view-diagnostics">
+    <div class="surface-card">
+      <div class="card-title-row">
+        <h2 class="card-title" id="lblDiagTitle">SIH Demo Scenarios & 360° Testing</h2>
+        <span style="font-size: 0.72rem; color: var(--text-dim);">Automated Test Fixtures</span>
       </div>
-
-      <div style="display: flex; gap: 6px; align-items: center;">
-        <input type="text" class="search-input" id="tableSearch" placeholder="Search product, ID...">
-        <button class="btn btn-outline" id="clearFilterBtn" style="padding: 5px 8px; font-size: 0.75rem; display: none;">✕</button>
-      </div>
+      <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 12px;" id="lblDiagDesc">
+        Execute any of the 13 predefined SIH test scenarios for independent verification:
+      </p>
+      <div id="diagnosticsListGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;"></div>
     </div>
-
-    <div class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Product Name</th>
-            <th>Category</th>
-            <th>MRP / Qty</th>
-            <th>Compliance</th>
-            <th>Sync</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="inspectionsTableBody">
-          <tr>
-            <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 24px;">
-              No inspections recorded yet. Tap Camera or Upload Photo above to start.
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
+  </section>
 
 </div>
 
-<!-- Camera Viewfinder Modal -->
-<div class="modal-overlay" id="cameraModal">
-  <div class="modal-content" style="max-width: 520px;">
-    <div class="modal-header">
-      <h3 style="font-size: 1.1rem; color: #fff;">📸 Live Camera Capture</h3>
-      <button class="close-btn" id="cameraCloseBtn">&times;</button>
+<!-- Single Camera Modal -->
+<div class="modal-backdrop" id="singleCamModal">
+  <div class="modal-window" style="max-width: 480px;">
+    <div class="modal-head">
+      <h3 style="font-size: 0.95rem; color: #fff;" id="lblSingleCamModal">Live Camera Capture</h3>
+      <button class="btn-close" id="btnCloseSingleCam">&times;</button>
     </div>
-    <div class="camera-box">
-      <video id="cameraVideo" class="camera-video" autoplay playsinline></video>
-      <canvas id="cameraCanvas" style="display: none;"></canvas>
+    <div class="viewfinder-wrap">
+      <video id="singleCamVideo" class="viewfinder-video" autoplay playsinline></video>
+      <canvas id="singleCamCanvas" style="display: none;"></canvas>
     </div>
-    <div style="display: flex; gap: 10px;">
-      <button class="btn btn-outline" id="cameraCancelBtn" style="flex: 1;">Cancel</button>
-      <button class="btn btn-primary" id="cameraCaptureBtn" style="flex: 2; padding: 10px;">
+    <div style="display: flex; gap: 8px;">
+      <button class="btn btn-outline btn-sm" id="btnCancelSingleCam" style="flex: 1;">Cancel</button>
+      <button class="btn btn-primary btn-sm" id="btnSnapSingleCam" style="flex: 2;">
         <span>📸</span> Capture Photo
       </button>
     </div>
   </div>
 </div>
 
-<!-- Diagnostics & Predefined Scenarios Modal (Off Main Screen) -->
-<div class="modal-overlay" id="diagnosticsModal">
-  <div class="modal-content" style="max-width: 680px;">
-    <div class="modal-header">
-      <h3 style="font-size: 1.1rem; color: #fff;">⚙️ SIH Demo Scenarios & 360 Inspector</h3>
-      <button class="close-btn" id="diagnosticsCloseBtn">&times;</button>
+<!-- 360 Video / Rotation Modal -->
+<div class="modal-backdrop" id="rotate360Modal">
+  <div class="modal-window" style="max-width: 520px;">
+    <div class="modal-head">
+      <div>
+        <h3 style="font-size: 0.95rem; color: #fff;" id="lbl360Modal">360° Package Inspection</h3>
+        <p style="font-size: 0.72rem; color: var(--text-muted);" id="lbl360Guide">Rotate the package slowly</p>
+      </div>
+      <button class="btn-close" id="btnClose360">&times;</button>
     </div>
-    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 14px;">
-      Quickly inject any of the 13 predefined SIH test scenarios for verification:
-    </p>
-    <div id="scenarioButtonsList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; max-height: 400px; overflow-y: auto;"></div>
+
+    <div class="viewfinder-wrap">
+      <video id="video360" class="viewfinder-video" autoplay playsinline></video>
+      <canvas id="canvas360" style="display: none;"></canvas>
+    </div>
+
+    <!-- Progress Indicator -->
+    <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-dim); margin-bottom: 2px;">
+      <span id="stepFront">1. Front</span>
+      <span id="stepRight">2. Right</span>
+      <span id="stepBack">3. Back</span>
+      <span id="stepLeft">4. Left</span>
+      <span id="stepDone">Complete</span>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progress360Fill"></div>
+    </div>
+
+    <div style="display: flex; gap: 8px; margin-top: 10px;">
+      <button class="btn btn-outline btn-sm" id="btnCancel360" style="flex: 1;">Cancel</button>
+      <button class="btn btn-primary btn-sm" id="btnStart360Record" style="flex: 2;">
+        <span>🔄</span> Start 360° Scan
+      </button>
+    </div>
   </div>
 </div>
 
-<!-- Visual Bounding Box & Audit Detail Modal -->
-<div class="modal-overlay" id="detailModal">
-  <div class="modal-content" style="max-width: 800px;">
-    <div class="modal-header">
+<!-- Inspection Details / Bounding Box / Manual Review Modal -->
+<div class="modal-backdrop" id="auditDetailModal">
+  <div class="modal-window" style="max-width: 720px;">
+    <div class="modal-head">
       <div>
-        <h3 id="modalTitle" style="font-size: 1.1rem;">Inspection Audit Details</h3>
-        <p style="font-size: 0.72rem; color: var(--text-muted);" id="modalSubtitle">ID: INSP-...</p>
+        <h3 id="modalAuditTitle" style="font-size: 0.95rem; color: #fff;">Inspection Audit & Visual Review</h3>
+        <p style="font-size: 0.7rem; color: var(--text-dim);" id="modalAuditSub">ID: INSP-...</p>
       </div>
-      <div style="display: flex; gap: 8px; align-items: center;">
-        <button class="btn btn-green" id="modalNoticeBtn" style="padding: 4px 10px; font-size: 0.75rem;">
+      <div style="display: flex; gap: 6px; align-items: center;">
+        <button class="btn btn-success btn-sm" id="btnModalNotice">
           <span>📄</span> Statutory Notice
         </button>
-        <button class="close-btn" id="modalCloseBtn">&times;</button>
+        <button class="btn-close" id="btnCloseAuditModal">&times;</button>
       </div>
     </div>
 
-    <!-- Visual Evidence Bounding Boxes Canvas -->
-    <div class="bbox-wrapper" id="modalBboxWrapper">
-      <img id="modalBboxImage" class="bbox-image" src="" alt="Inspection visual evidence">
-      <canvas id="modalBboxCanvas" class="bbox-canvas"></canvas>
+    <!-- Canvas with bounding boxes -->
+    <div class="bbox-canvas-wrap">
+      <img id="bboxImgElement" class="bbox-img" src="" alt="Visual Evidence">
+      <canvas id="bboxCanvasOverlay" class="bbox-canvas-overlay"></canvas>
     </div>
 
-    <!-- Officer Manual Review Form -->
-    <div style="background: #0f172a; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 12px; margin-top: 12px;">
-      <h4 style="font-size: 0.85rem; color: #fff; margin-bottom: 8px;">✍️ Officer Verification & Correction</h4>
-      <div id="manualReviewFieldsContainer"></div>
-      <div style="display: flex; gap: 8px; margin-top: 10px;">
-        <button class="btn btn-primary" id="saveManualReviewBtn" style="flex: 1; padding: 6px 12px; font-size: 0.8rem;">
-          <span>💾</span> Save Officer Verification
-        </button>
-      </div>
+    <!-- Officer Verification Form -->
+    <div style="background: var(--bg-subtle); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px; margin-top: 10px;">
+      <h4 style="font-size: 0.8rem; color: #fff; margin-bottom: 6px;" id="lblOfficerForm">✍️ Officer Declaration Confirmation</h4>
+      <div id="officerInputsContainer"></div>
+      <button class="btn btn-primary btn-sm btn-block" id="btnSaveOfficerVerification" style="margin-top: 8px;">
+        <span>💾</span> Save Verification
+      </button>
     </div>
   </div>
 </div>
 
 <!-- Toast Container -->
-<div class="toast-container" id="toastContainer"></div>
+<div class="toast-tray" id="toastTray"></div>
 
 <!-- Application Logic -->
 <script type="module">
@@ -1000,114 +1100,218 @@
     SYNC_STATUS
   } from '../src/db/indexedDB.js';
   import { syncManager } from '../src/sync/syncManager.js';
-  import { voiceAssistant, speak, PROMPT_KEYS } from '../src/voice/voiceAssistant.js';
+  import { voiceAssistant, speak, PROMPT_KEYS, SUPPORTED_LANGUAGES } from '../src/voice/voiceAssistant.js';
   import { compareProductWithPrevious, exportInspectionsAsCSV, generateStatutoryNoticeHTML } from '../src/history/historyManager.js';
   import { analyzeSafetyWatchlist } from '../src/safety/safetyAnalyzer.js';
   import { configureSQLiteBackend } from '../src/db/sqliteClient.js';
 
-  // Load mock test scenarios for diagnostics drawer
-  let mockScenarios = [];
-  try {
-    const res = await fetch('../src/data/mockInspections.json');
-    mockScenarios = await res.json();
-  } catch (e) {
-    console.warn('Could not load mock JSON:', e);
-  }
-
-  // Connect to authoritative FastAPI backend /api/sync
-  configureSQLiteBackend({ mockMode: false });
-
-  // Init DB and Sync
-  await initDB();
-  syncManager.init();
+  // Multilingual UI Localization Dictionary
+  const UI_STRINGS = {
+    en: {
+      govTag: "Govt. of India",
+      brandSub: "Packaged Commodity Compliance Inspector",
+      tabInspect: "Inspect",
+      tabHistory: "History",
+      tabDiagnostics: "Scenarios & 360",
+      secInspectTitle: "Inspect Packaged Commodity",
+      engineTag: "Legal Metrology Rules 2011 • NVIDIA OCR v2",
+      labelCategory: "Commodity Category",
+      lblSingleCam: "Camera Scan",
+      descSingleCam: "Capture single front label photo",
+      lbl360Cam: "360° Rotate Scan",
+      desc360Cam: "Rotate package slowly for full multi-panel scan",
+      lblUpload: "Upload Photo",
+      descUpload: "Browse or drop JPEG/PNG label",
+      lblBtnScan: "Scan & Evaluate Compliance",
+      lblDetectedDecl: "Statutory Declarations (Rule 6)",
+      lblIngSafety: "Ingredients & Safety Watchlist",
+      lblRuleChecklist: "Legal Metrology (Packaged Commodities) Rules 2011 Checklist",
+      lblBbox: "OCR Bounding Boxes",
+      lblReview: "Officer Review",
+      lblNotice: "Statutory Notice",
+      lblCompAlert: "🔍 Same-Product Historical Comparison Alert",
+      lblHistTitle: "Inspection History Log",
+      lblSyncBtn: "Sync Server",
+      lblDiagTitle: "SIH Demo Scenarios & 360° Testing",
+      lblDiagDesc: "Execute any of the 13 predefined SIH test scenarios for independent verification:",
+      lblSingleCamModal: "Live Camera Capture",
+      lbl360Modal: "360° Package Inspection",
+      lbl360Guide: "Rotate the package slowly"
+    },
+    hi: {
+      govTag: "भारत सरकार",
+      brandSub: "पैकेज्ड कमोडिटी अनुपालन निरीक्षक",
+      tabInspect: "जांच",
+      tabHistory: "इतिहास",
+      tabDiagnostics: "परिदृश्य और 360",
+      secInspectTitle: "पैकेज्ड उत्पाद की जांच करें",
+      engineTag: "विधिक मापविज्ञान नियम 2011 • एनवीडिया ओसीआर",
+      labelCategory: "उत्पाद श्रेणी",
+      lblSingleCam: "कैमरा स्कैन",
+      descSingleCam: "सामने के लेबल की फोटो खींचें",
+      lbl360Cam: "360° रोटेट स्कैन",
+      desc360Cam: "सभी कोणों के स्कैन के लिए पैकेज को धीरे-धीरे घुमाएं",
+      lblUpload: "फोटो अपलोड करें",
+      descUpload: "लेबल फोटो चुनें या खींचें",
+      lblBtnScan: "स्कैन करें और अनुपालन जांचें",
+      lblDetectedDecl: "वैधानिक घोषणाएं (नियम 6)",
+      lblIngSafety: "सामग्री और सुरक्षा वॉचलिस्ट",
+      lblRuleChecklist: "विधिक मापविज्ञान (पैक की गई वस्तुएं) नियम 2011 चेकलिस्ट",
+      lblBbox: "ओसीआर बाउंडिंग बॉक्स",
+      lblReview: "अधिकारी समीक्षा",
+      lblNotice: "वैधानिक नोटिस",
+      lblCompAlert: "🔍 उत्पाद तुलना और मूल्य अलर्ट",
+      lblHistTitle: "निरीक्षण इतिहास लॉग",
+      lblSyncBtn: "सर्वर सिंक करें",
+      lblDiagTitle: "एसोसिएशन डेमो परिदृश्य और 360° परीक्षण",
+      lblDiagDesc: "सत्यापन के लिए 13 पूर्वनिर्धारित परिदृश्यों में से कोई भी चलाएं:",
+      lblSingleCamModal: "लाइव कैमरा कैप्चर",
+      lbl360Modal: "360° पैकेज निरीक्षण",
+      lbl360Guide: "पैकेज को धीरे-धीरे घुमाएं"
+    },
+    te: {
+      govTag: "భారత ప్రభుత్వం",
+      brandSub: "ప్యాకేజ్డ్ కమోడిటీ వర్తింపు ఇన్స్పెక్టర్",
+      tabInspect: "తనిఖీ",
+      tabHistory: "చరిత్ర",
+      tabDiagnostics: "సన్నివేశాలు & 360",
+      secInspectTitle: "ప్యాకేజ్డ్ వస్తువును తనిఖీ చేయండి",
+      engineTag: "లీగల్ మెట్రాలజీ నిబంధనలు 2011 • ఎన్విడియా ఓసీఆర్",
+      labelCategory: "వస్తువు వర్గం",
+      lblSingleCam: "కెమెరా స్కాన్",
+      descSingleCam: "ముందు లేబుల్ ఫోటో తీయండి",
+      lbl360Cam: "360° రొటేట్ స్కాన్",
+      desc360Cam: "మొత్తం స్కాన్ కోసం ప్యాకేజీని నెమ్మదిగా తిప్పండి",
+      lblUpload: "ఫోటో అప్‌లోడ్ చేయండి",
+      descUpload: "లేబుల్ ఫోటో ఎంచుకోండి",
+      lblBtnScan: "స్కాన్ చేసి తనిఖీ చేయండి",
+      lblDetectedDecl: "చట్టబద్ధమైన ప్రకటనలు (రూల్ 6)",
+      lblIngSafety: "పదార్థాలు & భద్రతా పరిశీలన",
+      lblRuleChecklist: "లీగల్ మెట్రాలజీ నిబంధనలు 2011 చెక్‌లిస్ట్",
+      lblBbox: "ఓసీఆర్ సరిహద్దులు",
+      lblReview: "అధికారి సమీక్ష",
+      lblNotice: "చట్టబద్ధమైన నోటీసు",
+      lblCompAlert: "🔍 మునుపటి తనిఖీ పోలిక హెచ్చరిక",
+      lblHistTitle: "తనిఖీ చరిత్ర లాగ్",
+      lblSyncBtn: "సర్వర్ సింక్ చేయండి",
+      lblDiagTitle: "డెమో దృశ్యాలు & 360° పరీక్షలు",
+      lblDiagDesc: "ధృవీకరణ కోసం 13 దృశ్యాలలో దేనినైనా ఎంచుకోండి:",
+      lblSingleCamModal: "లైవ్ కెమెరా క్యాప్చర్",
+      lbl360Modal: "360° ప్యాకేజీ తనిఖీ",
+      lbl360Guide: "ప్యాకేజీని నెమ్మదిగా తిప్పండి"
+    }
+  };
 
   // State
-  let activeLanguage = 'en';
-  let activeFilter = 'ALL';
-  let searchQuery = '';
-  let selectedScanFile = null;
-  let currentPreviewDataUrl = null;
-  let cameraStream = null;
-  let lastScanInspectionId = null;
-  let currentViewingInspection = null;
+  let currentLang = 'en';
+  let activeHistoryFilter = 'ALL';
+  let historySearchQuery = '';
+  let activeSelectedFile = null;
+  let activePreviewDataUrl = null;
+  let activeStream = null;
+  let currentInspection = null;
+  let is360Scanning = false;
 
-  // DOM Elements
+  // Initialize DB and Sync
+  await initDB();
+  configureSQLiteBackend({ mockMode: false });
+  syncManager.init();
+
+  // Load mock scenarios for diagnostics tab
+  let testScenarios = [];
+  try {
+    const res = await fetch('../src/data/mockInspections.json');
+    testScenarios = await res.json();
+  } catch (e) {
+    console.warn('Could not load test scenarios JSON:', e);
+  }
+
+  // DOM references
   const networkToggle = document.getElementById('networkToggle');
   const statusDot = document.getElementById('statusDot');
-  const networkText = document.getElementById('networkText');
-  const syncNowBtn = document.getElementById('syncNowBtn');
-  const clearDbBtn = document.getElementById('clearDbBtn');
-  const exportCsvBtn = document.getElementById('exportCsvBtn');
-  const tableBody = document.getElementById('inspectionsTableBody');
-  const tableSearch = document.getElementById('tableSearch');
-  const clearFilterBtn = document.getElementById('clearFilterBtn');
+  const networkLabel = document.getElementById('networkLabel');
+  const navTabBtns = document.querySelectorAll('.nav-tab-btn');
+  const tabViews = document.querySelectorAll('.tab-view');
 
-  const openCameraHeroBtn = document.getElementById('openCameraHeroBtn');
-  const scannerDropzone = document.getElementById('scannerDropzone');
-  const scannerFileInput = document.getElementById('scannerFileInput');
-  const scannerPreviewBox = document.getElementById('scannerPreviewBox');
-  const scannerThumbnail = document.getElementById('scannerThumbnail');
-  const previewFilename = document.getElementById('previewFilename');
-  const previewFilesize = document.getElementById('previewFilesize');
-  const clearSelectedFileBtn = document.getElementById('clearSelectedFileBtn');
-  const scannerCategoryValue = document.getElementById('scannerCategoryValue');
-  const startScanBtn = document.getElementById('startScanBtn');
+  const selectedCategory = document.getElementById('selectedCategory');
+  const btnOpenSingleCamera = document.getElementById('btnOpenSingleCamera');
+  const btnOpen360Inspection = document.getElementById('btnOpen360Inspection');
+  const dropzonePhoto = document.getElementById('dropzonePhoto');
+  const fileInputPhoto = document.getElementById('fileInputPhoto');
+  const filePreviewContainer = document.getElementById('filePreviewContainer');
+  const filePreviewImg = document.getElementById('filePreviewImg');
+  const previewFileName = document.getElementById('previewFileName');
+  const previewFileSize = document.getElementById('previewFileSize');
+  const btnRemoveSelected = document.getElementById('btnRemoveSelected');
+  const btnExecuteScan = document.getElementById('btnExecuteScan');
 
-  const scannerLoadingState = document.getElementById('scannerLoadingState');
-  const scanLoadingStepTitle = document.getElementById('scanLoadingStepTitle');
-  const scanLoadingStepDesc = document.getElementById('scanLoadingStepDesc');
-  const scannerOutputContent = document.getElementById('scannerOutputContent');
-  const resultStatusBanner = document.getElementById('resultStatusBanner');
-  const resultStatusText = document.getElementById('resultStatusText');
-  const resultCategoryBadge = document.getElementById('resultCategoryBadge');
-  const resultProductName = document.getElementById('resultProductName');
-  const extractedChips = document.getElementById('extractedChips');
-  const scannerFindingsList = document.getElementById('scannerFindingsList');
+  const scanLoadingBox = document.getElementById('scanLoadingBox');
+  const loadingStepTitle = document.getElementById('loadingStepTitle');
+  const loadingStepSub = document.getElementById('loadingStepSub');
+  const resultsWrap = document.getElementById('resultsWrap');
+  const statusBanner = document.getElementById('statusBanner');
+  const statusBannerText = document.getElementById('statusBannerText');
+  const statusCategoryBadge = document.getElementById('statusCategoryBadge');
+  const resProductName = document.getElementById('resProductName');
+  const declarationsGrid = document.getElementById('declarationsGrid');
+  const findingsListUl = document.getElementById('findingsListUl');
 
-  const safetyBannerBox = document.getElementById('safetyBannerBox');
-  const safetyFlagsList = document.getElementById('safetyFlagsList');
-  const toggleIngredientsBtn = document.getElementById('toggleIngredientsBtn');
-  const ingredientsCount = document.getElementById('ingredientsCount');
-  const toggleIngredientsArrow = document.getElementById('toggleIngredientsArrow');
-  const ingredientsTagsContainer = document.getElementById('ingredientsTagsContainer');
+  const safetyNoticeBox = document.getElementById('safetyNoticeBox');
+  const safetyFlagsContainer = document.getElementById('safetyFlagsContainer');
+  const btnToggleIngredients = document.getElementById('btnToggleIngredients');
+  const ingCount = document.getElementById('ingCount');
+  const arrowIng = document.getElementById('arrowIng');
+  const ingTagsContainer = document.getElementById('ingTagsContainer');
 
-  const comparisonBanner = document.getElementById('comparisonBanner');
-  const comparisonCardContainer = document.getElementById('comparisonCardContainer');
-  const comparisonList = document.getElementById('comparisonList');
+  const shrinkflationBox = document.getElementById('shrinkflationBox');
+  const compGridContainer = document.getElementById('compGridContainer');
+  const compChangesList = document.getElementById('compChangesList');
 
-  const cameraModal = document.getElementById('cameraModal');
-  const cameraCloseBtn = document.getElementById('cameraCloseBtn');
-  const cameraCancelBtn = document.getElementById('cameraCancelBtn');
-  const cameraCaptureBtn = document.getElementById('cameraCaptureBtn');
-  const cameraVideo = document.getElementById('cameraVideo');
-  const cameraCanvas = document.getElementById('cameraCanvas');
+  const singleCamModal = document.getElementById('singleCamModal');
+  const singleCamVideo = document.getElementById('singleCamVideo');
+  const singleCamCanvas = document.getElementById('singleCamCanvas');
+  const btnCloseSingleCam = document.getElementById('btnCloseSingleCam');
+  const btnCancelSingleCam = document.getElementById('btnCancelSingleCam');
+  const btnSnapSingleCam = document.getElementById('btnSnapSingleCam');
 
-  const diagnosticsModal = document.getElementById('diagnosticsModal');
-  const openDiagnosticsBtn = document.getElementById('openDiagnosticsBtn');
-  const diagnosticsCloseBtn = document.getElementById('diagnosticsCloseBtn');
-  const scenarioButtonsList = document.getElementById('scenarioButtonsList');
+  const rotate360Modal = document.getElementById('rotate360Modal');
+  const video360 = document.getElementById('video360');
+  const canvas360 = document.getElementById('canvas360');
+  const btnClose360 = document.getElementById('btnClose360');
+  const btnCancel360 = document.getElementById('btnCancel360');
+  const btnStart360Record = document.getElementById('btnStart360Record');
+  const progress360Fill = document.getElementById('progress360Fill');
 
-  const detailModal = document.getElementById('detailModal');
-  const modalCloseBtn = document.getElementById('modalCloseBtn');
-  const modalNoticeBtn = document.getElementById('modalNoticeBtn');
-  const generateNoticeBtn = document.getElementById('generateNoticeBtn');
-  const viewBboxModalBtn = document.getElementById('viewBboxModalBtn');
-  const viewManualReviewBtn = document.getElementById('viewManualReviewBtn');
+  const auditDetailModal = document.getElementById('auditDetailModal');
+  const btnCloseAuditModal = document.getElementById('btnCloseAuditModal');
+  const bboxImgElement = document.getElementById('bboxImgElement');
+  const bboxCanvasOverlay = document.getElementById('bboxCanvasOverlay');
+  const btnShowBbox = document.getElementById('btnShowBbox');
+  const btnShowReview = document.getElementById('btnShowReview');
+  const btnGenNotice = document.getElementById('btnGenNotice');
+  const btnModalNotice = document.getElementById('btnModalNotice');
+
+  const historyTableBody = document.getElementById('historyTableBody');
+  const historySearchInput = document.getElementById('historySearchInput');
+  const btnSyncHistory = document.getElementById('btnSyncHistory');
+  const btnExportHistoryCsv = document.getElementById('btnExportHistoryCsv');
+  const btnClearHistory = document.getElementById('btnClearHistory');
+  const diagnosticsListGrid = document.getElementById('diagnosticsListGrid');
 
   // Show Toast
   function showToast(message, type = 'info') {
     const toast = document.createElement('div');
-    toast.className = 'toast';
+    toast.className = 'toast-pill';
     const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : type === 'warn' ? '⚠️' : 'ℹ️';
     toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
-    document.getElementById('toastContainer').appendChild(toast);
+    document.getElementById('toastTray').appendChild(toast);
     setTimeout(() => {
       toast.style.opacity = '0';
-      setTimeout(() => toast.remove(), 300);
-    }, 3500);
+      setTimeout(() => toast.remove(), 250);
+    }, 3200);
   }
 
-  // Format File Bytes
+  // Format Bytes
   function formatBytes(bytes) {
     if (!bytes) return '0 B';
     const k = 1024;
@@ -1116,212 +1320,309 @@
     return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
   }
 
-  // Category Pill Selection
-  document.querySelectorAll('.cat-pill').forEach(pill => {
-    pill.addEventListener('click', () => {
-      document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-      scannerCategoryValue.value = pill.dataset.cat;
+  // Switch Language
+  function updateLanguage(lang) {
+    currentLang = lang;
+    voiceAssistant.setLanguage(lang);
+    const dict = UI_STRINGS[lang] || UI_STRINGS.en;
+    Object.keys(dict).forEach(key => {
+      const el = document.getElementById(key);
+      if (el) el.textContent = dict[key];
+    });
+    document.querySelectorAll('.lang-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.lang === lang);
+    });
+  }
+
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      updateLanguage(btn.dataset.lang);
+      showToast(`Language: ${btn.textContent}`, 'info');
     });
   });
 
-  // File Handling
-  function handleSelectedFile(file) {
+  // Navigation Tabs Switching
+  navTabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      navTabBtns.forEach(b => b.classList.remove('active'));
+      tabViews.forEach(v => v.classList.remove('active'));
+      btn.classList.add('active');
+      const targetView = document.getElementById(btn.dataset.target);
+      if (targetView) targetView.classList.add('active');
+      if (btn.dataset.target === 'view-history') refreshHistoryTable();
+    });
+  });
+
+  // Commodity Category Pills
+  document.querySelectorAll('.cat-btn').forEach(btn => {
+    if (btn.dataset.cat !== undefined) {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.cat-btn').forEach(b => {
+          if (b.dataset.cat !== undefined) b.classList.remove('active');
+        });
+        btn.classList.add('active');
+        selectedCategory.value = btn.dataset.cat;
+      });
+    }
+  });
+
+  // Handle Selected Image
+  function setSelectedImage(file) {
     if (!file) return;
-    const validTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
-    if (!validTypes.includes(file.type) && !file.name.match(/\.(jpe?g|png|webp)$/i)) {
-      showToast('Please upload a JPEG, PNG, or WebP image.', 'error');
+    const validExts = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+    if (!validExts.includes(file.type) && !file.name.match(/\.(jpe?g|png|webp)$/i)) {
+      showToast('Please select a JPEG or PNG packaging image.', 'error');
       return;
     }
     if (file.size > 15 * 1024 * 1024) {
-      showToast('Image exceeds 15MB limit.', 'error');
+      showToast('Image file size exceeds 15MB.', 'error');
       return;
     }
 
-    selectedScanFile = file;
-    previewFilename.textContent = file.name;
-    previewFilesize.textContent = formatBytes(file.size);
+    activeSelectedFile = file;
+    previewFileName.textContent = file.name;
+    previewFileSize.textContent = formatBytes(file.size);
 
     const reader = new FileReader();
     reader.onload = (e) => {
-      currentPreviewDataUrl = e.target.result;
-      scannerThumbnail.src = currentPreviewDataUrl;
-      scannerPreviewBox.classList.add('active');
+      activePreviewDataUrl = e.target.result;
+      filePreviewImg.src = activePreviewDataUrl;
+      filePreviewContainer.classList.add('active');
     };
     reader.readAsDataURL(file);
   }
 
-  function clearSelectedFile() {
-    selectedScanFile = null;
-    currentPreviewDataUrl = null;
-    scannerFileInput.value = '';
-    scannerPreviewBox.classList.remove('active');
-    scannerThumbnail.src = '';
+  function clearSelectedImage() {
+    activeSelectedFile = null;
+    activePreviewDataUrl = null;
+    fileInputPhoto.value = '';
+    filePreviewContainer.classList.remove('active');
+    filePreviewImg.src = '';
   }
 
-  clearSelectedFileBtn.onclick = clearSelectedFile;
-  scannerDropzone.addEventListener('click', () => scannerFileInput.click());
-  scannerFileInput.addEventListener('change', (e) => {
-    if (e.target.files && e.target.files[0]) handleSelectedFile(e.target.files[0]);
+  btnRemoveSelected.onclick = clearSelectedImage;
+  dropzonePhoto.addEventListener('click', () => fileInputPhoto.click());
+  fileInputPhoto.addEventListener('change', (e) => {
+    if (e.target.files && e.target.files[0]) setSelectedImage(e.target.files[0]);
   });
 
   // Drag & Drop
-  ['dragenter', 'dragover'].forEach(name => {
-    scannerDropzone.addEventListener(name, (e) => {
+  ['dragenter', 'dragover'].forEach(evt => {
+    dropzonePhoto.addEventListener(evt, (e) => {
       e.preventDefault(); e.stopPropagation();
-      scannerDropzone.classList.add('drag-over');
+      dropzonePhoto.classList.add('drag-over');
     });
   });
-  ['dragleave', 'drop'].forEach(name => {
-    scannerDropzone.addEventListener(name, (e) => {
+  ['dragleave', 'drop'].forEach(evt => {
+    dropzonePhoto.addEventListener(evt, (e) => {
       e.preventDefault(); e.stopPropagation();
-      scannerDropzone.classList.remove('drag-over');
+      dropzonePhoto.classList.remove('drag-over');
     });
   });
-  scannerDropzone.addEventListener('drop', (e) => {
-    const dt = e.dataTransfer;
-    if (dt && dt.files && dt.files[0]) handleSelectedFile(dt.files[0]);
+  dropzonePhoto.addEventListener('drop', (e) => {
+    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) {
+      setSelectedImage(e.dataTransfer.files[0]);
+    }
   });
 
-  // Camera Modal
-  async function startCamera() {
+  // Single Camera Mode
+  async function openSingleCamera() {
     try {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        showToast('Camera not supported on this browser.', 'warn');
+        showToast('Camera not available on this browser.', 'warn');
         return;
       }
-      cameraStream = await navigator.mediaDevices.getUserMedia({
+      activeStream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
       });
-      cameraVideo.srcObject = cameraStream;
-      cameraModal.classList.add('open');
+      singleCamVideo.srcObject = activeStream;
+      singleCamModal.classList.add('open');
     } catch (err) {
-      showToast('Could not access camera: ' + err.message, 'error');
+      showToast('Camera error: ' + err.message, 'error');
     }
   }
 
-  function stopCamera() {
-    if (cameraStream) {
-      cameraStream.getTracks().forEach(t => t.stop());
-      cameraStream = null;
+  function closeSingleCamera() {
+    if (activeStream) {
+      activeStream.getTracks().forEach(t => t.stop());
+      activeStream = null;
     }
-    cameraModal.classList.remove('open');
+    singleCamModal.classList.remove('open');
   }
 
-  openCameraHeroBtn.addEventListener('click', startCamera);
-  cameraCloseBtn.addEventListener('click', stopCamera);
-  cameraCancelBtn.addEventListener('click', stopCamera);
+  btnOpenSingleCamera.addEventListener('click', openSingleCamera);
+  btnCloseSingleCam.addEventListener('click', closeSingleCamera);
+  btnCancelSingleCam.addEventListener('click', closeSingleCamera);
 
-  cameraCaptureBtn.addEventListener('click', () => {
-    if (!cameraVideo.videoWidth) {
-      showToast('Camera not ready yet.', 'warn');
+  btnSnapSingleCam.addEventListener('click', () => {
+    if (!singleCamVideo.videoWidth) {
+      showToast('Camera feed not ready.', 'warn');
       return;
     }
-    cameraCanvas.width = cameraVideo.videoWidth;
-    cameraCanvas.height = cameraVideo.videoHeight;
-    const ctx = cameraCanvas.getContext('2d');
-    ctx.drawImage(cameraVideo, 0, 0, cameraCanvas.width, cameraCanvas.height);
-    cameraCanvas.toBlob((blob) => {
+    singleCamCanvas.width = singleCamVideo.videoWidth;
+    singleCamCanvas.height = singleCamVideo.videoHeight;
+    const ctx = singleCamCanvas.getContext('2d');
+    ctx.drawImage(singleCamVideo, 0, 0, singleCamCanvas.width, singleCamCanvas.height);
+    singleCamCanvas.toBlob((blob) => {
       if (blob) {
-        const photo = new File([blob], `package-photo-${Date.now()}.jpg`, { type: 'image/jpeg' });
-        handleSelectedFile(photo);
-        stopCamera();
-        showToast('Photo captured successfully!', 'success');
+        const photoFile = new File([blob], `label-photo-${Date.now()}.jpg`, { type: 'image/jpeg' });
+        setSelectedImage(photoFile);
+        closeSingleCamera();
+        showToast('Photo captured!', 'success');
       }
     }, 'image/jpeg', 0.95);
   });
 
-  // Diagnostics Modal Trigger
-  openDiagnosticsBtn.onclick = () => diagnosticsModal.classList.add('open');
-  diagnosticsCloseBtn.onclick = () => diagnosticsModal.classList.remove('open');
-  diagnosticsModal.onclick = (e) => { if (e.target === diagnosticsModal) diagnosticsModal.classList.remove('open'); };
-
-  // Render Diagnostics Scenario Buttons
-  function renderScenarioButtons() {
-    scenarioButtonsList.innerHTML = '';
-    mockScenarios.forEach(item => {
-      const btn = document.createElement('button');
-      btn.className = 'btn btn-outline';
-      btn.style.cssText = 'padding: 8px; text-align: left; display: flex; flex-direction: column; gap: 2px;';
-      btn.innerHTML = `
-        <strong style="color: #93c5fd; font-size: 0.78rem;">#${item.scenario_id} ${item.scenario_name}</strong>
-        <span style="font-size: 0.7rem; color: var(--text-muted);">${item.product_name}</span>
-      `;
-      btn.onclick = async () => {
-        diagnosticsModal.classList.remove('open');
-        await injectScenario(item);
-      };
-      scenarioButtonsList.appendChild(btn);
-    });
-  }
-
-  // Inject Scenario (for Diagnostics & Audits)
-  async function injectScenario(scenarioData) {
-    const isOnline = syncManager.isOnline();
-    const cloned = JSON.parse(JSON.stringify(scenarioData));
-    if (!isOnline) {
-      cloned.sync_status = SYNC_STATUS.PENDING;
-      cloned.synced_at = null;
-    }
-    const saved = await saveInspection(cloned);
-    showToast(`Injected Scenario #${saved.scenario_id || ''}: ${saved.product_name}`, 'success');
-
-    if (saved.compliance_status === 'COMPLIANT') speak(PROMPT_KEYS.COMPLIANT, activeLanguage);
-    else if (saved.compliance_status === 'NON_COMPLIANT') speak(PROMPT_KEYS.NON_COMPLIANT, activeLanguage);
-
-    displayScanResult(saved);
-    await refreshDashboard();
-  }
-
-  // Statutory Unit Sale Price (USP) Calculation Helper
-  function calculateStatutoryUSP(mrp, netQty) {
-    if (!mrp || !netQty) return null;
-    const mrpNum = parseFloat(String(mrp).replace(/[^\d.]/g, ''));
-    if (!mrpNum || mrpNum <= 0) return null;
-    const match = String(netQty).match(/([\d.]+)\s*([a-zA-Z]+)/);
-    if (!match) return null;
-    const qtyNum = parseFloat(match[1]);
-    const unit = match[2].toLowerCase();
-    if (!qtyNum || qtyNum <= 0) return null;
-
-    if (['g', 'gm', 'gram', 'grams'].includes(unit)) {
-      return `₹${(mrpNum / qtyNum).toFixed(2)}/g`;
-    } else if (['kg', 'kgs'].includes(unit)) {
-      return `₹${(mrpNum / qtyNum).toFixed(2)}/kg`;
-    } else if (['ml'].includes(unit)) {
-      return `₹${(mrpNum / qtyNum).toFixed(2)}/ml`;
-    } else if (['l', 'ltr', 'litre'].includes(unit)) {
-      return `₹${(mrpNum / qtyNum).toFixed(2)}/L`;
-    } else {
-      return `₹${(mrpNum / qtyNum).toFixed(2)}/${unit}`;
+  // 360° Rotate Scan Mode
+  async function open360Inspection() {
+    try {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        showToast('Camera not available for 360 scan.', 'warn');
+        return;
+      }
+      activeStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
+      });
+      video360.srcObject = activeStream;
+      progress360Fill.style.width = '0%';
+      rotate360Modal.classList.add('open');
+      is360Scanning = false;
+    } catch (err) {
+      showToast('Camera error: ' + err.message, 'error');
     }
   }
 
-  // Toggle Ingredients List
-  let ingredientsExpanded = false;
-  toggleIngredientsBtn.addEventListener('click', () => {
-    ingredientsExpanded = !ingredientsExpanded;
-    ingredientsTagsContainer.style.display = ingredientsExpanded ? 'flex' : 'none';
-    toggleIngredientsArrow.textContent = ingredientsExpanded ? '▲' : '▼';
+  function close360Inspection() {
+    if (activeStream) {
+      activeStream.getTracks().forEach(t => t.stop());
+      activeStream = null;
+    }
+    rotate360Modal.classList.remove('open');
+    is360Scanning = false;
+  }
+
+  btnOpen360Inspection.addEventListener('click', open360Inspection);
+  btnClose360.addEventListener('click', close360Inspection);
+  btnCancel360.addEventListener('click', close360Inspection);
+
+  // Execute 360 Capture Sequence (Front -> Right -> Back -> Left)
+  btnStart360Record.addEventListener('click', async () => {
+    if (is360Scanning) return;
+    is360Scanning = true;
+    btnStart360Record.disabled = true;
+
+    speak(PROMPT_KEYS.ROTATE_PACKAGE, currentLang);
+    showToast('Rotate the package slowly...', 'info');
+
+    const sampledFrames = [];
+    const totalSteps = 4;
+    canvas360.width = video360.videoWidth || 640;
+    canvas360.height = video360.videoHeight || 480;
+    const ctx = canvas360.getContext('2d');
+
+    for (let step = 1; step <= totalSteps; step++) {
+      progress360Fill.style.width = `${(step / totalSteps) * 100}%`;
+      ctx.drawImage(video360, 0, 0, canvas360.width, canvas360.height);
+
+      const frameBlob = await new Promise(resolve => canvas360.toBlob(resolve, 'image/jpeg', 0.9));
+      if (frameBlob) {
+        sampledFrames.push(new File([frameBlob], `frame_${step}.jpg`, { type: 'image/jpeg' }));
+      }
+      if (step < totalSteps) {
+        await new Promise(r => setTimeout(r, 900));
+      }
+    }
+
+    close360Inspection();
+    btnStart360Record.disabled = false;
+
+    if (sampledFrames.length > 0) {
+      // Use the first frame for primary thumbnail and submit 360 payload
+      setSelectedImage(sampledFrames[0]);
+      await submit360Scan(sampledFrames);
+    }
   });
 
-  // Display Scan Result in UI
-  function displayScanResult(scanData) {
-    scannerLoadingState.style.display = 'none';
-    scannerOutputContent.style.display = 'flex';
+  // Submit 360 Scan to Backend
+  async function submit360Scan(framesList) {
+    const isOnline = syncManager.isOnline();
+    const cat = selectedCategory.value;
 
-    const status = scanData.overall_status || scanData.compliance_status || 'UNKNOWN';
+    if (!isOnline) {
+      const offlineId = `INSP-OFFLINE-360-${Date.now().toString(16).toUpperCase()}`;
+      const offlineRec = {
+        inspection_id: offlineId,
+        product_name: '360° Rotated Commodity',
+        category: cat || 'General Commodity',
+        mrp: null,
+        net_quantity: null,
+        compliance_status: 'FLAGGED_MANUAL_REVIEW',
+        confidence: 0.0,
+        violations: [
+          { rule_id: 'RULE-OFFLINE-001', field: 'network_sync', message: 'Offline 360 scan queued in IndexedDB. Pending cloud OCR synchronization.' }
+        ],
+        checks: [],
+        evidence: { thumbnail_base64: activePreviewDataUrl, angles_count: framesList.length },
+        sync_status: SYNC_STATUS.PENDING,
+        created_at: new Date().toISOString()
+      };
+      await saveInspection(offlineRec);
+      showToast(`Offline Mode: 360° scan queued as PENDING (${offlineId})`, 'info');
+      displayScanResult(offlineRec);
+      return;
+    }
+
+    resultsWrap.style.display = 'none';
+    scanLoadingBox.style.display = 'flex';
+    loadingStepTitle.textContent = 'Analyzing 360° Package Panels...';
+    loadingStepSub.textContent = 'Aggregating multi-angle OCR text with MultiImageFusion...';
+
+    const formData = new FormData();
+    framesList.forEach(fr => formData.append('frames', fr));
+    if (cat) formData.append('category', cat);
+
+    try {
+      const apiBase = window.__API_URL || 'http://localhost:8000';
+      const res = await fetch(`${apiBase}/api/scan/360`, { method: 'POST', body: formData });
+      if (!res.ok) {
+        let errStr = '360 analysis error.';
+        try { const errJson = await res.json(); errStr = errJson.detail || JSON.stringify(errJson); } catch (e) {}
+        throw new Error(errStr);
+      }
+      const scanRes = await res.json();
+      await processAndSaveScanResult(scanRes, 'video_360');
+    } catch (err) {
+      console.error('360 Scan Error:', err);
+      showToast(`360 Scan Error: ${err.message}`, 'error');
+      scanLoadingBox.style.display = 'none';
+    }
+  }
+
+  // Display Extracted Ingredients Toggle
+  let isIngredientsOpen = false;
+  btnToggleIngredients.addEventListener('click', () => {
+    isIngredientsOpen = !isIngredientsOpen;
+    ingTagsContainer.style.display = isIngredientsOpen ? 'flex' : 'none';
+    arrowIng.textContent = isIngredientsOpen ? '▲' : '▼';
+  });
+
+  // Display Scan Result
+  function displayScanResult(record) {
+    scanLoadingBox.style.display = 'none';
+    resultsWrap.style.display = 'flex';
+
+    const status = record.overall_status || record.compliance_status || 'UNKNOWN';
     const isCompliant = status === 'COMPLIANT';
     const isNonCompliant = status === 'NON_COMPLIANT';
 
-    resultStatusBanner.className = 'result-status-banner ' + (
-      isCompliant ? 'status-banner-compliant' :
-      isNonCompliant ? 'status-banner-non_compliant' : 'status-banner-needs_review'
+    statusBanner.className = 'status-banner ' + (
+      isCompliant ? 'status-compliant' :
+      isNonCompliant ? 'status-non-compliant' : 'status-needs-review'
     );
-    resultStatusText.textContent = isCompliant ? '✅ COMPLIANT' : isNonCompliant ? '🚨 NON-COMPLIANT' : '⚠️ NEEDS MANUAL REVIEW';
-    resultCategoryBadge.textContent = (scanData.category || 'Commodity').toUpperCase();
+    statusBannerText.textContent = isCompliant ? '✓ COMPLIANT' : isNonCompliant ? '✕ NON-COMPLIANT' : '⚠ NEEDS MANUAL REVIEW';
+    statusCategoryBadge.textContent = (record.category || 'Commodity').toUpperCase();
 
-    const findings = scanData.findings || scanData.checks || [];
+    const findings = record.findings || record.checks || [];
     const declMap = {};
     findings.forEach(f => {
       if (f.field && f.extracted_value !== undefined && f.extracted_value !== null) {
@@ -1329,290 +1630,279 @@
       }
     });
 
-    const prodName = declMap.product_name || scanData.product_name || (selectedScanFile ? selectedScanFile.name.replace(/\.[^/.]+$/, '') : 'Packaged Commodity');
-    resultProductName.textContent = prodName;
+    const pName = declMap.product_name || record.product_name || (activeSelectedFile ? activeSelectedFile.name.replace(/\.[^/.]+$/, '') : 'Packaged Commodity');
+    resProductName.textContent = pName;
 
-    const mrpVal = declMap.mrp || scanData.mrp;
-    const qtyVal = declMap.net_quantity || scanData.net_quantity;
-    const computedUsp = calculateStatutoryUSP(mrpVal, qtyVal);
-    const declaredUsp = declMap.unit_sale_price || scanData.unit_sale_price || computedUsp || 'Missing';
+    const mrp = declMap.mrp || record.mrp;
+    const netQty = declMap.net_quantity || record.net_quantity;
+    const usp = declMap.unit_sale_price || record.unit_sale_price;
+    const mfg = declMap.date_of_manufacture || declMap.mfg_date || record.mfg_date;
+    const expiry = declMap.expiry_date || record.expiry_date;
+    const mfgName = declMap.manufacturer || record.manufacturer;
+    const origin = declMap.country_of_origin || record.country_of_origin;
+    const consumerCare = declMap.consumer_care || record.consumer_care;
+    const barcode = record.barcode || 'Verified';
 
-    extractedChips.innerHTML = `
-      <div class="chip">
-        <span class="chip-label">MRP (Max Price)</span>
-        <span class="chip-value">${mrpVal ? '₹' + mrpVal : 'Missing'}</span>
+    declarationsGrid.innerHTML = `
+      <div class="declaration-item">
+        <span class="decl-label">MRP (Max Price)</span>
+        <span class="decl-value ${mrp ? '' : 'decl-not-detected'}">${mrp ? '₹' + mrp : 'Not detected'}</span>
       </div>
-      <div class="chip">
-        <span class="chip-label">Net Quantity</span>
-        <span class="chip-value">${qtyVal || 'Missing'}</span>
+      <div class="declaration-item">
+        <span class="decl-label">Net Quantity</span>
+        <span class="decl-value ${netQty ? '' : 'decl-not-detected'}">${netQty || 'Not detected'}</span>
       </div>
-      <div class="chip">
-        <span class="chip-label">Unit Sale Price</span>
-        <span class="chip-value" style="color: #93c5fd;">${declaredUsp}</span>
+      <div class="declaration-item">
+        <span class="decl-label">Unit Sale Price</span>
+        <span class="decl-value ${usp ? '' : 'decl-not-detected'}" style="color: #93c5fd;">${usp || 'Not detected'}</span>
       </div>
-      <div class="chip">
-        <span class="chip-label">Mfg Date / PKD</span>
-        <span class="chip-value">${declMap.date_of_manufacture || declMap.mfg_date || scanData.mfg_date || 'Missing'}</span>
+      <div class="declaration-item">
+        <span class="decl-label">Mfg Date / PKD</span>
+        <span class="decl-value ${mfg ? '' : 'decl-not-detected'}">${mfg || 'Not detected'}</span>
       </div>
-      <div class="chip">
-        <span class="chip-label">Manufacturer</span>
-        <span class="chip-value" title="${declMap.manufacturer || scanData.manufacturer || ''}">${declMap.manufacturer || scanData.manufacturer || 'Missing'}</span>
+      <div class="declaration-item">
+        <span class="decl-label">Best Before / Exp</span>
+        <span class="decl-value ${expiry ? '' : 'decl-not-detected'}">${expiry || 'Not specified'}</span>
       </div>
-      <div class="chip">
-        <span class="chip-label">Origin Country</span>
-        <span class="chip-value">${declMap.country_of_origin || scanData.country_of_origin || 'India'}</span>
+      <div class="declaration-item">
+        <span class="decl-label">Manufacturer / Packer</span>
+        <span class="decl-value ${mfgName ? '' : 'decl-not-detected'}" title="${mfgName || ''}">${mfgName || 'Not detected'}</span>
       </div>
-      <div class="chip">
-        <span class="chip-label">Consumer Care</span>
-        <span class="chip-value">${(declMap.consumer_care || scanData.consumer_care) ? 'Declared' : 'Missing'}</span>
+      <div class="declaration-item">
+        <span class="decl-label">Country of Origin</span>
+        <span class="decl-value ${origin ? '' : 'decl-not-detected'}">${origin || 'India'}</span>
       </div>
-      <div class="chip">
-        <span class="chip-label">Barcode / FSAT</span>
-        <span class="chip-value" style="color: #34d399;">${scanData.barcode || 'Verified'}</span>
+      <div class="declaration-item">
+        <span class="decl-label">Consumer Care</span>
+        <span class="decl-value ${consumerCare ? '' : 'decl-not-detected'}">${consumerCare ? 'Declared' : 'Not detected'}</span>
       </div>
     `;
 
-    // Ingredients & Safety Analysis
-    const safetyRes = scanData.safety_analysis || analyzeSafetyWatchlist(scanData.raw_ingredients_text, scanData.ingredients);
+    // Ingredients & Safety
+    const safetyRes = record.safety_analysis || analyzeSafetyWatchlist(record.raw_ingredients_text, record.ingredients);
     const flags = safetyRes.flagged_components || [];
-    const ingList = scanData.ingredients || safetyRes.extracted_ingredients || [];
+    const ingredients = record.ingredients || safetyRes.extracted_ingredients || [];
 
-    ingredientsCount.textContent = ingList.length;
-    if (ingList.length > 0) {
-      ingredientsTagsContainer.innerHTML = ingList.map(it => `<span class="ingredient-tag">${it}</span>`).join('');
+    ingCount.textContent = ingredients.length;
+    if (ingredients.length > 0) {
+      ingTagsContainer.innerHTML = ingredients.map(i => `<span class="ing-tag">${i}</span>`).join('');
     } else {
-      ingredientsTagsContainer.innerHTML = `<span style="color: var(--text-muted); font-size: 0.75rem;">No separate ingredients panel detected on front packaging face.</span>`;
+      ingTagsContainer.innerHTML = `<span style="font-size: 0.72rem; color: var(--text-dim);">Ingredients not detected from the scanned label.</span>`;
     }
 
     if (safetyRes.review_required && flags.length > 0) {
-      safetyBannerBox.innerHTML = `
-        <div class="safety-banner-warn">
-          <strong style="color: #fbbf24; font-size: 0.85rem; display: block; margin-bottom: 2px;">
-            ⚠️ Statutory Safety Review Required (${flags.length} Item${flags.length > 1 ? 's' : ''} Flagged)
+      safetyNoticeBox.innerHTML = `
+        <div class="safety-notice-warn">
+          <strong style="color: #fbbf24; font-size: 0.82rem; display: block; margin-bottom: 2px;">
+            ⚠️ WARNING — Safety Review Required (${flags.length} Component${flags.length > 1 ? 's' : ''} Flagged)
           </strong>
-          <span style="font-size: 0.78rem; color: #cbd5e1;">
-            Packaging contains components requiring mandatory statutory disclosures or allergen advisory declarations under Food Safety and Legal Metrology regulations.
+          <span style="font-size: 0.74rem; color: #cbd5e1;">
+            Configured safety watchlist match detected. Verify applicable statutory labelling and advisory requirements under Food Safety & Legal Metrology regulations.
           </span>
         </div>
       `;
-      safetyFlagsList.innerHTML = flags.map(flag => `
-        <div class="safety-flag-item">
-          <div class="safety-flag-header">
-            <strong style="color: #fff; font-size: 0.8rem;">${flag.name}</strong>
-            <span class="badge-gov" style="font-size: 0.68rem; background: rgba(245, 158, 11, 0.2); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);">${flag.code || flag.category}</span>
+      safetyFlagsContainer.innerHTML = flags.map(flag => `
+        <div class="flagged-item-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+            <strong style="color: #fff;">${flag.name}</strong>
+            <span class="tag-badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">${flag.code || flag.category}</span>
           </div>
-          <p style="font-size: 0.75rem; color: #94a3b8; margin: 2px 0;"><strong>Statutory Advisory:</strong> ${flag.reason}</p>
-          <span style="font-size: 0.7rem; color: #64748b;">Ref: ${flag.statutory_reference || flag.statutoryReference || 'FSSAI Regulations'}</span>
+          <p style="color: #9ca3af; font-size: 0.72rem;"><strong>Reason:</strong> ${flag.reason}</p>
+          <span style="color: #6b7280; font-size: 0.68rem;">Ref: ${flag.statutory_reference || flag.statutoryReference || 'FSSAI / Legal Metrology'}</span>
         </div>
       `).join('');
     } else {
-      safetyBannerBox.innerHTML = `
-        <div class="safety-banner-ok">
-          <strong style="color: #34d399; font-size: 0.85rem; display: block; margin-bottom: 2px;">
-            ✅ Standard Declarations Conformity
+      safetyNoticeBox.innerHTML = `
+        <div class="safety-notice-ok">
+          <strong style="color: #34d399; font-size: 0.82rem; display: block; margin-bottom: 2px;">
+            ✓ No configured safety-watchlist components detected.
           </strong>
-          <span style="font-size: 0.78rem; color: #cbd5e1;">
-            Ingredients text analyzed. No restricted additive alerts or statutory safety review notices flagged.
+          <span style="font-size: 0.74rem; color: #cbd5e1;">
+            Ingredients text analyzed. No statutory warning advisories or restricted additive alerts flagged.
           </span>
         </div>
       `;
-      safetyFlagsList.innerHTML = '';
+      safetyFlagsContainer.innerHTML = '';
     }
 
     // Rules Evaluation Checklist
-    scannerFindingsList.innerHTML = findings.map(f => {
+    findingsListUl.innerHTML = findings.map(f => {
       const isPass = f.result === 'PASS';
-      const badge = isPass ? '<span class="badge-compliance comp-compliant">PASS</span>' : '<span class="badge-compliance comp-non_compliant">FAIL</span>';
-      const desc = isPass ? (f.requirement || f.field) : (f.message || f.reason || `${f.field}: Mandatory statutory requirement`);
+      const badge = isPass ? '<span class="tag-badge tag-pass">PASS</span>' : '<span class="tag-badge tag-fail">FAIL</span>';
+      const desc = isPass ? (f.requirement || f.field) : (f.message || f.reason || `${f.field}: Mandatory statutory requirement missing`);
       return `
-        <li class="finding-item ${isPass ? 'pass' : 'fail'}">
+        <li class="finding-row ${isPass ? 'pass' : 'fail'}">
           <div>
-            <strong style="color: #fff; font-size: 0.78rem;">${f.rule_id || f.field}:</strong>
-            <span style="color: var(--text-muted); font-size: 0.78rem; margin-left: 4px;">${desc}</span>
+            <strong style="color: #fff; font-size: 0.75rem;">${f.rule_id || f.field}:</strong>
+            <span style="color: var(--text-muted); font-size: 0.75rem; margin-left: 4px;">${desc}</span>
           </div>
           ${badge}
         </li>
       `;
     }).join('');
 
-    lastScanInspectionId = scanData.inspection_id;
-    currentViewingInspection = scanData;
+    currentInspection = record;
   }
 
-  // Real Scan Pipeline Submission
-  startScanBtn.addEventListener('click', async () => {
-    if (!selectedScanFile) {
-      showToast('Please select or capture a packaging photo first.', 'warn');
+  // Process and Save Scan Result
+  async function processAndSaveScanResult(scanResult, source = 'image') {
+    displayScanResult(scanResult);
+
+    const declMap = {};
+    (scanResult.findings || []).forEach(f => {
+      if (f.field && f.extracted_value !== undefined && f.extracted_value !== null) {
+        declMap[f.field] = f.extracted_value;
+      }
+    });
+
+    const newRec = {
+      inspection_id: scanResult.inspection_id || `INSP-${Date.now()}`,
+      product_name: declMap.product_name || (activeSelectedFile ? activeSelectedFile.name.replace(/\.[^/.]+$/, '') : 'Packaged Commodity'),
+      category: scanResult.category || selectedCategory.value || 'General Commodity',
+      barcode: scanResult.barcode || 'Verified',
+      mrp: declMap.mrp || null,
+      net_quantity: declMap.net_quantity || null,
+      unit_sale_price: declMap.unit_sale_price || null,
+      mfg_date: declMap.date_of_manufacture || declMap.mfg_date || null,
+      expiry_date: declMap.expiry_date || null,
+      manufacturer: declMap.manufacturer || null,
+      consumer_care: declMap.consumer_care || null,
+      country_of_origin: declMap.country_of_origin || 'India',
+      compliance_status: scanResult.overall_status || 'UNKNOWN',
+      confidence: scanResult.findings && scanResult.findings.length > 0
+        ? scanResult.findings.reduce((acc, f) => acc + (f.confidence || 0), 0) / (scanResult.findings.length * 100)
+        : 0.95,
+      violations: (scanResult.findings || []).filter(f => f.result === 'FAIL'),
+      checks: scanResult.findings || [],
+      ingredients: scanResult.ingredients || [],
+      raw_ingredients_text: scanResult.raw_ingredients_text || '',
+      safety_analysis: scanResult.safety_analysis || null,
+      evidence: {
+        thumbnail_base64: activePreviewDataUrl,
+        raw_ocr_count: scanResult.raw_ocr_count || 0,
+        ocr_detections: scanResult.ocr_detections || []
+      },
+      source: source,
+      sync_status: SYNC_STATUS.SYNCED,
+      created_at: scanResult.evaluated_at || new Date().toISOString(),
+      synced_at: new Date().toISOString()
+    };
+
+    await saveInspection(newRec);
+    showToast(`Scan complete: ${newRec.inspection_id} (${newRec.compliance_status})`, 'success');
+
+    if (newRec.compliance_status === 'COMPLIANT') speak(PROMPT_KEYS.COMPLIANT, currentLang);
+    else if (newRec.compliance_status === 'NON_COMPLIANT') speak(PROMPT_KEYS.NON_COMPLIANT, currentLang);
+    else speak(PROMPT_KEYS.MANUAL_VERIFY, currentLang);
+
+    // Same-Product Historical Comparison (Shrinkflation & Price Hike)
+    const comparison = await compareProductWithPrevious(newRec);
+    if (comparison.hasHistory && comparison.changesDetected.length > 0) {
+      shrinkflationBox.classList.add('active');
+      const prev = comparison.latestPrevious;
+      if (prev) {
+        compGridContainer.innerHTML = `
+          <div class="comp-grid">
+            <div class="comp-column" style="border-left: 3px solid var(--primary);">
+              <span class="decl-label">Previous Batch (${prev.inspection_id || 'Prior'})</span>
+              <div>Net Qty: <strong>${prev.net_quantity || 'N/A'}</strong></div>
+              <div>MRP: <strong>₹${prev.mrp || 'N/A'}</strong></div>
+            </div>
+            <div class="comp-column" style="border-left: 3px solid var(--warning);">
+              <span class="decl-label">Current Batch (${newRec.inspection_id})</span>
+              <div>Net Qty: <strong>${newRec.net_quantity || 'N/A'}</strong></div>
+              <div>MRP: <strong>₹${newRec.mrp || 'N/A'}</strong></div>
+            </div>
+          </div>
+          ${comparison.shrinkflationDetected ? '<div style="margin-top: 6px; font-size: 0.75rem; color: #f87171; font-weight: 700;">🚨 SHRINKFLATION ALERT: Quantity reduced without proportional price decrease</div>' : ''}
+          ${comparison.priceHikeDetected ? '<div style="margin-top: 6px; font-size: 0.75rem; color: #fbbf24; font-weight: 700;">📈 PRICE HIKE: MRP increased over prior inspection</div>' : ''}
+        `;
+      }
+      compChangesList.innerHTML = comparison.changesDetected.map(c => `<li>• ${c}</li>`).join('');
+    } else {
+      shrinkflationBox.classList.remove('active');
+    }
+  }
+
+  // Primary Single Image Scan Submission
+  btnExecuteScan.addEventListener('click', async () => {
+    if (!activeSelectedFile) {
+      showToast('Please select or capture a label photo first.', 'warn');
       return;
     }
 
-    const category = scannerCategoryValue.value;
     const isOnline = syncManager.isOnline();
+    const cat = selectedCategory.value;
 
-    // If offline: save inspection as PENDING without fabricating fake compliance
     if (!isOnline) {
       const offlineId = `INSP-OFFLINE-${Date.now().toString(16).toUpperCase()}`;
-      const offlineRecord = {
+      const offlineRec = {
         inspection_id: offlineId,
-        product_name: selectedScanFile.name.replace(/\.[^/.]+$/, ''),
-        category: category || 'General Commodity',
+        product_name: activeSelectedFile.name.replace(/\.[^/.]+$/, ''),
+        category: cat || 'General Commodity',
         mrp: null,
         net_quantity: null,
-        unit_sale_price: null,
         compliance_status: 'FLAGGED_MANUAL_REVIEW',
         confidence: 0.0,
         violations: [
-          { rule_id: 'RULE-OFFLINE-001', field: 'network_sync', requirement: 'Rural / Offline capture stored in IndexedDB. Pending cloud OCR synchronization.' }
+          { rule_id: 'RULE-OFFLINE-001', field: 'network_sync', message: 'Rural / Offline capture stored in IndexedDB. Pending cloud OCR synchronization.' }
         ],
         checks: [],
-        evidence: { thumbnail_base64: currentPreviewDataUrl, offline_queued: true },
+        evidence: { thumbnail_base64: activePreviewDataUrl, offline_queued: true },
         sync_status: SYNC_STATUS.PENDING,
-        sync_attempts: 0,
-        created_at: new Date().toISOString(),
-        synced_at: null
+        created_at: new Date().toISOString()
       };
-
-      await saveInspection(offlineRecord);
-      showToast(`Offline Mode: Scan saved as PENDING (${offlineId}). Will sync when connected.`, 'info');
-      speak(PROMPT_KEYS.INSPECTION_COMPLETE, activeLanguage);
-      displayScanResult(offlineRecord);
-      await refreshDashboard();
+      await saveInspection(offlineRec);
+      showToast(`Offline Mode: Scan saved as PENDING (${offlineId})`, 'info');
+      speak(PROMPT_KEYS.INSPECTION_COMPLETE, currentLang);
+      displayScanResult(offlineRec);
       return;
     }
 
-    // Set Loading state
-    scannerOutputContent.style.display = 'none';
-    scannerLoadingState.style.display = 'flex';
-    scanLoadingStepTitle.textContent = 'Analyzing Packaging...';
-    scanLoadingStepDesc.textContent = 'Extracting declarations with NVIDIA Nemotron OCR v2 & Statutory Rule Engine...';
-    startScanBtn.disabled = true;
+    resultsWrap.style.display = 'none';
+    scanLoadingBox.style.display = 'flex';
+    loadingStepTitle.textContent = 'Processing Packaging Image...';
+    loadingStepSub.textContent = 'Extracting declarations with NVIDIA Nemotron OCR v2...';
+    btnExecuteScan.disabled = true;
 
     const formData = new FormData();
-    formData.append('image', selectedScanFile);
-    if (category) formData.append('category', category);
+    formData.append('image', activeSelectedFile);
+    if (cat) formData.append('category', cat);
 
     try {
       const apiBase = window.__API_URL || 'http://localhost:8000';
       const res = await fetch(`${apiBase}/api/scan`, { method: 'POST', body: formData });
-
       if (!res.ok) {
-        let errDetail = 'OCR and compliance evaluation failed.';
-        try {
-          const errJson = await res.json();
-          errDetail = errJson.detail || JSON.stringify(errJson);
-        } catch (e) {}
-        throw new Error(errDetail);
+        let errStr = 'OCR and compliance evaluation error.';
+        try { const errJson = await res.json(); errStr = errJson.detail || JSON.stringify(errJson); } catch (e) {}
+        throw new Error(errStr);
       }
-
-      const scanResult = await res.json();
-      displayScanResult(scanResult);
-
-      const declMap = {};
-      (scanResult.findings || []).forEach(f => {
-        if (f.field && f.extracted_value !== undefined && f.extracted_value !== null) {
-          declMap[f.field] = f.extracted_value;
-        }
-      });
-
-      const newRecord = {
-        inspection_id: scanResult.inspection_id || `INSP-${Date.now()}`,
-        product_name: declMap.product_name || selectedScanFile.name.replace(/\.[^/.]+$/, ''),
-        category: scanResult.category || category || 'General Commodity',
-        barcode: scanResult.barcode || 'Verified',
-        mrp: declMap.mrp || null,
-        net_quantity: declMap.net_quantity || null,
-        unit_sale_price: declMap.unit_sale_price || null,
-        mfg_date: declMap.date_of_manufacture || declMap.mfg_date || null,
-        expiry_date: declMap.expiry_date || null,
-        manufacturer: declMap.manufacturer || null,
-        consumer_care: declMap.consumer_care || null,
-        country_of_origin: declMap.country_of_origin || 'India',
-        compliance_status: scanResult.overall_status || 'UNKNOWN',
-        confidence: scanResult.findings && scanResult.findings.length > 0
-          ? scanResult.findings.reduce((acc, f) => acc + (f.confidence || 0), 0) / (scanResult.findings.length * 100)
-          : 0.95,
-        violations: (scanResult.findings || []).filter(f => f.result === 'FAIL'),
-        checks: scanResult.findings || [],
-        ingredients: scanResult.ingredients || [],
-        raw_ingredients_text: scanResult.raw_ingredients_text || '',
-        safety_analysis: scanResult.safety_analysis || null,
-        evidence: {
-          thumbnail_base64: currentPreviewDataUrl,
-          raw_ocr_count: scanResult.raw_ocr_count || 0,
-          ocr_detections: scanResult.ocr_detections || []
-        },
-        sync_status: SYNC_STATUS.SYNCED,
-        created_at: scanResult.evaluated_at || new Date().toISOString(),
-        synced_at: new Date().toISOString()
-      };
-
-      await saveInspection(newRecord);
-      showToast(`Scan complete: ${newRecord.inspection_id} (${newRecord.compliance_status})`, 'success');
-
-      if (newRecord.compliance_status === 'COMPLIANT') speak(PROMPT_KEYS.COMPLIANT, activeLanguage);
-      else if (newRecord.compliance_status === 'NON_COMPLIANT') speak(PROMPT_KEYS.NON_COMPLIANT, activeLanguage);
-      else speak(PROMPT_KEYS.MANUAL_VERIFY, activeLanguage);
-
-      // Check same-product historical comparison (Shrinkflation)
-      const comparison = await compareProductWithPrevious(newRecord);
-      if (comparison.hasHistory && comparison.changesDetected.length > 0) {
-        comparisonBanner.classList.add('active');
-        const prev = comparison.latestPrevious;
-        if (prev) {
-          comparisonCardContainer.innerHTML = `
-            <div class="comparison-side-by-side">
-              <div class="comp-col highlight-prev">
-                <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Previous Batch (${prev.inspection_id || 'Prior'})</div>
-                <div style="font-size: 0.85rem; color: #fff; font-weight: 600;">Net Qty: ${prev.net_quantity || 'N/A'}</div>
-                <div style="font-size: 0.85rem; color: #fff;">MRP: ₹${prev.mrp || 'N/A'}</div>
-              </div>
-              <div class="comp-col highlight-curr">
-                <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Current Batch (${newRecord.inspection_id})</div>
-                <div style="font-size: 0.85rem; color: #fff; font-weight: 600;">Net Qty: ${newRecord.net_quantity || 'N/A'}</div>
-                <div style="font-size: 0.85rem; color: #fff;">MRP: ₹${newRecord.mrp || 'N/A'}</div>
-              </div>
-            </div>
-            ${comparison.shrinkflationDetected ? '<div class="shrinkflation-badge">🚨 SHRINKFLATION ALERT: Net quantity reduced without proportional price drop</div>' : ''}
-            ${comparison.priceHikeDetected ? '<div class="shrinkflation-badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border-color: rgba(245, 158, 11, 0.4);">📈 PRICE HIKE: MRP increased over previous batch</div>' : ''}
-          `;
-        }
-        comparisonList.innerHTML = comparison.changesDetected.map(c => `<li>• ${c}</li>`).join('');
-      } else {
-        comparisonBanner.classList.remove('active');
-      }
-
-      await refreshDashboard();
-
+      const scanRes = await res.json();
+      await processAndSaveScanResult(scanRes, 'image');
     } catch (err) {
-      console.error('Scan error:', err);
+      console.error('Scan Error:', err);
       showToast(`Scan Error: ${err.message}`, 'error');
-      scannerLoadingState.style.display = 'none';
+      scanLoadingBox.style.display = 'none';
     } finally {
-      startScanBtn.disabled = false;
+      btnExecuteScan.disabled = false;
     }
   });
 
-  // Refresh Table & KPI
-  async function refreshDashboard() {
+  // History Tab Logic
+  async function refreshHistoryTable() {
     const stats = await getSyncStats();
     let records = await getAllInspections();
 
-    document.getElementById('tabCountAll').textContent = records.length;
-    document.getElementById('tabCountPending').textContent = stats.pending;
-    document.getElementById('tabCountSynced').textContent = stats.synced;
+    document.getElementById('histCountAll').textContent = records.length;
+    document.getElementById('histCountPending').textContent = stats.pending;
+    document.getElementById('histCountSynced').textContent = stats.synced;
 
-    if (searchQuery || activeFilter !== 'ALL') {
-      clearFilterBtn.style.display = 'inline-flex';
-    } else {
-      clearFilterBtn.style.display = 'none';
+    if (activeHistoryFilter !== 'ALL') {
+      records = records.filter(r => r.sync_status === activeHistoryFilter);
     }
 
-    if (activeFilter !== 'ALL') {
-      records = records.filter(r => r.sync_status === activeFilter);
-    }
-
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
+    if (historySearchQuery) {
+      const q = historySearchQuery.toLowerCase();
       records = records.filter(r =>
         (r.product_name && r.product_name.toLowerCase().includes(q)) ||
         (r.inspection_id && r.inspection_id.toLowerCase().includes(q)) ||
@@ -1621,32 +1911,35 @@
     }
 
     if (records.length === 0) {
-      tableBody.innerHTML = `
+      historyTableBody.innerHTML = `
         <tr>
           <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 24px;">
-            ${(searchQuery || activeFilter !== 'ALL') ? 'No inspections match your search/filter.' : 'No inspections recorded yet. Tap Camera or Upload Photo to start.'}
+            No inspection records found.
           </td>
         </tr>
       `;
       return;
     }
 
-    tableBody.innerHTML = records.map(r => {
-      const compClass = r.compliance_status === 'COMPLIANT' ? 'comp-compliant' :
-                        r.compliance_status === 'NON_COMPLIANT' ? 'comp-non_compliant' : 'comp-flagged';
-      const syncClass = r.sync_status === 'synced' ? 'status-synced' :
-                        r.sync_status === 'pending' ? 'status-pending' : 'status-failed';
-
+    historyTableBody.innerHTML = records.map(r => {
+      const isPass = r.compliance_status === 'COMPLIANT';
+      const isFail = r.compliance_status === 'NON_COMPLIANT';
+      const statusBadge = isPass ? '<span class="tag-badge tag-pass">COMPLIANT</span>' :
+                          isFail ? '<span class="tag-badge tag-fail">NON-COMPLIANT</span>' :
+                                   '<span class="tag-badge tag-review">REVIEW</span>';
+      const syncBadge = r.sync_status === 'synced' ? '<span class="tag-badge tag-pass">SYNCED</span>' :
+                        r.sync_status === 'pending' ? '<span class="tag-badge tag-review">PENDING</span>' :
+                                                      '<span class="tag-badge tag-fail">FAILED</span>';
       return `
         <tr>
-          <td style="font-family: monospace; font-size: 0.75rem; color: #93c5fd;">${r.inspection_id}</td>
+          <td style="font-family: var(--font-mono); font-size: 0.72rem; color: #93c5fd;">${r.inspection_id}</td>
           <td><strong>${r.product_name}</strong></td>
           <td style="color: var(--text-muted);">${r.category}</td>
-          <td>${r.mrp ? '₹' + r.mrp : 'N/A'} <span style="font-size: 0.7rem; color: var(--text-muted);">(${r.net_quantity || ''})</span></td>
-          <td><span class="badge-compliance ${compClass}">${r.compliance_status}</span></td>
-          <td><span class="badge-status ${syncClass}">${r.sync_status}</span></td>
+          <td>${r.mrp ? '₹' + r.mrp : 'N/A'} <span style="font-size: 0.68rem; color: var(--text-dim);">(${r.net_quantity || ''})</span></td>
+          <td>${statusBadge}</td>
+          <td>${syncBadge}</td>
           <td>
-            <button class="btn btn-outline" style="padding: 3px 8px; font-size: 0.72rem;" onclick="window.viewInspectionModal('${r.inspection_id}')">
+            <button class="btn btn-outline btn-sm" onclick="window.openAuditModal('${r.inspection_id}')">
               View
             </button>
           </td>
@@ -1655,52 +1948,185 @@
     }).join('');
   }
 
-  // Filter Tabs & Search Handlers
-  document.querySelectorAll('.filter-tab').forEach(btn => {
+  // Filter Buttons in History
+  document.querySelectorAll('#view-history .cat-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('#view-history .cat-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      activeFilter = btn.dataset.filter;
-      refreshDashboard();
+      activeHistoryFilter = btn.dataset.filter;
+      refreshHistoryTable();
     });
   });
 
-  tableSearch.addEventListener('input', (e) => {
-    searchQuery = e.target.value;
-    refreshDashboard();
+  historySearchInput.addEventListener('input', (e) => {
+    historySearchQuery = e.target.value;
+    refreshHistoryTable();
   });
 
-  clearFilterBtn.addEventListener('click', () => {
-    searchQuery = '';
-    tableSearch.value = '';
-    activeFilter = 'ALL';
-    document.querySelectorAll('.filter-tab').forEach(b => b.classList.toggle('active', b.dataset.filter === 'ALL'));
-    clearFilterBtn.style.display = 'none';
-    refreshDashboard();
-  });
-
-  // Export CSV Handler
-  exportCsvBtn.addEventListener('click', async () => {
+  btnExportHistoryCsv.addEventListener('click', async () => {
     const records = await getAllInspections();
     const csvContent = exportInspectionsAsCSV(records);
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `LegalMetrix_Inspection_Audit_${new Date().toISOString().slice(0, 10)}.csv`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    showToast(`Exported ${records.length} inspection records!`, 'success');
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `LegalMetrix_Audit_${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    showToast(`Exported ${records.length} inspections!`, 'success');
   });
 
-  // Reset Database
-  clearDbBtn.addEventListener('click', async () => {
-    if (confirm('Reset local IndexedDB store?')) {
+  btnClearHistory.addEventListener('click', async () => {
+    if (confirm('Reset local IndexedDB inspections?')) {
       await clearAllInspections();
-      showToast('Local database reset.', 'info');
-      await refreshDashboard();
+      showToast('Database reset.', 'info');
+      await refreshHistoryTable();
     }
+  });
+
+  btnSyncHistory.addEventListener('click', async () => {
+    btnSyncHistory.disabled = true;
+    const res = await syncManager.syncNow();
+    btnSyncHistory.disabled = false;
+    if (res.syncedCount > 0) {
+      showToast(`Synced ${res.syncedCount} records to server!`, 'success');
+      speak(PROMPT_KEYS.SYNC_SUCCESS, currentLang);
+    } else if (res.offline) {
+      showToast('Cannot sync while offline.', 'warn');
+    } else {
+      showToast('All inspections synced.', 'info');
+    }
+    await refreshHistoryTable();
+  });
+
+  // Diagnostics Tab: 13 Predefined Scenarios
+  function renderDiagnosticsGrid() {
+    diagnosticsListGrid.innerHTML = '';
+    testScenarios.forEach(sc => {
+      const btn = document.createElement('button');
+      btn.className = 'btn btn-outline';
+      btn.style.cssText = 'padding: 8px 10px; text-align: left; display: flex; flex-direction: column; gap: 2px; align-items: flex-start;';
+      btn.innerHTML = `
+        <strong style="color: #93c5fd; font-size: 0.75rem;">#${sc.scenario_id} ${sc.scenario_name}</strong>
+        <span style="font-size: 0.68rem; color: var(--text-muted);">${sc.product_name}</span>
+      `;
+      btn.onclick = async () => {
+        const isOnline = syncManager.isOnline();
+        const cloned = JSON.parse(JSON.stringify(sc));
+        if (!isOnline) {
+          cloned.sync_status = SYNC_STATUS.PENDING;
+          cloned.synced_at = null;
+        }
+        const saved = await saveInspection(cloned);
+        showToast(`Injected #${saved.scenario_id}: ${saved.product_name}`, 'success');
+
+        // Switch to Inspect view and display
+        navTabBtns.forEach(b => b.classList.toggle('active', b.dataset.target === 'view-inspect'));
+        tabViews.forEach(v => v.classList.toggle('active', v.id === 'view-inspect'));
+        displayScanResult(saved);
+      };
+      diagnosticsListGrid.appendChild(btn);
+    });
+  }
+
+  // Audit / Visual Bounding Box Modal
+  window.openAuditModal = async (id) => {
+    const records = await getAllInspections();
+    const item = records.find(r => r.inspection_id === id);
+    if (!item) return;
+
+    currentInspection = item;
+    document.getElementById('modalAuditTitle').textContent = `${item.product_name} (${item.compliance_status})`;
+    document.getElementById('modalAuditSub').textContent = `ID: ${item.inspection_id} • Date: ${new Date(item.created_at).toLocaleString()}`;
+
+    const thumb = item.evidence && item.evidence.thumbnail_base64 ? item.evidence.thumbnail_base64 : activePreviewDataUrl;
+    if (thumb) {
+      bboxImgElement.src = thumb;
+      bboxImgElement.onload = () => {
+        bboxCanvasOverlay.width = bboxImgElement.clientWidth || 360;
+        bboxCanvasOverlay.height = bboxImgElement.clientHeight || 240;
+        const ctx = bboxCanvasOverlay.getContext('2d');
+        ctx.clearRect(0, 0, bboxCanvasOverlay.width, bboxCanvasOverlay.height);
+
+        const detections = (item.evidence && item.evidence.ocr_detections) || [];
+        detections.forEach(det => {
+          if (det.box && det.box.length === 4) {
+            const sx = bboxCanvasOverlay.width / (bboxImgElement.naturalWidth || bboxCanvasOverlay.width);
+            const sy = bboxCanvasOverlay.height / (bboxImgElement.naturalHeight || bboxCanvasOverlay.height);
+            const x = det.box[0][0] * sx;
+            const y = det.box[0][1] * sy;
+            const w = (det.box[1][0] - det.box[0][0]) * sx;
+            const h = (det.box[2][1] - det.box[0][1]) * sy;
+
+            ctx.strokeStyle = '#2563eb';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x, y, w, h);
+            ctx.fillStyle = 'rgba(37, 99, 235, 0.12)';
+            ctx.fillRect(x, y, w, h);
+          }
+        });
+      };
+    }
+
+    // Populate Officer Form
+    const officerInputs = document.getElementById('officerInputsContainer');
+    officerInputs.innerHTML = `
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 0.78rem;">
+        <div>
+          <label style="color: var(--text-dim); font-size: 0.68rem;">Product Name:</label>
+          <input type="text" id="editPName" class="search-field" style="width: 100%;" value="${item.product_name || ''}">
+        </div>
+        <div>
+          <label style="color: var(--text-dim); font-size: 0.68rem;">MRP (₹):</label>
+          <input type="text" id="editPMrp" class="search-field" style="width: 100%;" value="${item.mrp || ''}">
+        </div>
+        <div>
+          <label style="color: var(--text-dim); font-size: 0.68rem;">Net Quantity:</label>
+          <input type="text" id="editPQty" class="search-field" style="width: 100%;" value="${item.net_quantity || ''}">
+        </div>
+        <div>
+          <label style="color: var(--text-dim); font-size: 0.68rem;">Manufacturer:</label>
+          <input type="text" id="editPMfg" class="search-field" style="width: 100%;" value="${item.manufacturer || ''}">
+        </div>
+      </div>
+    `;
+
+    auditDetailModal.classList.add('open');
+  };
+
+  btnCloseAuditModal.onclick = () => auditDetailModal.classList.remove('open');
+  auditDetailModal.onclick = (e) => { if (e.target === auditDetailModal) auditDetailModal.classList.remove('open'); };
+
+  btnShowBbox.onclick = () => { if (currentInspection) window.openAuditModal(currentInspection.inspection_id); };
+  btnShowReview.onclick = () => { if (currentInspection) window.openAuditModal(currentInspection.inspection_id); };
+
+  // Statutory Show-Cause Notice Generator
+  function openNotice(rec) {
+    if (!rec) { showToast('No inspection selected.', 'warn'); return; }
+    const html = generateStatutoryNoticeHTML(rec);
+    const win = window.open('', '_blank');
+    if (win) { win.document.write(html); win.document.close(); }
+    else { showToast('Please enable pop-ups to open notice.', 'warn'); }
+  }
+
+  btnGenNotice.onclick = () => openNotice(currentInspection);
+  btnModalNotice.onclick = () => openNotice(currentInspection);
+
+  // Save Officer Verification
+  document.getElementById('btnSaveOfficerVerification').addEventListener('click', async () => {
+    if (!currentInspection) return;
+    currentInspection.product_name = document.getElementById('editPName').value;
+    currentInspection.mrp = document.getElementById('editPMrp').value;
+    currentInspection.net_quantity = document.getElementById('editPQty').value;
+    currentInspection.manufacturer = document.getElementById('editPMfg').value;
+    currentInspection.officer_reviewed = true;
+    currentInspection.reviewer_id = 'OFFICER-007';
+
+    await saveInspection(currentInspection);
+    showToast('Officer verification saved!', 'success');
+    auditDetailModal.classList.remove('open');
+    displayScanResult(currentInspection);
   });
 
   // Network Switch Handler
@@ -1708,167 +2134,23 @@
     const isOnline = e.target.checked;
     syncManager.setSimulatedOffline(!isOnline);
     if (isOnline) {
-      statusDot.className = 'status-dot dot-online';
-      networkText.textContent = 'ONLINE';
-      showToast('Online mode restored. Background sync active.', 'info');
+      statusDot.className = 'dot dot-online';
+      networkLabel.textContent = 'Online';
+      showToast('Online mode active. Background sync enabled.', 'info');
     } else {
-      statusDot.className = 'status-dot dot-offline';
-      networkText.textContent = 'OFFLINE (Rural)';
+      statusDot.className = 'dot dot-offline';
+      networkLabel.textContent = 'Offline (Rural)';
       showToast('Offline Mode: Scans will save locally as PENDING.', 'warn');
     }
   });
 
-  // Force Sync Now Handler
-  syncNowBtn.addEventListener('click', async () => {
-    syncNowBtn.disabled = true;
-    syncNowBtn.innerHTML = '<span>⏳</span> Syncing...';
-    const res = await syncManager.syncNow();
-    syncNowBtn.disabled = false;
-    syncNowBtn.innerHTML = '<span>🔄</span> Sync';
-    if (res.syncedCount > 0) {
-      showToast(`Synced ${res.syncedCount} inspection(s) to SQLite Backend!`, 'success');
-      speak(PROMPT_KEYS.SYNC_SUCCESS, activeLanguage);
-    } else if (res.offline) {
-      showToast('Cannot sync while offline. Switch online first.', 'warn');
-    } else {
-      showToast('All inspections are already synced.', 'info');
-    }
-    await refreshDashboard();
-  });
-
-  // Language Selector
-  document.querySelectorAll('.lang-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      activeLanguage = btn.dataset.lang;
-      voiceAssistant.setLanguage(activeLanguage);
-      showToast(`Voice assistant switched to ${btn.textContent}`, 'info');
-    });
-  });
-
-  // Modal Bounding Box & Manual Review Visualizer
-  window.viewInspectionModal = async (inspId) => {
-    const records = await getAllInspections();
-    const item = records.find(r => r.inspection_id === inspId);
-    if (!item) return;
-
-    currentViewingInspection = item;
-    document.getElementById('modalTitle').textContent = `${item.product_name} (${item.compliance_status})`;
-    document.getElementById('modalSubtitle').textContent = `Inspection ID: ${item.inspection_id} • Date: ${new Date(item.created_at).toLocaleString()}`;
-
-    const img = document.getElementById('modalBboxImage');
-    const canvas = document.getElementById('modalBboxCanvas');
-    const ctx = canvas.getContext('2d');
-
-    const thumb = item.evidence && item.evidence.thumbnail_base64 ? item.evidence.thumbnail_base64 : currentPreviewDataUrl;
-    if (thumb) {
-      img.src = thumb;
-      img.onload = () => {
-        canvas.width = img.clientWidth || 400;
-        canvas.height = img.clientHeight || 280;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Draw bounding boxes if present
-        const detections = (item.evidence && item.evidence.ocr_detections) || [];
-        detections.forEach(det => {
-          if (det.box && det.box.length === 4) {
-            const scaleX = canvas.width / (img.naturalWidth || canvas.width);
-            const scaleY = canvas.height / (img.naturalHeight || canvas.height);
-            const x = det.box[0][0] * scaleX;
-            const y = det.box[0][1] * scaleY;
-            const w = (det.box[1][0] - det.box[0][0]) * scaleX;
-            const h = (det.box[2][1] - det.box[0][1]) * scaleY;
-
-            ctx.strokeStyle = '#3b82f6';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(x, y, w, h);
-            ctx.fillStyle = 'rgba(59, 130, 246, 0.15)';
-            ctx.fillRect(x, y, w, h);
-          }
-        });
-      };
-    }
-
-    // Populate Manual Review inputs
-    const container = document.getElementById('manualReviewFieldsContainer');
-    container.innerHTML = `
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.8rem;">
-        <div>
-          <label style="color: var(--text-muted); font-size: 0.72rem;">Product Name:</label>
-          <input type="text" id="editProdName" class="search-input" style="width: 100%; margin-top: 2px;" value="${item.product_name || ''}">
-        </div>
-        <div>
-          <label style="color: var(--text-muted); font-size: 0.72rem;">MRP (₹):</label>
-          <input type="text" id="editMrp" class="search-input" style="width: 100%; margin-top: 2px;" value="${item.mrp || ''}">
-        </div>
-        <div>
-          <label style="color: var(--text-muted); font-size: 0.72rem;">Net Quantity:</label>
-          <input type="text" id="editNetQty" class="search-input" style="width: 100%; margin-top: 2px;" value="${item.net_quantity || ''}">
-        </div>
-        <div>
-          <label style="color: var(--text-muted); font-size: 0.72rem;">Manufacturer:</label>
-          <input type="text" id="editMfg" class="search-input" style="width: 100%; margin-top: 2px;" value="${item.manufacturer || ''}">
-        </div>
-      </div>
-    `;
-
-    detailModal.classList.add('open');
-  };
-
-  modalCloseBtn.onclick = () => detailModal.classList.remove('open');
-  detailModal.onclick = (e) => { if (e.target === detailModal) detailModal.classList.remove('open'); };
-
-  viewBboxModalBtn.onclick = () => {
-    if (lastScanInspectionId) window.viewInspectionModal(lastScanInspectionId);
-  };
-  viewManualReviewBtn.onclick = () => {
-    if (lastScanInspectionId) window.viewInspectionModal(lastScanInspectionId);
-  };
-
-  // Statutory Show-Cause Notice Generator Action
-  function openStatutoryNotice(record) {
-    if (!record) {
-      showToast('No inspection record selected.', 'warn');
-      return;
-    }
-    const html = generateStatutoryNoticeHTML(record);
-    const noticeWin = window.open('', '_blank');
-    if (noticeWin) {
-      noticeWin.document.write(html);
-      noticeWin.document.close();
-    } else {
-      showToast('Please allow pop-ups to open statutory notice.', 'warn');
-    }
-  }
-
-  generateNoticeBtn.onclick = () => openStatutoryNotice(currentViewingInspection);
-  modalNoticeBtn.onclick = () => openStatutoryNotice(currentViewingInspection);
-
-  // Save Manual Review Changes
-  document.getElementById('saveManualReviewBtn').addEventListener('click', async () => {
-    if (!currentViewingInspection) return;
-    currentViewingInspection.product_name = document.getElementById('editProdName').value;
-    currentViewingInspection.mrp = document.getElementById('editMrp').value;
-    currentViewingInspection.net_quantity = document.getElementById('editNetQty').value;
-    currentViewingInspection.manufacturer = document.getElementById('editMfg').value;
-    currentViewingInspection.officer_reviewed = true;
-    currentViewingInspection.reviewer_id = 'OFFICER-007';
-
-    await saveInspection(currentViewingInspection);
-    showToast('Officer verification saved successfully!', 'success');
-    detailModal.classList.remove('open');
-    displayScanResult(currentViewingInspection);
-    await refreshDashboard();
-  });
-
   // Sync Manager Events
-  syncManager.on('syncComplete', refreshDashboard);
-  syncManager.on('itemSynced', refreshDashboard);
+  syncManager.on('syncComplete', refreshHistoryTable);
+  syncManager.on('itemSynced', refreshHistoryTable);
 
-  // Initialize UI
-  renderScenarioButtons();
-  await refreshDashboard();
+  // Initialize
+  renderDiagnosticsGrid();
+  updateLanguage('en');
 </script>
 
 </body>

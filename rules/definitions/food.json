@@ -1,7 +1,7 @@
 {
   "category": "food",
-  "version": "1.0",
-  "description": "Configurable rule definition set for Food category packaged commodities [DEMO / TEST CONFIGURATION - Pending verified legal rule data]",
+  "version": "2021.1",
+  "description": "Statutory rule definition set for Food category pre-packaged commodities under Legal Metrology (Packaged Commodities) Rules, 2011 (as amended 2017 & 2021)",
   "rules": [
     {
       "rule_id": "RULE-FOOD-001",
@@ -11,9 +11,9 @@
       "validation": {
         "type": "presence"
       },
-      "description": "Name of the commodity must be clearly declared on the package",
-      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(a) [Reference Framework]",
-      "version": "1.0"
+      "description": "Name and description of the commodity must be clearly declared on the principal display panel",
+      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(b)",
+      "version": "2021.1"
     },
     {
       "rule_id": "RULE-FOOD-002",
@@ -24,8 +24,8 @@
         "type": "presence"
       },
       "description": "Net quantity in terms of standard unit of weight or measure must be declared",
-      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(b) [Reference Framework]",
-      "version": "1.0"
+      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(c)",
+      "version": "2021.1"
     },
     {
       "rule_id": "RULE-FOOD-003",
@@ -36,8 +36,8 @@
         "type": "presence"
       },
       "description": "Maximum Retail Price (MRP) inclusive of all taxes must be declared",
-      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(e) [Reference Framework]",
-      "version": "1.0"
+      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(e)",
+      "version": "2021.1"
     },
     {
       "rule_id": "RULE-FOOD-004",
@@ -48,8 +48,8 @@
         "type": "presence"
       },
       "description": "Name and complete address of the manufacturer or packer must be declared",
-      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(a) [Reference Framework]",
-      "version": "1.0"
+      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(a)",
+      "version": "2021.1"
     },
     {
       "rule_id": "RULE-FOOD-005",
@@ -60,8 +60,8 @@
         "type": "presence"
       },
       "description": "Country of origin must be declared on the package",
-      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(10) [Reference Framework]",
-      "version": "1.0"
+      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(10)",
+      "version": "2021.1"
     },
     {
       "rule_id": "RULE-FOOD-006",
@@ -72,8 +72,8 @@
         "type": "presence"
       },
       "description": "Month and year of manufacture or packaging must be declared",
-      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(d) [Reference Framework]",
-      "version": "1.0"
+      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(d)",
+      "version": "2021.1"
     },
     {
       "rule_id": "RULE-FOOD-007",
@@ -84,8 +84,8 @@
         "type": "presence"
       },
       "description": "Consumer care contact details (name, address, telephone/email) must be declared",
-      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(g) [Reference Framework]",
-      "version": "1.0"
+      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(g)",
+      "version": "2021.1"
     }
   ]
 }

@@ -158,7 +158,19 @@ def analyze_safety_watchlist(
         Structured safety analysis object.
     """
     active_watchlist = watchlist or DEFAULT_SAFETY_WATCHLIST
-    text_to_search = (ingredients_text or "") + " " + (" ".join(ingredients_list or []))
+    
+    parts = []
+    if isinstance(ingredients_text, str):
+        parts.append(ingredients_text)
+    elif isinstance(ingredients_text, (list, tuple)):
+        parts.extend([str(x) for x in ingredients_text])
+        
+    if isinstance(ingredients_list, str):
+        parts.append(ingredients_list)
+    elif isinstance(ingredients_list, (list, tuple)):
+        parts.extend([str(x) for x in ingredients_list])
+        
+    text_to_search = " ".join(parts)
     
     flagged_components = []
     seen_ids = set()

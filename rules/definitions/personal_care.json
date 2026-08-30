@@ -1,7 +1,7 @@
 {
   "category": "personal_care",
-  "version": "1.0",
-  "description": "Configurable rule definition set for Personal Care category packaged commodities [DEMO / TEST CONFIGURATION - Pending verified legal rule data]",
+  "version": "2021.1",
+  "description": "Statutory rule definition set for Personal Care category pre-packaged commodities under Legal Metrology (Packaged Commodities) Rules, 2011 (as amended 2017 & 2021)",
   "rules": [
     {
       "rule_id": "RULE-PC-001",
@@ -12,8 +12,8 @@
         "type": "presence"
       },
       "description": "Generic or common name of the personal care commodity must be declared",
-      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(a) [Reference Framework]",
-      "version": "1.0"
+      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(b)",
+      "version": "2021.1"
     },
     {
       "rule_id": "RULE-PC-002",
@@ -24,8 +24,8 @@
         "type": "presence"
       },
       "description": "Net weight, volume, or count must be declared in standard units",
-      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(b) [Reference Framework]",
-      "version": "1.0"
+      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(c)",
+      "version": "2021.1"
     },
     {
       "rule_id": "RULE-PC-003",
@@ -36,8 +36,8 @@
         "type": "presence"
       },
       "description": "MRP inclusive of all taxes must be declared",
-      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(e) [Reference Framework]",
-      "version": "1.0"
+      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(e)",
+      "version": "2021.1"
     },
     {
       "rule_id": "RULE-PC-004",
@@ -48,8 +48,8 @@
         "type": "presence"
       },
       "description": "Manufacturer or packer name and address must be declared",
-      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(a) [Reference Framework]",
-      "version": "1.0"
+      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(a)",
+      "version": "2021.1"
     },
     {
       "rule_id": "RULE-PC-005",
@@ -60,8 +60,8 @@
         "type": "presence"
       },
       "description": "Country of origin must be declared",
-      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(10) [Reference Framework]",
-      "version": "1.0"
+      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(10)",
+      "version": "2021.1"
     },
     {
       "rule_id": "RULE-PC-006",
@@ -72,8 +72,8 @@
         "type": "presence"
       },
       "description": "Consumer care helpline/email contact information must be declared",
-      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(g) [Reference Framework]",
-      "version": "1.0"
+      "source": "Legal Metrology (Packaged Commodities) Rules, 2011 - Rule 6(1)(g)",
+      "version": "2021.1"
     }
   ]
 }
