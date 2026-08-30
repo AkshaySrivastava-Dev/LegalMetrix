@@ -936,7 +936,10 @@
 
         <!-- Status Summary Bar -->
         <div class="status-summary-bar bar-pass" id="resStatusBar">
-          <span id="resStatusText">COMPLIANT</span>
+          <div>
+            <span id="resStatusText">COMPLIANT</span>
+            <span class="decl-key" id="resInspectionMode" style="font-size: 0.7rem; color: inherit; opacity: 0.8; margin-left: 8px;">(Single Image)</span>
+          </div>
           <span id="resCategoryBadge" class="gov-badge" style="background:#fff;">FOOD</span>
         </div>
 
@@ -1285,23 +1288,28 @@
     }
   };
 
-  // State
+  // State Management
   let currentLang = 'en';
   let activeHistoryFilter = 'ALL';
   let historySearchQuery = '';
+  
+  // Single image mode state
   let activeSelectedSingleFile = null;
   let activePreviewDataUrl = null;
+  
+  // 360 multi-angle mode state
+  let captured360FramesList = []; // [frontFile, rightFile, backFile, leftFile]
+  let captured360DataUrls = { front: null, right: null, back: null, left: null };
+  let is360ModeActive = false;
+
   let activeCameraStream = null;
   let currentInspection = null;
 
-  // 360 Inspection State
-  let is360ModeActive = false;
+  // 360 Runtime State
   let is360Running = false;
   let is360Paused = false;
   let current360PhaseIdx = 0;
   let phaseTimerInterval = null;
-  let captured360Angles = { front: null, right: null, back: null, left: null };
-  let captured360DataUrls = { front: null, right: null, back: null, left: null };
 
   const ROTATION_PHASES = [
     {
@@ -1385,6 +1393,7 @@
   const resultWorkspace = document.getElementById('resultWorkspace');
   const resStatusBar = document.getElementById('resStatusBar');
   const resStatusText = document.getElementById('resStatusText');
+  const resInspectionMode = document.getElementById('resInspectionMode');
   const resCategoryBadge = document.getElementById('resCategoryBadge');
   const resProductName = document.getElementById('resProductName');
   const declarationsGrid = document.getElementById('declarationsGrid');
@@ -1433,16 +1442,21 @@
   const btnClearDb = document.getElementById('btnClearDb');
   const scenariosGrid = document.getElementById('scenariosGrid');
 
-  // Toast Helper
+  // De-duplicated Toast Notification Helper
   function showToast(msg) {
+    const container = document.getElementById('toastContainer');
+    const existing = container.querySelector('.toast-pill');
+    if (existing && existing.textContent === msg) return; // Ignore exact duplicate
+
+    container.innerHTML = '';
     const toast = document.createElement('div');
     toast.className = 'toast-pill';
     toast.textContent = msg;
-    document.getElementById('toastContainer').appendChild(toast);
+    container.appendChild(toast);
     setTimeout(() => {
       toast.style.opacity = '0';
       setTimeout(() => toast.remove(), 250);
-    }, 3000);
+    }, 2800);
   }
 
   function formatBytes(bytes) {
@@ -1488,12 +1502,19 @@
     });
   });
 
-  // Single Image Selection
+  // ==========================================
+  // SINGLE IMAGE SELECTION / CAPTURE
+  // ==========================================
   function selectSingleFile(file) {
     if (!file) return;
+
+    // Clear 360 mode state
     is360ModeActive = false;
+    captured360FramesList = [];
+    captured360DataUrls = { front: null, right: null, back: null, left: null };
     panel360Preview.classList.remove('active');
 
+    // Set single image state
     activeSelectedSingleFile = file;
     previewNameLabel.textContent = file.name;
     previewSizeLabel.textContent = formatBytes(file.size);
@@ -1582,52 +1603,67 @@
         video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
       });
       video360Feed.srcObject = activeCameraStream;
-      reset360State();
+      
+      // Reset active runtime UI
+      is360Running = false;
+      is360Paused = false;
+      current360PhaseIdx = 0;
+      if (phaseTimerInterval) clearInterval(phaseTimerInterval);
+      stepTimerFill.style.width = '0%';
+      stepTimerCountdown.textContent = '0.0s / 5.0s';
+      stepGuidanceText.textContent = 'Keep front label centered';
+      btnTrigger360Start.style.display = 'inline-flex';
+      btnPause360Modal.style.display = 'none';
+
+      ROTATION_PHASES.forEach(p => {
+        const el = document.getElementById(p.pillId);
+        if (el) el.className = 'phase-step-pill';
+      });
+
       modal360Capture.classList.add('open');
     } catch (err) {
       showToast('Camera error: ' + err.message);
     }
   }
 
-  function reset360State() {
-    is360Running = false;
-    is360Paused = false;
-    current360PhaseIdx = 0;
-    if (phaseTimerInterval) clearInterval(phaseTimerInterval);
-    stepTimerFill.style.width = '0%';
-    stepTimerCountdown.textContent = '0.0s / 5.0s';
-    stepGuidanceText.textContent = 'Keep front label centered';
-    btnTrigger360Start.style.display = 'inline-flex';
-    btnPause360Modal.style.display = 'none';
-    captured360Angles = { front: null, right: null, back: null, left: null };
-    captured360DataUrls = { front: null, right: null, back: null, left: null };
-
-    ROTATION_PHASES.forEach(p => {
-      const el = document.getElementById(p.pillId);
-      if (el) el.className = 'phase-step-pill';
-    });
-  }
-
-  function close360Modal() {
+  function close360ModalOnly() {
     if (phaseTimerInterval) clearInterval(phaseTimerInterval);
     if (activeCameraStream) {
       activeCameraStream.getTracks().forEach(t => t.stop());
       activeCameraStream = null;
     }
     modal360Capture.classList.remove('open');
-    reset360State();
+    is360Running = false;
+    is360Paused = false;
+  }
+
+  function retake360() {
+    // Completely wipe old 360 frames
+    captured360FramesList = [];
+    captured360DataUrls = { front: null, right: null, back: null, left: null };
+    is360ModeActive = false;
+    panel360Preview.classList.remove('active');
+    thumb360Front.src = '';
+    thumb360Right.src = '';
+    thumb360Back.src = '';
+    thumb360Left.src = '';
+    open360Modal();
   }
 
   btnStart360Mode.onclick = open360Modal;
-  btnRetake360.onclick = open360Modal;
-  btnClose360Modal.onclick = close360Modal;
-  btnCancel360Modal.onclick = close360Modal;
+  btnRetake360.onclick = retake360;
+  btnClose360Modal.onclick = close360ModalOnly;
+  btnCancel360Modal.onclick = close360ModalOnly;
 
   btnTrigger360Start.onclick = () => {
     if (is360Running) return;
     is360Running = true;
     btnTrigger360Start.style.display = 'none';
     btnPause360Modal.style.display = 'inline-flex';
+    
+    // Wipe captured list for new capture run
+    captured360FramesList = [];
+    captured360DataUrls = { front: null, right: null, back: null, left: null };
     execute360Phase(0);
   };
 
@@ -1680,7 +1716,7 @@
         stepTimerFill.style.width = `${progressPct}%`;
         stepTimerCountdown.textContent = `${(elapsedMs / 1000).toFixed(1)}s / 5.0s`;
 
-        // Sample frame every 1 second
+        // Sample a frame every 1 second
         if (elapsedMs - lastSampleMs >= sampleIntervalMs) {
           lastSampleMs = elapsedMs;
           ctx.drawImage(video360Feed, 0, 0, canvas360Buffer.width, canvas360Buffer.height);
@@ -1696,10 +1732,10 @@
         if (elapsedMs >= phaseDuration) {
           clearInterval(phaseTimerInterval);
           
-          // Select best representative frame
+          // Select best representative frame for this phase
           if (sampledFrames.length > 0) {
             const bestFrame = sampledFrames[Math.floor(sampledFrames.length / 2)];
-            captured360Angles[phase.id] = bestFrame;
+            captured360FramesList.push(bestFrame);
             captured360DataUrls[phase.id] = URL.createObjectURL(bestFrame);
           }
 
@@ -1718,7 +1754,7 @@
   async function finalize360Capture() {
     is360Running = false;
     speak(PROMPT_KEYS.CAPTURE_360_COMPLETE, currentLang);
-    showToast('360° capture complete (20s guided rotation).');
+    showToast('360° capture complete (4 angles ready).');
 
     // Populate 4-Panel Preview Strip
     if (captured360DataUrls.front) thumb360Front.src = captured360DataUrls.front;
@@ -1726,27 +1762,18 @@
     if (captured360DataUrls.back) thumb360Back.src = captured360DataUrls.back;
     if (captured360DataUrls.left) thumb360Left.src = captured360DataUrls.left;
 
+    // Set 360 mode active and show preview
     is360ModeActive = true;
     clearSingleFile();
     panel360Preview.classList.add('active');
 
-    close360Modal();
-
-    // Trigger Scan & Evaluate with all 4 captured angles
-    const framesArray = [
-      captured360Angles.front,
-      captured360Angles.right,
-      captured360Angles.back,
-      captured360Angles.left
-    ].filter(Boolean);
-
-    if (framesArray.length > 0) {
-      await execute360Evaluation(framesArray);
-    }
+    close360ModalOnly();
   }
 
-  // Display Result (Quiet, Editorial, Minimalist)
-  function displayResult(record) {
+  // ==========================================
+  // RESULT RENDERING (Quiet, Editorial, Minimalist)
+  // ==========================================
+  function displayResult(record, modeLabel = 'Single Image') {
     scanProgressBox.style.display = 'none';
     resultWorkspace.style.display = 'flex';
 
@@ -1756,6 +1783,7 @@
 
     resStatusBar.className = 'status-summary-bar ' + (isPass ? 'bar-pass' : isFail ? 'bar-fail' : 'bar-review');
     resStatusText.textContent = isPass ? 'COMPLIANT' : isFail ? 'NON-COMPLIANT' : 'NEEDS REVIEW';
+    resInspectionMode.textContent = `(${modeLabel})`;
     resCategoryBadge.textContent = (record.category || 'Commodity').toUpperCase();
 
     const findings = record.findings || record.checks || [];
@@ -1768,7 +1796,7 @@
 
     // Product Name (Strict: No fake test product substitution)
     const detectedName = declMap.product_name || record.product_name;
-    resProductName.textContent = detectedName && detectedName !== 'Packaged Commodity'
+    resProductName.textContent = detectedName && detectedName !== 'Packaged Commodity' && detectedName !== '360° Rotated Commodity'
       ? detectedName
       : 'Product name not detected';
 
@@ -1871,9 +1899,9 @@
     currentInspection = record;
   }
 
-  // Process and Save Scan Record
-  async function processAndSaveInspection(scanRes, source = 'image') {
-    displayResult(scanRes);
+  // Save inspection record to IndexedDB
+  async function processAndSaveInspection(scanRes, source = 'image', modeLabel = 'Single Image') {
+    displayResult(scanRes, modeLabel);
 
     const declMap = {};
     (scanRes.findings || []).forEach(f => {
@@ -1884,7 +1912,7 @@
 
     const newRecord = {
       inspection_id: scanRes.inspection_id || `INSP-${Date.now()}`,
-      product_name: declMap.product_name || 'Product name not detected',
+      product_name: declMap.product_name || (modeLabel.includes('360') ? '360° Inspected Commodity' : 'Product name not detected'),
       category: scanRes.category || selectedCategory.value || 'General Commodity',
       barcode: scanRes.barcode || 'Verified',
       mrp: declMap.mrp || null,
@@ -1947,7 +1975,9 @@
     }
   }
 
-  // 360 Evaluation Submitter
+  // ==========================================
+  // 360 EVALUATION PIPELINE
+  // ==========================================
   async function execute360Evaluation(framesArray) {
     const isOnline = syncManager.isOnline();
     const cat = selectedCategory.value;
@@ -1956,7 +1986,7 @@
       const offlineId = `INSP-OFFLINE-360-${Date.now().toString(16).toUpperCase()}`;
       const offlineRec = {
         inspection_id: offlineId,
-        product_name: '360° Rotated Commodity',
+        product_name: '360° Inspected Commodity',
         category: cat || 'General Commodity',
         mrp: null,
         net_quantity: null,
@@ -1972,7 +2002,7 @@
       };
       await saveInspection(offlineRec);
       showToast(`Offline: 360° scan queued as PENDING (${offlineId})`);
-      displayResult(offlineRec);
+      displayResult(offlineRec, '360° / 4-Angle Fusion');
       return;
     }
 
@@ -1980,6 +2010,7 @@
     scanProgressBox.style.display = 'flex';
     progressMainText.textContent = 'Analyzing 4-Angle 360° Packaging...';
     progressSubText.textContent = 'Aggregating multi-angle OCR text with MultiImageFusion...';
+    btnScanEvaluate.disabled = true;
 
     const formData = new FormData();
     framesArray.forEach(fr => formData.append('frames', fr));
@@ -1994,30 +2025,20 @@
         throw new Error(errStr);
       }
       const scanRes = await res.json();
-      await processAndSaveInspection(scanRes, 'video_360');
+      await processAndSaveInspection(scanRes, 'video_360', '360° / 4-Angle Fusion');
     } catch (err) {
       console.error('360 Scan Error:', err);
       showToast(`360 Scan Error: ${err.message}`);
       scanProgressBox.style.display = 'none';
+    } finally {
+      btnScanEvaluate.disabled = false;
     }
   }
 
-  // Dominant [ Scan & Evaluate ] Button Handler
-  btnScanEvaluate.onclick = async () => {
-    // If 360 mode is active with frames
-    if (is360ModeActive) {
-      const frames = [captured360Angles.front, captured360Angles.right, captured360Angles.back, captured360Angles.left].filter(Boolean);
-      if (frames.length > 0) {
-        await execute360Evaluation(frames);
-        return;
-      }
-    }
-
-    if (!activeSelectedSingleFile) {
-      showToast('Please start camera or upload an image first.');
-      return;
-    }
-
+  // ==========================================
+  // SINGLE IMAGE EVALUATION PIPELINE
+  // ==========================================
+  async function executeSingleEvaluation(file) {
     const isOnline = syncManager.isOnline();
     const cat = selectedCategory.value;
 
@@ -2025,7 +2046,7 @@
       const offlineId = `INSP-OFFLINE-${Date.now().toString(16).toUpperCase()}`;
       const offlineRec = {
         inspection_id: offlineId,
-        product_name: activeSelectedSingleFile.name.replace(/\.[^/.]+$/, ''),
+        product_name: file.name.replace(/\.[^/.]+$/, ''),
         category: cat || 'General Commodity',
         mrp: null,
         net_quantity: null,
@@ -2042,7 +2063,7 @@
       await saveInspection(offlineRec);
       showToast(`Offline Mode: Scan saved as PENDING (${offlineId})`);
       speak(PROMPT_KEYS.INSPECTION_COMPLETE, currentLang);
-      displayResult(offlineRec);
+      displayResult(offlineRec, 'Single Image');
       return;
     }
 
@@ -2053,7 +2074,7 @@
     btnScanEvaluate.disabled = true;
 
     const formData = new FormData();
-    formData.append('image', activeSelectedSingleFile);
+    formData.append('image', file);
     if (cat) formData.append('category', cat);
 
     try {
@@ -2065,7 +2086,7 @@
         throw new Error(errStr);
       }
       const scanRes = await res.json();
-      await processAndSaveInspection(scanRes, 'image');
+      await processAndSaveInspection(scanRes, 'image', 'Single Image');
     } catch (err) {
       console.error('Scan Error:', err);
       showToast(`Scan Error: ${err.message}`);
@@ -2073,9 +2094,31 @@
     } finally {
       btnScanEvaluate.disabled = false;
     }
+  }
+
+  // ==========================================
+  // DOMINANT [ SCAN & EVALUATE ] ACTION
+  // ==========================================
+  btnScanEvaluate.onclick = async () => {
+    // 1. Check if 360° inspection frames exist (4 angles captured)
+    if (is360ModeActive && captured360FramesList && captured360FramesList.length >= 4) {
+      await execute360Evaluation(captured360FramesList);
+      return;
+    }
+
+    // 2. Check if a single image was selected or snapped
+    if (activeSelectedSingleFile) {
+      await executeSingleEvaluation(activeSelectedSingleFile);
+      return;
+    }
+
+    // 3. If neither exists, show clear message
+    showToast('Please start camera or upload an image first.');
   };
 
-  // History Tab
+  // ==========================================
+  // HISTORY TAB
+  // ==========================================
   async function refreshHistoryTable() {
     const stats = await getSyncStats();
     let records = await getAllInspections();
@@ -2186,7 +2229,9 @@
     await refreshHistoryTable();
   };
 
-  // Diagnostics Tab
+  // ==========================================
+  // DIAGNOSTICS & SCENARIOS TAB
+  // ==========================================
   function renderScenarios() {
     scenariosGrid.innerHTML = '';
     testScenarios.forEach(sc => {
@@ -2209,13 +2254,15 @@
 
         navTabBtns.forEach(b => b.classList.toggle('active', b.dataset.target === 'view-inspect'));
         viewPanels.forEach(p => p.classList.toggle('active', p.id === 'view-inspect'));
-        displayResult(saved);
+        displayResult(saved, `Demo #${saved.scenario_id}`);
       };
       scenariosGrid.appendChild(btn);
     });
   }
 
-  // Officer Review Modal
+  // ==========================================
+  // OFFICER AUDIT SHEET
+  // ==========================================
   window.openAuditSheet = async (id) => {
     const records = await getAllInspections();
     const item = records.find(r => r.inspection_id === id);
