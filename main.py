@@ -3,12 +3,21 @@ LEGALMETRIX - AI-Assisted Legal Metrology Inspection System
 Member 4: Legal Compliance + Comparison Engine Entry Point.
 """
 
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.routes import router as api_router
 from backend.routes.sync import router as sync_router
 from backend.services.database_service import init_db
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Initializes SQLite database and tables on application startup."""
+    init_db()
+    yield
+
 
 app = FastAPI(
     title="LegalMetrix - Legal Compliance & Comparison Engine",
@@ -19,6 +28,7 @@ app = FastAPI(
         "and same-product historical tracking."
     ),
     version="1.0.0",
+    lifespan=lifespan,
 )
 
 # CORS Configuration
@@ -29,12 +39,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-@app.on_event("startup")
-def startup_event():
-    """Initializes SQLite database and tables on application startup."""
-    init_db()
 
 
 # Mount API & Offline Sync Routes

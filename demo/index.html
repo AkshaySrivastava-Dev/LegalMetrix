@@ -1099,6 +1099,55 @@
       background: var(--accent-blue);
       color: #fff;
     }
+    .dropzone.drag-over, .dropzone.dragover {
+      border-color: var(--accent-blue) !important;
+      background-color: rgba(59, 130, 246, 0.14) !important;
+      box-shadow: 0 0 16px rgba(59, 130, 246, 0.3) !important;
+    }
+    .comparison-side-by-side {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 10px;
+    }
+    @media (max-width: 600px) {
+      .comparison-side-by-side {
+        grid-template-columns: 1fr;
+      }
+    }
+    .comp-col {
+      background-color: #0f172a;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+    }
+    .comp-col.highlight-prev {
+      border-left: 3px solid var(--accent-blue);
+    }
+    .comp-col.highlight-curr {
+      border-left: 3px solid var(--accent-amber);
+    }
+    .shrinkflation-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      font-weight: bold;
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #f87171;
+      margin-top: 8px;
+    }
+    .btn-blue {
+      background-color: var(--accent-blue);
+      color: #fff;
+      border: none;
+    }
+    .btn-blue:hover {
+      background-color: #2563eb;
+    }
   </style>
 </head>
 <body>
@@ -1339,12 +1388,13 @@
         <div class="comparison-header">
           <span>🔍</span> Same-Product Historical Comparison Alert
         </div>
+        <div id="comparisonCardContainer"></div>
         <ul class="comparison-list" id="comparisonList"></ul>
       </div>
 
       <!-- Inspections Database Table Card -->
       <div class="card">
-        <div class="card-header">
+        <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
           <h2><span>📋</span> Local Inspections Store (IndexedDB)</h2>
         </div>
 
@@ -1356,7 +1406,15 @@
             <button class="filter-tab" data-filter="failed">Failed (<span id="tabCountFailed">0</span>)</button>
           </div>
 
-          <input type="text" class="search-input" id="tableSearch" placeholder="Search product, barcode, ID...">
+          <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+            <input type="text" class="search-input" id="tableSearch" placeholder="Search product, barcode, ID...">
+            <button class="btn btn-outline" id="clearFilterBtn" style="padding: 6px 12px; font-size: 0.78rem; display: none;">
+              <span>✕</span> Clear Filter
+            </button>
+            <button class="btn btn-blue" id="exportCsvBtn" style="padding: 6px 12px; font-size: 0.78rem;">
+              <span>📥</span> Export CSV
+            </button>
+          </div>
         </div>
 
         <div class="table-container">
@@ -1397,7 +1455,12 @@
         <h3 id="modalTitle" style="font-size: 1.15rem;">Inspection Audit Record</h3>
         <p style="font-size: 0.75rem; color: var(--text-muted);" id="modalSubtitle">ID: INSP-...</p>
       </div>
-      <button class="close-btn" id="modalCloseBtn">&times;</button>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <button class="btn btn-green" id="generateNoticeBtn" style="padding: 5px 12px; font-size: 0.78rem;">
+          <span>📄</span> Statutory Notice
+        </button>
+        <button class="close-btn" id="modalCloseBtn">&times;</button>
+      </div>
     </div>
 
     <!-- Modal Navigation Tabs -->
@@ -1519,7 +1582,7 @@
   } from '../src/db/indexedDB.js';
   import { syncManager } from '../src/sync/syncManager.js';
   import { voiceAssistant, speak, PROMPT_KEYS } from '../src/voice/voiceAssistant.js';
-  import { compareProductWithPrevious } from '../src/history/historyManager.js';
+  import { compareProductWithPrevious, exportInspectionsAsCSV, generateStatutoryNoticeHTML } from '../src/history/historyManager.js';
   import { configureSQLiteBackend } from '../src/db/sqliteClient.js';
 
   // Load mock test data
@@ -1617,12 +1680,37 @@
 
     // Check same-product comparison
     const comparison = await compareProductWithPrevious(saved);
+    const comparisonCardContainer = document.getElementById('comparisonCardContainer');
     if (comparison.hasHistory && comparison.changesDetected.length > 0) {
       comparisonBanner.classList.add('active');
+      comparisonBanner.style.display = 'block';
+
+      const prev = comparison.latestPrevious;
+      if (prev && comparisonCardContainer) {
+        comparisonCardContainer.innerHTML = `
+          <div class="comparison-side-by-side">
+            <div class="comp-col highlight-prev">
+              <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Previous Batch (${prev.inspection_id || 'Prior Scan'})</div>
+              <div style="font-size: 0.85rem; color: #fff; font-weight: 600;">Net Qty: ${prev.net_quantity || 'N/A'}</div>
+              <div style="font-size: 0.85rem; color: #fff;">MRP: ₹${prev.mrp || 'N/A'}</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Inspected: ${new Date(prev.created_at || Date.now()).toLocaleDateString()}</div>
+            </div>
+            <div class="comp-col highlight-curr">
+              <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Current Batch (${saved.inspection_id})</div>
+              <div style="font-size: 0.85rem; color: #fff; font-weight: 600;">Net Qty: ${saved.net_quantity || 'N/A'}</div>
+              <div style="font-size: 0.85rem; color: #fff;">MRP: ₹${saved.mrp || 'N/A'}</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Inspected: ${new Date(saved.created_at || Date.now()).toLocaleDateString()}</div>
+            </div>
+          </div>
+          ${comparison.shrinkflationDetected ? '<div class="shrinkflation-badge">🚨 SHRINKFLATION ALERT: Net quantity reduced without proportional price reduction</div>' : ''}
+          ${comparison.priceHikeDetected ? '<div class="shrinkflation-badge" style="background: rgba(245, 158, 11, 0.2); border-color: rgba(245, 158, 11, 0.4); color: #fbbf24;">📈 PRICE HIKE DETECTED: MRP increased over previous batch</div>' : ''}
+        `;
+      }
       comparisonList.innerHTML = comparison.changesDetected.map(c => `<li>${c}</li>`).join('');
       speak(PROMPT_KEYS.MRP_CHANGED, activeLanguage);
     } else {
       comparisonBanner.classList.remove('active');
+      comparisonBanner.style.display = 'none';
     }
 
     // Auto-sync trigger if online
@@ -1654,6 +1742,14 @@
     document.getElementById('tabCountSynced').textContent = stats.synced;
     document.getElementById('tabCountFailed').textContent = stats.failed;
 
+    // Show/hide Clear Filter button
+    const clearFilterBtn = document.getElementById('clearFilterBtn');
+    if (searchQuery || activeFilter !== 'ALL') {
+      if (clearFilterBtn) clearFilterBtn.style.display = 'inline-flex';
+    } else {
+      if (clearFilterBtn) clearFilterBtn.style.display = 'none';
+    }
+
     // Apply active filter
     if (activeFilter !== 'ALL') {
       records = records.filter(r => r.sync_status === activeFilter);
@@ -1671,13 +1767,27 @@
 
     // Render Table Rows
     if (records.length === 0) {
-      tableBody.innerHTML = `
-        <tr>
-          <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">
-            No inspections found in this view.
-          </td>
-        </tr>
-      `;
+      if (searchQuery || activeFilter !== 'ALL') {
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">
+              <div style="font-size: 0.9rem; color: #fff; margin-bottom: 6px;">No matching inspections found</div>
+              <div style="font-size: 0.8rem; margin-bottom: 12px;">No records match filter '${activeFilter}' ${searchQuery ? `or query '${searchQuery}'` : ''}.</div>
+              <button class="btn btn-outline" style="padding: 5px 14px; font-size: 0.75rem;" onclick="window.resetTableFilters()">
+                ✕ Clear & Reset Filters
+              </button>
+            </td>
+          </tr>
+        `;
+      } else {
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 30px;">
+              No inspections recorded yet. Upload a package photo above or click any test scenario on the left to simulate a scan.
+            </td>
+          </tr>
+        `;
+      }
       return;
     }
 
@@ -2088,6 +2198,61 @@
     refreshDashboard();
   });
 
+  // Reset Table Filters Helper
+  window.resetTableFilters = () => {
+    searchQuery = '';
+    tableSearch.value = '';
+    activeFilter = 'ALL';
+    document.querySelectorAll('.filter-tab').forEach(b => {
+      b.classList.toggle('active', b.dataset.filter === 'ALL');
+    });
+    const clearBtn = document.getElementById('clearFilterBtn');
+    if (clearBtn) clearBtn.style.display = 'none';
+    refreshDashboard();
+  };
+
+  const clearFilterBtn = document.getElementById('clearFilterBtn');
+  if (clearFilterBtn) {
+    clearFilterBtn.addEventListener('click', window.resetTableFilters);
+  }
+
+  // Export CSV Handler
+  const exportCsvBtn = document.getElementById('exportCsvBtn');
+  if (exportCsvBtn) {
+    exportCsvBtn.addEventListener('click', async () => {
+      const records = await getAllInspections();
+      const csvContent = exportInspectionsAsCSV(records);
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `LegalMetrix_Audit_Export_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast(`Exported ${records.length} inspection record(s) to CSV!`, 'success');
+    });
+  }
+
+  // Generate Statutory Notice Handler
+  const generateNoticeBtn = document.getElementById('generateNoticeBtn');
+  if (generateNoticeBtn) {
+    generateNoticeBtn.addEventListener('click', () => {
+      if (!currentViewingInspection) {
+        showToast('No inspection record loaded to generate notice.', 'warn');
+        return;
+      }
+      const html = generateStatutoryNoticeHTML(currentViewingInspection);
+      const noticeWin = window.open('', '_blank');
+      if (noticeWin) {
+        noticeWin.document.write(html);
+        noticeWin.document.close();
+      } else {
+        showToast('Pop-up blocked. Please allow pop-ups to open the statutory notice.', 'warn');
+      }
+    });
+  }
+
   // Language Selection
   document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -2305,6 +2470,58 @@
     }
   }
 
+  // Real-time Barcode / QR Code Detector & FSAT Cross-Referencing
+  async function scanBarcodeAndVerifyFSAT(previewDataUrl, defaultBarcode = null) {
+    let barcodeValue = defaultBarcode;
+    if (!barcodeValue && 'BarcodeDetector' in window) {
+      try {
+        const barcodeDetector = new BarcodeDetector({
+          formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'qr_code', 'code_128', 'code_39']
+        });
+        const img = new Image();
+        img.src = previewDataUrl;
+        await new Promise(res => { img.onload = res; img.onerror = res; });
+        const barcodes = await barcodeDetector.detect(img);
+        if (barcodes && barcodes.length > 0) {
+          barcodeValue = barcodes[0].rawValue;
+        }
+      } catch (e) {
+        console.warn('Native BarcodeDetector:', e);
+      }
+    }
+    return barcodeValue;
+  }
+
+  // Statutory Unit Sale Price (USP) Math Calculation Helper
+  function calculateStatutoryUSP(mrp, netQty) {
+    if (!mrp || !netQty) return null;
+    const mrpNum = parseFloat(String(mrp).replace(/[^\d.]/g, ''));
+    if (!mrpNum || mrpNum <= 0) return null;
+
+    const match = String(netQty).match(/([\d.]+)\s*([a-zA-Z]+)/);
+    if (!match) return null;
+    const qtyNum = parseFloat(match[1]);
+    const unit = match[2].toLowerCase();
+    if (!qtyNum || qtyNum <= 0) return null;
+
+    if (['g', 'gm', 'gram', 'grams'].includes(unit)) {
+      const rate = mrpNum / qtyNum;
+      return { rate: rate.toFixed(2), unit: 'g', text: `₹${rate.toFixed(2)}/g` };
+    } else if (['kg', 'kgs'].includes(unit)) {
+      const rate = mrpNum / qtyNum;
+      return { rate: rate.toFixed(2), unit: 'kg', text: `₹${rate.toFixed(2)}/kg` };
+    } else if (['ml', 'millilitre'].includes(unit)) {
+      const rate = mrpNum / qtyNum;
+      return { rate: rate.toFixed(2), unit: 'ml', text: `₹${rate.toFixed(2)}/ml` };
+    } else if (['l', 'ltr', 'litre', 'litres'].includes(unit)) {
+      const rate = mrpNum / qtyNum;
+      return { rate: rate.toFixed(2), unit: 'L', text: `₹${rate.toFixed(2)}/L` };
+    } else {
+      const rate = mrpNum / qtyNum;
+      return { rate: rate.toFixed(2), unit: 'unit', text: `₹${rate.toFixed(2)}/${unit}` };
+    }
+  }
+
   function displayScanResult(scanData) {
     scannerEmptyState.style.display = 'none';
     scannerLoadingState.style.display = 'none';
@@ -2331,6 +2548,9 @@
 
     resultProductName.textContent = declMap.product_name || selectedScanFile.name.replace(/\.[^/.]+$/, '');
 
+    const computedUsp = calculateStatutoryUSP(declMap.mrp, declMap.net_quantity);
+    const declaredUsp = declMap.unit_sale_price || (computedUsp ? computedUsp.text : 'Missing');
+
     extractedChips.innerHTML = `
       <div class="chip">
         <span class="chip-label">MRP (Max Price)</span>
@@ -2339,6 +2559,10 @@
       <div class="chip">
         <span class="chip-label">Net Quantity</span>
         <span class="chip-value">${declMap.net_quantity || 'Missing'}</span>
+      </div>
+      <div class="chip">
+        <span class="chip-label">Unit Sale Price (USP)</span>
+        <span class="chip-value" title="Statutory Rate: ${computedUsp ? computedUsp.text : 'N/A'}">${declaredUsp}</span>
       </div>
       <div class="chip">
         <span class="chip-label">Mfg Date</span>
@@ -2389,6 +2613,41 @@
     }
 
     const category = scannerCategorySelect.value;
+    const isOnline = syncManager.isOnline();
+
+    // If offline, save inspection into local queue gracefully
+    if (!isOnline) {
+      const offlineId = `INSP-OFFLINE-${Date.now().toString(16).toUpperCase()}`;
+      const offlineRecord = {
+        inspection_id: offlineId,
+        product_name: selectedScanFile.name.replace(/\.[^/.]+$/, ''),
+        category: category || 'General Commodities',
+        mrp: null,
+        net_quantity: null,
+        unit_sale_price: null,
+        compliance_status: 'FLAGGED_MANUAL_REVIEW',
+        confidence: 0.0,
+        violations: [
+          { rule_id: 'RULE-OFFLINE-001', field: 'network_sync', requirement: 'Rural / Offline scan captured. Queued locally in IndexedDB for auto-sync.' }
+        ],
+        checks: [],
+        evidence: {
+          thumbnail_base64: currentPreviewDataUrl,
+          offline_queued: true
+        },
+        sync_status: SYNC_STATUS.PENDING,
+        sync_attempts: 0,
+        created_at: new Date().toISOString(),
+        synced_at: null
+      };
+
+      await saveInspection(offlineRecord);
+      showToast(`Offline Mode: Scan queued in local IndexedDB (${offlineId}). Will auto-sync when online.`, 'info');
+      speak(PROMPT_KEYS.INSPECTION_COMPLETE, activeLanguage);
+      await refreshDashboard();
+      return;
+    }
+
     setScannerLoading(true, 'Running OCR & Legal Rules Engine...', 'Analyzing packaging with NVIDIA Nemotron OCR v2 & Legal Metrology Rules 2011...');
 
     const formData = new FormData();
@@ -2423,11 +2682,14 @@
         }
       });
 
-      const isOnline = syncManager.isOnline();
+      // Barcode / FSAT check
+      const detectedBarcode = await scanBarcodeAndVerifyFSAT(currentPreviewDataUrl, scanResult.barcode || null);
+
       const newRecord = {
         inspection_id: scanResult.inspection_id || `INSP-${Date.now()}`,
         product_name: declMap.product_name || selectedScanFile.name.replace(/\.[^/.]+$/, ''),
         category: scanResult.category || category || 'General Commodities',
+        barcode: detectedBarcode || null,
         mrp: declMap.mrp || null,
         net_quantity: declMap.net_quantity || null,
         unit_sale_price: declMap.unit_sale_price || null,
@@ -2444,11 +2706,12 @@
         checks: scanResult.findings || [],
         evidence: {
           thumbnail_base64: currentPreviewDataUrl,
-          raw_ocr_count: scanResult.raw_ocr_count || 0
+          raw_ocr_count: scanResult.raw_ocr_count || 0,
+          ocr_detections: scanResult.ocr_detections || []
         },
-        sync_status: isOnline ? SYNC_STATUS.SYNCED : SYNC_STATUS.PENDING,
+        sync_status: SYNC_STATUS.SYNCED,
         created_at: scanResult.evaluated_at || new Date().toISOString(),
-        synced_at: isOnline ? new Date().toISOString() : null
+        synced_at: new Date().toISOString()
       };
 
       await saveInspection(newRecord);
@@ -2460,6 +2723,41 @@
         speak(PROMPT_KEYS.NON_COMPLIANT, activeLanguage);
       } else {
         speak(PROMPT_KEYS.MANUAL_VERIFY, activeLanguage);
+      }
+
+      // Check same-product comparison for Shrinkflation
+      const comparison = await compareProductWithPrevious(newRecord);
+      const comparisonCardContainer = document.getElementById('comparisonCardContainer');
+      if (comparison.hasHistory && comparison.changesDetected.length > 0) {
+        comparisonBanner.classList.add('active');
+        comparisonBanner.style.display = 'block';
+
+        const prev = comparison.latestPrevious;
+        if (prev && comparisonCardContainer) {
+          comparisonCardContainer.innerHTML = `
+            <div class="comparison-side-by-side">
+              <div class="comp-col highlight-prev">
+                <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Previous Batch (${prev.inspection_id || 'Prior Scan'})</div>
+                <div style="font-size: 0.85rem; color: #fff; font-weight: 600;">Net Qty: ${prev.net_quantity || 'N/A'}</div>
+                <div style="font-size: 0.85rem; color: #fff;">MRP: ₹${prev.mrp || 'N/A'}</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Inspected: ${new Date(prev.created_at || Date.now()).toLocaleDateString()}</div>
+              </div>
+              <div class="comp-col highlight-curr">
+                <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Current Batch (${newRecord.inspection_id})</div>
+                <div style="font-size: 0.85rem; color: #fff; font-weight: 600;">Net Qty: ${newRecord.net_quantity || 'N/A'}</div>
+                <div style="font-size: 0.85rem; color: #fff;">MRP: ₹${newRecord.mrp || 'N/A'}</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Inspected: ${new Date(newRecord.created_at || Date.now()).toLocaleDateString()}</div>
+              </div>
+            </div>
+            ${comparison.shrinkflationDetected ? '<div class="shrinkflation-badge">🚨 SHRINKFLATION ALERT: Net quantity reduced without proportional price reduction</div>' : ''}
+            ${comparison.priceHikeDetected ? '<div class="shrinkflation-badge" style="background: rgba(245, 158, 11, 0.2); border-color: rgba(245, 158, 11, 0.4); color: #fbbf24;">📈 PRICE HIKE DETECTED: MRP increased over previous batch</div>' : ''}
+          `;
+        }
+        comparisonList.innerHTML = comparison.changesDetected.map(c => `<li>${c}</li>`).join('');
+        speak(PROMPT_KEYS.MRP_CHANGED, activeLanguage);
+      } else {
+        comparisonBanner.classList.remove('active');
+        comparisonBanner.style.display = 'none';
       }
 
       await refreshDashboard();

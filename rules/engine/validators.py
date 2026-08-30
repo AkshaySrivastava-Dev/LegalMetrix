@@ -163,3 +163,132 @@ def execute_validator(
     else:
         # Unsupported validation type
         return (False, f"Unsupported validation type '{val_type}' in rule configuration")
+
+
+def calculate_unit_sale_price(
+    mrp: Any,
+    net_quantity: Any,
+) -> Optional[Dict[str, Any]]:
+    """
+    Computes the statutory Unit Sale Price (USP) under Legal Metrology Rules.
+
+    Returns dict with:
+        - unit_price: float (calculated unit price in Rs.)
+        - standard_unit: str ('g', 'kg', 'ml', 'L', 'piece')
+        - display_string: str (e.g. '₹0.45 / g' or '₹450.00 / kg')
+    """
+    mrp_val = _extract_numeric_value(mrp)
+    if mrp_val is None or mrp_val <= 0:
+        return None
+
+    if not isinstance(net_quantity, str):
+        qty_val = _extract_numeric_value(net_quantity)
+        if qty_val is None or qty_val <= 0:
+            return None
+        return {
+            "unit_price": round(mrp_val / qty_val, 4),
+            "standard_unit": "unit",
+            "display_string": f"₹{(mrp_val / qty_val):.2f} / unit",
+        }
+
+    raw_qty = net_quantity.strip().lower()
+    match = re.search(r"([\d.]+)\s*([a-zA-Z]+)", raw_qty)
+    if not match:
+        qty_val = _extract_numeric_value(raw_qty)
+        if qty_val is None or qty_val <= 0:
+            return None
+        return {
+            "unit_price": round(mrp_val / qty_val, 4),
+            "standard_unit": "unit",
+            "display_string": f"₹{(mrp_val / qty_val):.2f} / unit",
+        }
+
+    try:
+        qty_num = float(match.group(1))
+        unit_str = match.group(2).lower()
+    except (ValueError, IndexError):
+        return None
+
+    if qty_num <= 0:
+        return None
+
+    if unit_str in ["g", "gm", "gram", "grams"]:
+        unit_price = mrp_val / qty_num
+        return {
+            "unit_price": round(unit_price, 4),
+            "standard_unit": "g",
+            "display_string": f"₹{unit_price:.2f} / g",
+            "alt_display_string": f"₹{(unit_price * 1000):.2f} / kg" if qty_num >= 100 else None,
+        }
+    elif unit_str in ["kg", "kgs", "kilogram", "kilograms"]:
+        unit_price = mrp_val / qty_num
+        return {
+            "unit_price": round(unit_price, 4),
+            "standard_unit": "kg",
+            "display_string": f"₹{unit_price:.2f} / kg",
+        }
+    elif unit_str in ["ml", "millilitre", "milliliter"]:
+        unit_price = mrp_val / qty_num
+        return {
+            "unit_price": round(unit_price, 4),
+            "standard_unit": "ml",
+            "display_string": f"₹{unit_price:.2f} / ml",
+            "alt_display_string": f"₹{(unit_price * 1000):.2f} / L" if qty_num >= 100 else None,
+        }
+    elif unit_str in ["l", "ltr", "litre", "liter", "litres", "liters"]:
+        unit_price = mrp_val / qty_num
+        return {
+            "unit_price": round(unit_price, 4),
+            "standard_unit": "L",
+            "display_string": f"₹{unit_price:.2f} / L",
+        }
+    elif unit_str in ["pcs", "pc", "piece", "pieces", "units", "unit", "n", "nos"]:
+        unit_price = mrp_val / qty_num
+        return {
+            "unit_price": round(unit_price, 4),
+            "standard_unit": "piece",
+            "display_string": f"₹{unit_price:.2f} / piece",
+        }
+    else:
+        unit_price = mrp_val / qty_num
+        return {
+            "unit_price": round(unit_price, 4),
+            "standard_unit": unit_str,
+            "display_string": f"₹{unit_price:.2f} / {unit_str}",
+        }
+
+
+def validate_unit_sale_price(
+    mrp: Any,
+    net_quantity: Any,
+    declared_usp: Any,
+    tolerance_pct: float = 2.0,
+) -> Tuple[bool, str, Optional[Dict[str, Any]]]:
+    """
+    Validates whether declared Unit Sale Price mathematically matches MRP and Net Quantity.
+    """
+    calculated = calculate_unit_sale_price(mrp, net_quantity)
+    if calculated is None:
+        return (False, "Cannot calculate statutory USP: missing or invalid MRP / Net Quantity", None)
+
+    if not validate_presence(declared_usp):
+        return (False, f"USP not declared on package (Statutory Rate: {calculated['display_string']})", calculated)
+
+    declared_num = _extract_numeric_value(declared_usp)
+    if declared_num is None or declared_num <= 0:
+        return (False, f"Declared USP '{declared_usp}' is unparseable (Statutory Rate: {calculated['display_string']})", calculated)
+
+    calc_price = calculated["unit_price"]
+
+    # Match direct rate, kg vs g rate, or L vs ml rate within tolerance
+    diff_pct = abs(declared_num - calc_price) / max(calc_price, 1e-6) * 100.0
+    if diff_pct <= tolerance_pct:
+        return (True, f"Declared USP matches statutory rate: {calculated['display_string']}", calculated)
+
+    if declared_num > 0 and abs(declared_num - (calc_price * 1000)) / max(calc_price * 1000, 1e-6) * 100.0 <= tolerance_pct:
+        return (True, f"Declared USP matches statutory rate: ₹{declared_num:.2f} / kg", calculated)
+
+    if declared_num > 0 and abs(declared_num - (calc_price / 1000)) / max(calc_price / 1000, 1e-6) * 100.0 <= tolerance_pct:
+        return (True, f"Declared USP matches statutory rate: ₹{declared_num:.2f} / g", calculated)
+
+    return (False, f"Declared USP '{declared_usp}' does not match calculated statutory rate '{calculated['display_string']}'", calculated)
