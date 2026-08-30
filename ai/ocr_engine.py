@@ -55,7 +55,7 @@ class OCREngine:
             except Exception as e:
                 print(f"[OCREngine] NVIDIA OCR init error: {e}")
 
-        if self._engine is None and backend in ("auto", "paddle"):
+        if self._engine is None and backend == "paddle":
             try:
                 # Lazy import paddle
                 os.environ['FLAGS_use_onednn'] = '0'
